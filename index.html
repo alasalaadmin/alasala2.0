@@ -9,12 +9,12 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="متابعة الدروس">
-  <meta name="application-name" content="متابعة الدروس">
+  <meta name="apple-mobile-web-app-title" content="المتابعة">
+  <meta name="application-name" content="المتابعة">
   <meta name="theme-color" content="#153828">
 
   <!-- Link to Web App Manifest -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="./manifest.json">
 
   <!-- Apple Touch Icon (iOS Safari Home Screen Icon) -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%23153828'/%3E%3Ccircle cx='256' cy='256' r='140' fill='%231b4532' stroke='%2334d399' stroke-width='12'/%3E%3Cpath d='M190 256l45 45 90-90' stroke='%2334d399' stroke-width='32' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
@@ -52,7 +52,6 @@
   </script>
 
   <style>
-    /* Safe Area & Mobile Tap UX */
     :root {
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
@@ -112,15 +111,31 @@
     .glass-card:active {
       transform: scale(0.985);
     }
+    @keyframes floatingCard {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+    .animate-float {
+      animation: floatingCard 6s ease-in-out infinite;
+    }
+    .login-bg-cover {
+      background-image: url('./Cover.webp'), url('Cover.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
   </style>
 </head>
 <body class="h-full bg-slate-100 text-slate-900 antialiased flex flex-col justify-between overflow-x-hidden">
 
-  <!-- CONFIGURATION CONSTANT & SERVICE WORKER REGISTRATION -->
+  <!-- CONFIGURATION & PWA SERVICE WORKER REGISTRATION -->
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxoVf_eJi8auuiG8u8hY4tI-4gyfXu8zZ2StOcmb2FZZszyXWY7FOgX72dcjcif6BBgXA/exec";
 
-    // PWA Service Worker Registration with relative scope for GitHub Pages
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js', { scope: './' })
@@ -145,81 +160,44 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 1. LOGIN SCREEN (1 Google, 1 Microsoft, 1 Apple) -->
+  <!-- 1. LOGIN SCREEN (Email + Master PIN)       -->
   <!-- ========================================== -->
-  <div id="loginScreen" class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 bg-slate-900 selection:bg-emerald-500 selection:text-white safe-top safe-bottom">
-    <div class="w-full max-w-sm z-10 flex flex-col items-center">
+  <div id="loginScreen" class="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 login-bg-cover selection:bg-amber-500 selection:text-white safe-top safe-bottom overflow-hidden">
+    
+    <!-- Warm sunset atmospheric gradient overlay for readability -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-slate-950/45 to-black/75 backdrop-blur-[1.5px] pointer-events-none"></div>
+
+    <div class="w-full max-w-sm z-10 flex flex-col items-center animate-float">
       
-      <!-- Authentic Mediterranean Olive Tree Emblem with Glowing Halo -->
-      <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-b from-emerald-900/60 to-slate-950/80 border border-emerald-400/30 flex items-center justify-center mb-3 text-emerald-400 shadow-[0_0_35px_rgba(16,185,129,0.3)] relative overflow-hidden group">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-400/20 via-transparent to-transparent animate-pulse"></div>
-        <svg class="w-16 h-16 sm:w-20 sm:h-20 relative z-10 drop-shadow-[0_0_12px_rgba(52,211,153,0.7)]" viewBox="0 0 120 120" fill="none">
-          <!-- Soil ground mound -->
-          <ellipse cx="60" cy="100" rx="34" ry="4.5" fill="#064e3b" opacity="0.6"/>
-          
-          <!-- Gnarled Ancient Olive Trunk with Wood Grain & Exposed Roots -->
-          <path d="M60 97 C57 97 54 94 50 99 C48 97 51 92 53 87 C55 82 53 77 52 72 C50 67 47 62 44 57 C42 53 45 51 48 53 C50 55 52 61 54 65 C55 60 56 55 56 49 C57 44 59 44 60 48 C61 44 63 44 64 49 C64 55 65 60 66 65 C68 61 70 55 72 53 C75 51 78 53 76 57 C73 62 70 67 68 72 C67 77 65 82 67 87 C69 92 72 97 70 99 C66 94 63 97 60 97 Z" fill="#34d399"/>
-          
-          <!-- Trunk bark texture lines -->
-          <path d="M57 92 C55 85 57 78 55 70" stroke="#064e3b" stroke-width="1.2" stroke-linecap="round"/>
-          <path d="M63 92 C65 85 63 78 65 70" stroke="#064e3b" stroke-width="1.2" stroke-linecap="round"/>
-          <path d="M60 84 C59 78 61 72 60 64" stroke="#064e3b" stroke-width="1" stroke-linecap="round"/>
-
-          <!-- Canopy Foliage Clusters (Layered Olive Leaves) -->
-          <!-- Center Top Cluster -->
-          <path d="M60 22 C52 22 46 29 49 37 C44 38 41 44 45 49 C49 53 56 52 60 47 C64 52 71 53 75 49 C79 44 76 38 71 37 C74 29 68 22 60 22 Z" fill="#10b981" opacity="0.95"/>
-          
-          <!-- Left Main Cluster -->
-          <path d="M42 36 C35 36 29 42 31 49 C26 51 24 57 28 62 C32 66 38 65 42 61 C45 65 51 65 54 61 C57 56 55 50 51 49 C53 42 48 36 42 36 Z" fill="#059669" opacity="0.95"/>
-          
-          <!-- Right Main Cluster -->
-          <path d="M78 36 C72 36 67 42 69 49 C65 50 63 56 66 61 C69 65 75 65 78 61 C82 65 88 66 92 62 C96 57 94 51 89 49 C91 42 85 36 78 36 Z" fill="#059669" opacity="0.95"/>
-
-          <!-- Secondary Outer Leaves Highlights -->
-          <path d="M30 46 C24 45 22 39 26 36 C30 33 34 38 30 46 Z" fill="#6ee7b7"/>
-          <path d="M90 46 C96 45 98 39 94 36 C90 33 86 38 90 46 Z" fill="#6ee7b7"/>
-          <path d="M60 17 C56 12 64 12 60 17 Z" fill="#a7f3d0"/>
-          <path d="M46 25 C41 21 47 18 49 23 Z" fill="#6ee7b7"/>
-          <path d="M74 25 C79 21 73 18 71 23 Z" fill="#6ee7b7"/>
-
-          <!-- Hanging Golden-Green Olives (Fruit details) -->
-          <!-- Left Olives -->
-          <circle cx="37" cy="55" r="3" fill="#facc15" stroke="#713f12" stroke-width="0.7"/>
-          <path d="M37 52 L36 50" stroke="#10b981" stroke-width="0.8"/>
-          <circle cx="47" cy="45" r="2.8" fill="#a3e635" stroke="#365314" stroke-width="0.7"/>
-          
-          <!-- Center Olives -->
-          <circle cx="56" cy="38" r="3" fill="#facc15" stroke="#713f12" stroke-width="0.7"/>
-          <circle cx="64" cy="40" r="2.8" fill="#a3e635" stroke="#365314" stroke-width="0.7"/>
-          
-          <!-- Right Olives -->
-          <circle cx="73" cy="54" r="3" fill="#facc15" stroke="#713f12" stroke-width="0.7"/>
-          <path d="M73 51 L74 49" stroke="#10b981" stroke-width="0.8"/>
-          <circle cx="83" cy="47" r="2.8" fill="#a3e635" stroke="#365314" stroke-width="0.7"/>
-        </svg>
+      <!-- Brand Title with soft text glow -->
+      <div class="text-center mb-5">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+          تطبيق المتابعة
+        </h1>
+        <p class="text-xs sm:text-sm text-amber-200/90 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">
+          بوابة تسجيل دخول المدرسين
+        </p>
       </div>
 
-      <h1 class="text-xl sm:text-2xl font-bold text-white mb-1 text-center">تطبيق المتابعة</h1>
-      <p class="text-xs sm:text-sm text-slate-400 mb-5 text-center">تسجيل الدخول</p>
-
-      <div class="w-full bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-6 shadow-float space-y-4">
+      <!-- Floating Glassmorphic Login Card -->
+      <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_30px_rgba(251,191,36,0.08)] space-y-4">
         
-        <form onsubmit="event.preventDefault(); submitEmailPinLogin();" class="space-y-3.5">
+        <form onsubmit="event.preventDefault(); submitEmailPinLogin();" class="space-y-4">
           <!-- EMAIL INPUT -->
           <div>
-            <label for="loginEmailInput" class="block text-xs font-semibold text-slate-300 mb-1.5 text-right">
+            <label for="loginEmailInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right drop-shadow-sm">
               البريد الإلكتروني
             </label>
-            <div class="relative">
+            <div class="relative shadow-inner">
               <input 
                 type="email" 
                 id="loginEmailInput" 
                 required 
                 placeholder="teacher@example.com"
                 dir="ltr"
-                class="w-full px-3.5 py-3 bg-white/10 border border-white/15 focus:border-emerald-400 rounded-2xl text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all text-left"
+                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all text-left shadow-sm"
               />
-              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
                 </svg>
@@ -229,19 +207,19 @@
 
           <!-- PIN INPUT -->
           <div>
-            <label for="loginPinInput" class="block text-xs font-semibold text-slate-300 mb-1.5 text-right">
+            <label for="loginPinInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right drop-shadow-sm">
               الرمز السري (PIN)
             </label>
-            <div class="relative">
+            <div class="relative shadow-inner">
               <input 
                 type="password" 
                 id="loginPinInput" 
                 required 
                 placeholder="••••••"
                 dir="ltr"
-                class="w-full px-3.5 py-3 bg-white/10 border border-white/15 focus:border-emerald-400 rounded-2xl text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all text-left num-font tracking-widest"
+                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all text-left num-font tracking-widest shadow-sm"
               />
-              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                 </svg>
@@ -253,7 +231,7 @@
           <button 
             type="submit" 
             id="loginSubmitBtn"
-            class="w-full min-h-[48px] py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm rounded-2xl flex items-center justify-center gap-2 transition-all shadow-card select-none mt-2"
+            class="w-full min-h-[50px] py-3.5 px-5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 active:scale-[0.98] text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-[0_12px_28px_-6px_rgba(5,150,105,0.45)] select-none mt-4 cursor-pointer border border-emerald-400/30 backdrop-blur-sm"
           >
             <span>تسجيل الدخول</span>
             <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,20 +240,20 @@
           </button>
         </form>
 
-        <div id="loginErrorMsg" class="hidden text-xs text-red-300 bg-red-950/70 border border-red-500/40 p-3 rounded-xl text-center leading-relaxed"></div>
-        <div id="loginSuccessNotice" class="hidden text-xs text-emerald-300 bg-emerald-950/70 border border-emerald-500/40 p-3 rounded-xl text-center"></div>
+        <div id="loginErrorMsg" class="hidden text-xs text-red-200 bg-red-950/80 border border-red-500/50 p-3 rounded-2xl text-center leading-relaxed backdrop-blur-sm shadow-md"></div>
+        <div id="loginSuccessNotice" class="hidden text-xs text-amber-200 bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-center backdrop-blur-sm shadow-md"></div>
 
       </div>
 
-      <!-- Install App Shortcut button on login page (Thumb-friendly tap) -->
+      <!-- Install App Shortcut button on login page -->
       <div id="loginInstallWrapper" class="mt-4 w-full">
         <button 
           type="button" 
           onclick="triggerPWAInstall()" 
           id="loginInstallBtn"
-          class="w-full min-h-[46px] py-2.5 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 rounded-2xl text-emerald-300 hover:text-emerald-200 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-transform active:scale-[0.98] shadow-sm select-none"
+          class="w-full min-h-[46px] py-2.5 px-4 bg-black/40 hover:bg-black/55 backdrop-blur-xl border border-white/20 rounded-2xl text-amber-200 hover:text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg select-none cursor-pointer"
         >
-          <svg class="w-4 h-4 shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 shrink-0 text-amber-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
           <span id="installBtnText">تثبيت التطبيق مباشرة على الهاتف</span>
@@ -304,7 +282,7 @@
           <p><strong>3.</strong> اضغط على <strong>"إضافة"</strong> (<em>Add</em>) في الأعلى.</p>
         </div>
       </div>
-      <button type="button" onclick="closePwaGuideModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all">
+      <button type="button" onclick="closePwaGuideModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer">
         حسناً، فهمت
       </button>
     </div>
@@ -329,12 +307,12 @@
         </div>
 
         <div class="flex items-center gap-1.5">
-          <button onclick="refreshLiveBackend()" title="تحديث" class="p-2.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-200/60 transition-all">
+          <button onclick="refreshLiveBackend()" title="تحديث" class="p-2.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-200/60 transition-all cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
           </button>
-          <button onclick="handleLogout()" title="خروج" class="p-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all">
+          <button onclick="handleLogout()" title="خروج" class="p-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
             </svg>
@@ -382,7 +360,6 @@
               <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">رصد الحضور والغياب</p>
             </div>
 
-            <!-- Quick Access Arrow in bottom-left -->
             <div class="w-full flex justify-start pt-3">
               <span class="w-8 h-8 inline-flex items-center justify-center text-emerald-800 bg-emerald-100/80 group-hover:bg-emerald-600 group-hover:text-white border border-emerald-300/80 group-hover:border-emerald-600 rounded-xl transition-all shadow-xs">
                 <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -413,7 +390,7 @@
               <button 
                 type="button" 
                 onclick="event.stopPropagation(); openAddStudentModal();" 
-                class="py-1.5 px-3 bg-indigo-100/90 hover:bg-indigo-600 text-indigo-900 hover:text-white border border-indigo-300/80 hover:border-indigo-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs"
+                class="py-1.5 px-3 bg-indigo-100/90 hover:bg-indigo-600 text-indigo-900 hover:text-white border border-indigo-300/80 hover:border-indigo-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
@@ -444,7 +421,7 @@
               <button 
                 type="button" 
                 onclick="event.stopPropagation(); openCreateCourseModal();" 
-                class="py-1.5 px-3 bg-teal-100/90 hover:bg-teal-600 text-teal-900 hover:text-white border border-teal-300/80 hover:border-teal-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs"
+                class="py-1.5 px-3 bg-teal-100/90 hover:bg-teal-600 text-teal-900 hover:text-white border border-teal-300/80 hover:border-teal-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
@@ -489,7 +466,7 @@
         
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
           <div class="flex items-center gap-2">
-            <button onclick="handleAttendanceBackNav()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 transition-all">
+            <button onclick="handleAttendanceBackNav()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 transition-all cursor-pointer">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
@@ -502,7 +479,7 @@
               type="button" 
               onclick="submitAttendanceSession()" 
               id="topSaveAttendanceBtn"
-              class="hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1.5"
+              class="hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"/>
@@ -525,7 +502,7 @@
               type="button"
               id="attCourseDropdownBtn"
               onclick="toggleAttendanceCourseDropdown()"
-              class="w-full p-3.5 glass-card hover:border-emerald-500 rounded-2xl flex items-center justify-between text-right transition-all group"
+              class="w-full p-3.5 glass-card hover:border-emerald-500 rounded-2xl flex items-center justify-between text-right transition-all group cursor-pointer"
             >
               <div class="flex items-center gap-3 overflow-hidden">
                 <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center font-bold text-sm shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
@@ -605,10 +582,10 @@
             <div class="flex items-center justify-between mb-3 px-1">
               <h3 class="text-sm font-extrabold text-slate-800">قائمة حضور الطلاب</h3>
               <div class="flex items-center gap-2">
-                <button type="button" onclick="setAllAttendanceState(true)" class="text-xs sm:text-sm font-bold text-emerald-900 bg-emerald-100 border border-emerald-300/70 px-3 py-1.5 rounded-xl hover:bg-emerald-200 transition-all shadow-xs">
+                <button type="button" onclick="setAllAttendanceState(true)" class="text-xs sm:text-sm font-bold text-emerald-900 bg-emerald-100 border border-emerald-300/70 px-3 py-1.5 rounded-xl hover:bg-emerald-200 transition-all shadow-xs cursor-pointer">
                   الكل حاضر
                 </button>
-                <button type="button" onclick="setAllAttendanceState(false)" class="text-xs sm:text-sm font-bold text-red-900 bg-red-100 border border-red-300/70 px-3 py-1.5 rounded-xl hover:bg-red-200 transition-all shadow-xs">
+                <button type="button" onclick="setAllAttendanceState(false)" class="text-xs sm:text-sm font-bold text-red-900 bg-red-100 border border-red-300/70 px-3 py-1.5 rounded-xl hover:bg-red-200 transition-all shadow-xs cursor-pointer">
                   الكل غائب
                 </button>
               </div>
@@ -627,7 +604,7 @@
               type="button" 
               onclick="submitAttendanceSession()" 
               id="saveAttendanceBtn"
-              class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-card transition-all flex items-center justify-center gap-2 active:scale-[0.98] text-base"
+              class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-card transition-all flex items-center justify-center gap-2 active:scale-[0.98] text-base cursor-pointer"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/>
@@ -647,7 +624,7 @@
         
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
           <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80">
+            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
@@ -655,7 +632,7 @@
             <h2 class="text-base sm:text-lg font-bold text-slate-900">الطلبة</h2>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="openAddStudentModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm">
+            <button onclick="openAddStudentModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
               </svg>
@@ -699,7 +676,7 @@
         
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
           <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80">
+            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
@@ -707,7 +684,7 @@
             <h2 class="text-base sm:text-lg font-bold text-slate-900">قائمة الدروس</h2>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="openCreateCourseModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm">
+            <button onclick="openCreateCourseModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
               </svg>
@@ -727,7 +704,7 @@
       <section id="viewFollowUp" class="hidden space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
           <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80">
+            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
@@ -750,7 +727,7 @@
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
         <h3 class="text-sm font-bold text-slate-900">إضافة طالب جديد</h3>
-        <button onclick="closeAddStudentModal()" class="text-slate-400 hover:text-slate-600">
+        <button onclick="closeAddStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -820,10 +797,10 @@
         </div>
 
         <div class="pt-2 flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm">
+          <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm cursor-pointer">
             حفظ وإضافة الطالب
           </button>
-          <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all">
+          <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
             إلغاء
           </button>
         </div>
@@ -853,14 +830,14 @@
         <button 
           type="button" 
           onclick="confirmDiscardAttendance()" 
-          class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition-all shadow-sm"
+          class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition-all shadow-sm cursor-pointer"
         >
           خروج دون حفظ
         </button>
         <button 
           type="button" 
           onclick="closeConfirmLeaveModal()" 
-          class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all"
+          class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all cursor-pointer"
         >
           البقاء في الصفحة
         </button>
@@ -875,7 +852,7 @@
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
         <h3 class="text-sm font-bold text-slate-900">تحيين بيانات الطالب</h3>
-        <button onclick="closeEditStudentModal()" class="text-slate-400 hover:text-slate-600">
+        <button onclick="closeEditStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -941,10 +918,10 @@
         </div>
 
         <div class="pt-2 flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95">
+          <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
             حفظ وتوثيق التحيين
           </button>
-          <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all">
+          <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
             إلغاء
           </button>
         </div>
@@ -959,7 +936,7 @@
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
         <h3 class="text-sm font-bold text-slate-900">فتح درس جديد</h3>
-        <button onclick="closeCreateCourseModal()" class="text-slate-400 hover:text-slate-600">
+        <button onclick="closeCreateCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -1018,11 +995,11 @@
           <button 
             type="submit" 
             id="submitCreateCourseBtn"
-            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95"
+            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer"
           >
             تأكيد فتح الدرس
           </button>
-          <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all">
+          <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
             إلغاء
           </button>
         </div>
@@ -1037,7 +1014,7 @@
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
         <h3 class="text-sm font-bold text-slate-900">تعديل بيانات الدرس</h3>
-        <button onclick="closeEditCourseModal()" class="text-slate-400 hover:text-slate-600">
+        <button onclick="closeEditCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -1096,14 +1073,14 @@
         <div class="pt-2 flex gap-2">
           <button 
             type="submit" 
-            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95"
+            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer"
           >
             حفظ التعديلات
           </button>
           <button 
             type="button" 
             onclick="closeEditCourseModal()" 
-            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all"
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer"
           >
             إلغاء
           </button>
@@ -1355,7 +1332,7 @@
         chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-semibold";
         chip.innerHTML = `
           <span>${escapeHtml(book)}</span>
-          <button type="button" onclick="removeEditCompletedBook('${escapeHtml(book)}')" class="text-emerald-500 hover:text-red-600 transition-colors">
+          <button type="button" onclick="removeEditCompletedBook('${escapeHtml(book)}')" class="text-emerald-500 hover:text-red-600 transition-colors cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -1398,7 +1375,7 @@
         chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-semibold";
         chip.innerHTML = `
           <span>${escapeHtml(book)}</span>
-          <button type="button" onclick="removeAddCompletedBook('${escapeHtml(book)}')" class="text-indigo-500 hover:text-red-600 transition-colors">
+          <button type="button" onclick="removeAddCompletedBook('${escapeHtml(book)}')" class="text-indigo-500 hover:text-red-600 transition-colors cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -1750,7 +1727,6 @@
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       deferredInstallPrompt = e;
       const installWrapper = document.getElementById('loginInstallWrapper');
@@ -1768,7 +1744,6 @@
 
     function triggerPWAInstall() {
       if (deferredInstallPrompt) {
-        // Show native Android Chrome prompt directly
         deferredInstallPrompt.prompt();
         deferredInstallPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
@@ -1779,7 +1754,6 @@
           deferredInstallPrompt = null;
         });
       } else {
-        // Fallback guide if browser doesn't expose native event (e.g., iOS Safari)
         const guideModal = document.getElementById('pwaGuideModal');
         if (guideModal) guideModal.classList.remove('hidden');
       }
@@ -2044,7 +2018,7 @@
         lettersMap.forEach((firstIdx, letter) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = "w-6 h-6 flex items-center justify-center text-[11px] font-bold text-slate-700 hover:text-white hover:bg-emerald-600 active:scale-95 rounded-lg transition-all";
+          btn.className = "w-6 h-6 flex items-center justify-center text-[11px] font-bold text-slate-700 hover:text-white hover:bg-emerald-600 active:scale-95 rounded-lg transition-all cursor-pointer";
           btn.innerText = letter;
           btn.onclick = (e) => {
             e.preventDefault();
@@ -2085,7 +2059,7 @@
         }
 
         const card = document.createElement('div');
-        item.className = `p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none ${
+        card.className = `p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none ${
           isPresent 
             ? 'glass-card border-emerald-400 hover:border-emerald-500' 
             : 'bg-red-50/90 border-red-300 hover:border-red-400'
@@ -2240,7 +2214,7 @@
       bar.innerHTML = "";
 
       const allBtn = document.createElement('button');
-      allBtn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+      allBtn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
         AppState.selectedStudentCourseFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
       }`;
       allBtn.innerText = `الكل (${AppState.students.length})`;
@@ -2256,7 +2230,7 @@
         const btn = document.createElement('button');
         const active = AppState.selectedStudentCourseFilter === c.code;
 
-        btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+        btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
           active ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
         }`;
         btn.innerHTML = `${escapeHtml(c.book || 'درس')} <span class="num-font text-[10px] opacity-80">(${count})</span>`;
@@ -2355,7 +2329,7 @@
               </div>
             </div>
 
-            <button onclick="openEditStudentModal('${escapeHtml(st.name)}')" class="px-3.5 py-1.5 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-bold transition-all shadow-xs">
+            <button onclick="openEditStudentModal('${escapeHtml(st.name)}')" class="px-3.5 py-1.5 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
               تحيين
             </button>
           </div>
@@ -2789,13 +2763,13 @@
           </div>
 
           <div class="flex items-center gap-2 pt-1">
-            <button onclick="selectCourseAndOpenAttendance('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5">
+            <button onclick="selectCourseAndOpenAttendance('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
               <span>تسجيل الحضور</span>
             </button>
-            <button onclick="openEditCourseModal('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 active:scale-[0.98] text-slate-800 text-xs sm:text-sm font-bold rounded-xl transition-all border border-slate-300">
+            <button onclick="openEditCourseModal('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 active:scale-[0.98] text-slate-800 text-xs sm:text-sm font-bold rounded-xl transition-all border border-slate-300 cursor-pointer">
               تعديل الدرس
             </button>
           </div>
@@ -3029,11 +3003,11 @@
                 <span>اتصال (${escapeHtml(item.phone)})</span>
               </a>
             ` : `
-              <button onclick="openEditStudentModal('${escapeHtml(item.name)}')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all">
+              <button onclick="openEditStudentModal('${escapeHtml(item.name)}')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all cursor-pointer">
                 + إضافة رقم هاتف
               </button>
             `}
-            <button onclick="acknowledgeFollowUp('${escapeHtml(item.name)}', '${escapeHtml(item.courseCode)}')" class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all whitespace-nowrap">
+            <button onclick="acknowledgeFollowUp('${escapeHtml(item.name)}', '${escapeHtml(item.courseCode)}')" class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer">
               تم التواصل
             </button>
           </div>
@@ -3152,7 +3126,6 @@
     window.addEventListener('load', () => {
       updateDateWidget();
       
-      // Auto-fill saved email if previously used on this device
       const savedEmail = localStorage.getItem('al_rawad_saved_email');
       const emailInput = document.getElementById('loginEmailInput');
       if (savedEmail && emailInput) {
