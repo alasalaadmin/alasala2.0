@@ -3,7 +3,7 @@
  * Designed for GitHub Pages and production offline resilience.
  */
 
-const CACHE_NAME = 'dourous-cache-v2';
+const CACHE_NAME = 'dourous-cache-v4';
 
 // Essential static shell assets to cache on install
 const PRECACHE_ASSETS = [
@@ -34,6 +34,13 @@ self.addEventListener('activate', (event) => {
       );
     }).then(() => self.clients.claim())
   );
+});
+
+// Allow immediate take-over when a new service worker is installed
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch Event: Network-first for live Google Sheets API requests, Cache-fallback for UI shell
