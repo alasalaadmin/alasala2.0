@@ -3,7 +3,7 @@
  * Designed for GitHub Pages and production offline resilience.
  */
 
-const CACHE_NAME = 'dourous-cache-v4';
+const CACHE_NAME = 'dourous-cache-v6';
 
 // Essential static shell assets to cache on install
 const PRECACHE_ASSETS = [
@@ -57,7 +57,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        // Cache valid local GET responses for offline shell access
         if (event.request.method === 'GET' && networkResponse && networkResponse.status === 200) {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -71,7 +70,6 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          // Fallback to cached index.html for navigation requests
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }

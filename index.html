@@ -2,49 +2,74 @@
 <html lang="ar" dir="rtl" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>نظام إدارة ومتابعة الدروس</title>
 
   <!-- PWA & Mobile Web App Meta Tags -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="المتابعة">
   <meta name="application-name" content="المتابعة">
-  <meta name="theme-color" content="#153828">
+  <meta name="theme-color" content="#1B3326">
 
   <!-- Link to Web App Manifest -->
   <link rel="manifest" href="./manifest.json">
-
-  <!-- Apple Touch Icon -->
   <link rel="apple-touch-icon" href="./icon-192.png">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="./icon-192.png">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Tajawal, Amiri Quran & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,700;1,700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Marhey:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Reem+Kufi+Ink&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,700;1,700&family=Aref+Ruqaa:wght@400;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   
   <script>
     tailwind.config = {
       theme: {
         extend: {
+          colors: {
+            brand: {
+              50: '#F5F7F5',
+              100: '#E7ECE7',
+              200: '#CFD9D0',
+              300: '#A7BBA9',
+              400: '#79977D',
+              500: '#547659',
+              600: '#3D5C43',
+              700: '#2C4C3B',
+              800: '#1E382B',
+              900: '#14271E',
+              950: '#0C1813',
+            },
+            parchment: {
+              DEFAULT: '#FBF9F5',
+              surface: '#FFFFFF',
+              muted: '#F3EFE6',
+              border: '#E8E2D5',
+              line: '#DCD4C4'
+            },
+            terracotta: {
+              50: '#FDF4F4',
+              100: '#FCE7E7',
+              500: '#C75151',
+              600: '#AA3D3D',
+              700: '#8C2E2E'
+            }
+          },
           fontFamily: {
             sans: ['Tajawal', 'Plus Jakarta Sans', 'sans-serif'],
             num: ['Plus Jakarta Sans', 'Tajawal', 'sans-serif'],
-            naskh: ['"Noto Naskh Arabic"', 'Amiri', 'serif'],
-            handwritten: ['"Marhey"', '"Aref Ruqaa"', 'cursive', 'sans-serif'],
-            calligraphy: ['"Aref Ruqaa Ink"', '"Amiri Quran"', '"Noto Naskh Arabic"', 'serif']
+            handwritten: ['"Aref Ruqaa"', 'cursive', 'serif'],
+            calligraphy: ['"Amiri Quran"', 'serif']
           },
           boxShadow: {
-            'soft': '0 4px 20px -2px rgba(16, 24, 40, 0.05)',
-            'card': '0 10px 25px -4px rgba(15, 23, 42, 0.08)',
-            'float': '0 20px 40px -8px rgba(15, 23, 42, 0.12)'
+            'warm-sm': '0 1px 3px rgba(44, 40, 34, 0.05), 0 1px 2px rgba(44, 40, 34, 0.04)',
+            'warm-md': '0 4px 14px -2px rgba(35, 45, 38, 0.07), 0 2px 6px -1px rgba(35, 45, 38, 0.04)',
+            'warm-lg': '0 10px 25px -4px rgba(35, 45, 38, 0.08), 0 4px 10px -2px rgba(35, 45, 38, 0.03)',
+            'float': '0 20px 40px -8px rgba(24, 38, 29, 0.16)'
           }
         }
       }
@@ -60,23 +85,11 @@
       padding-top: max(0.75rem, env(safe-area-inset-top));
     }
     .safe-bottom {
-      padding-bottom: max(1rem, env(safe-area-inset-bottom));
-    }
-    .handwritten-chalk {
-      font-family: 'Aref Ruqaa', serif;
-      color: #FFFFFF;
-      text-shadow: 
-        0 0 1px rgba(255, 255, 255, 0.95),
-        0 0 3px rgba(255, 255, 255, 0.5),
-        1px 2px 2px rgba(0, 0, 0, 0.4);
-      letter-spacing: 0.01em;
-    }
-    .chalkboard-bg {
-      background: radial-gradient(circle at 50% 50%, #1c4533 0%, #153828 65%, #0e271c 100%);
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45), 0 6px 16px -3px rgba(15, 23, 42, 0.08);
+      padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
     }
     body {
-      background-color: #F1F5F9;
+      background-color: #F8F6F0;
+      color: #1A2421;
       font-family: 'Tajawal', sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
@@ -88,7 +101,7 @@
     }
     @media (min-width: 640px) {
       input, textarea, select {
-        font-size: 0.875rem;
+        font-size: 0.9375rem;
       }
     }
     .num-font {
@@ -101,22 +114,15 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(226, 232, 240, 0.95);
-      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    .chalkboard-bg {
+      background: radial-gradient(circle at 50% 50%, #254434 0%, #1A3426 70%, #12251B 100%);
+      box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.35);
     }
-    .glass-card:active {
-      transform: scale(0.985);
-    }
-    @keyframes floatingCard {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
-    }
-    .animate-float {
-      animation: floatingCard 6s ease-in-out infinite;
+    .handwritten-chalk {
+      font-family: 'Aref Ruqaa', serif;
+      color: #FDFDFD;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+      letter-spacing: 0.02em;
     }
     .login-bg-cover {
       background-image: url('./Cover.webp'), url('Cover.webp');
@@ -124,9 +130,16 @@
       background-position: center;
       background-repeat: no-repeat;
     }
+    @keyframes floatLogin {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+    .animate-float-subtle {
+      animation: floatLogin 7s ease-in-out infinite;
+    }
   </style>
 </head>
-<body class="h-full bg-slate-100 text-slate-900 antialiased flex flex-col justify-between overflow-x-hidden">
+<body class="h-full bg-[#F8F6F0] text-[#1A2421] antialiased flex flex-col justify-between overflow-x-hidden">
 
   <!-- CONFIGURATION & PWA SERVICE WORKER REGISTRATION -->
   <script>
@@ -136,10 +149,10 @@
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js', { scope: './' })
           .then((reg) => {
-            console.log('PWA Service Worker registered successfully:', reg.scope);
+            console.log('PWA Service Worker active:', reg.scope);
           })
           .catch((err) => {
-            console.warn('Service Worker registration skipped or failed:', err);
+            console.warn('SW registration skipped:', err);
           });
       });
     }
@@ -148,26 +161,22 @@
   <!-- Notifications & Loader -->
   <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-11/12 max-w-sm pointer-events-none transition-all duration-300"></div>
 
-  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
-    <div class="bg-white p-5 rounded-3xl shadow-float flex flex-col items-center gap-3 max-w-xs text-center border border-slate-100">
-      <div class="w-10 h-10 rounded-full border-3 border-slate-100 border-t-emerald-600 animate-spin"></div>
-      <p id="loadingMessage" class="text-slate-800 font-bold text-sm">جارٍ المعالجة...</p>
+  <div id="loadingOverlay" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-3xl shadow-float flex flex-col items-center gap-3.5 max-w-xs text-center border border-stone-100">
+      <div class="w-10 h-10 rounded-full border-3 border-stone-200 border-t-brand-700 animate-spin"></div>
+      <p id="loadingMessage" class="text-stone-800 font-bold text-sm">جارٍ المعالجة...</p>
     </div>
   </div>
 
   <!-- ========================================== -->
   <!-- 1. LOGIN SCREEN (Email + Master PIN)       -->
   <!-- ========================================== -->
-  <div id="loginScreen" class="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 login-bg-cover selection:bg-amber-500 selection:text-white safe-top safe-bottom overflow-hidden">
-    
-    <!-- Clean tint overlay without blur so the background image remains sharp and fully visible -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/55 pointer-events-none"></div>
+  <div id="loginScreen" class="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 login-bg-cover selection:bg-amber-600 selection:text-white safe-top safe-bottom overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-stone-950/20 via-stone-950/40 to-stone-950/75 pointer-events-none"></div>
 
-    <div class="w-full max-w-sm z-10 flex flex-col items-center animate-float">
-      
-      <!-- Brand Title with soft text glow -->
+    <div class="w-full max-w-sm z-10 flex flex-col items-center animate-float-subtle">
       <div class="text-center mb-5">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+        <h1 class="text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
           تطبيق المتابعة
         </h1>
         <p class="text-xs sm:text-sm text-amber-200/90 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">
@@ -175,23 +184,20 @@
         </p>
       </div>
 
-      <!-- Floating Glassmorphic Login Card -->
-      <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_30px_rgba(251,191,36,0.08)] space-y-4">
-        
+      <div class="w-full bg-stone-950/55 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-float space-y-4">
         <form onsubmit="event.preventDefault(); submitEmailPinLogin();" class="space-y-4">
-          <!-- EMAIL INPUT -->
           <div>
             <label for="loginEmailInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right drop-shadow-sm">
               البريد الإلكتروني
             </label>
-            <div class="relative shadow-inner">
+            <div class="relative">
               <input 
                 type="email" 
                 id="loginEmailInput" 
                 required 
                 placeholder="teacher@example.com"
                 dir="ltr"
-                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all text-left shadow-sm"
+                class="w-full px-4 py-3.5 bg-black/40 border border-white/25 focus:border-amber-400 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all text-left"
               />
               <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,19 +207,18 @@
             </div>
           </div>
 
-          <!-- PIN INPUT -->
           <div>
             <label for="loginPinInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right drop-shadow-sm">
               الرمز السري (PIN)
             </label>
-            <div class="relative shadow-inner">
+            <div class="relative">
               <input 
                 type="password" 
                 id="loginPinInput" 
                 required 
                 placeholder="••••••"
                 dir="ltr"
-                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all text-left num-font tracking-widest shadow-sm"
+                class="w-full px-4 py-3.5 bg-black/40 border border-white/25 focus:border-amber-400 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all text-left num-font tracking-widest"
               />
               <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,11 +228,10 @@
             </div>
           </div>
 
-          <!-- SUBMIT BUTTON -->
           <button 
             type="submit" 
             id="loginSubmitBtn"
-            class="w-full min-h-[50px] py-3.5 px-5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 active:scale-[0.98] text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-[0_12px_28px_-6px_rgba(5,150,105,0.45)] select-none mt-4 cursor-pointer border border-emerald-400/30 backdrop-blur-sm"
+            class="w-full min-h-[50px] py-3.5 px-5 bg-brand-700 hover:bg-brand-600 active:bg-brand-800 text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-lg active:scale-[0.99] select-none mt-4 cursor-pointer border border-brand-500/30"
           >
             <span>تسجيل الدخول</span>
             <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,61 +240,84 @@
           </button>
         </form>
 
-        <div id="loginErrorMsg" class="hidden text-xs text-red-200 bg-red-950/80 border border-red-500/50 p-3 rounded-2xl text-center leading-relaxed backdrop-blur-sm shadow-md"></div>
-        <div id="loginSuccessNotice" class="hidden text-xs text-amber-200 bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-center backdrop-blur-sm shadow-md"></div>
-
+        <div id="loginErrorMsg" class="hidden text-xs text-rose-200 bg-rose-950/80 border border-rose-500/40 p-3 rounded-2xl text-center leading-relaxed"></div>
+        <div id="loginSuccessNotice" class="hidden text-xs text-amber-200 bg-amber-950/80 border border-amber-500/40 p-3 rounded-2xl text-center"></div>
       </div>
 
-      <!-- Direct APK Download Link -->
       <div id="loginInstallWrapper" class="mt-4 w-full">
         <a 
-          href="./app.apk"
-          download="app.apk"
-          id="loginInstallBtn"
-          class="w-full min-h-[46px] py-2.5 px-4 bg-black/40 hover:bg-black/55 backdrop-blur-xl border border-white/20 rounded-2xl text-amber-200 hover:text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg select-none cursor-pointer"
+          href="./app.apk" 
+          download="al-rawad-app.apk"
+          id="directDownloadApkBtn"
+          onclick="handleDirectDownload(event)"
+          class="w-full min-h-[46px] py-2.5 px-4 bg-stone-900/60 hover:bg-stone-900/80 backdrop-blur-xl border border-white/20 rounded-2xl text-amber-200 hover:text-white text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
         >
-          <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
           <span id="installBtnText">تحميل تطبيق الهاتف مباشرة (APK)</span>
         </a>
       </div>
+    </div>
+  </div>
 
+  <!-- iOS PWA Manual Guide Modal -->
+  <div id="pwaGuideModal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-stone-200 text-stone-800 space-y-4">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-2.5">
+        <h3 class="text-sm font-bold text-stone-900">تثبيت التطبيق على الآيفون</h3>
+        <button onclick="closePwaGuideModal()" class="text-stone-400 hover:text-stone-600 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs leading-relaxed text-stone-700">
+        <p class="font-bold text-brand-800">لتثبيت التطبيق مباشرة على شاشتك:</p>
+        <div class="p-3.5 bg-stone-50 rounded-2xl space-y-2 border border-stone-200/80">
+          <p><strong>1.</strong> اضغط على زر المشاركة <strong>(⎋)</strong> أسفل شاشة Safari.</p>
+          <p><strong>2.</strong> اختر <strong>"إضافة إلى الصفحة الرئيسية"</strong> (<em>Add to Home Screen</em>).</p>
+          <p><strong>3.</strong> اضغط على <strong>"إضافة"</strong> بالأعلى.</p>
+        </div>
+      </div>
+      <button type="button" onclick="closePwaGuideModal()" class="w-full py-2.5 bg-brand-700 text-white font-bold rounded-xl text-xs transition-all">
+        حسناً، فهمت
+      </button>
     </div>
   </div>
 
   <!-- ========================================== -->
   <!-- 2. MAIN APPLICATION SHELL                  -->
   <!-- ========================================== -->
-  <div id="appShell" class="hidden flex-1 flex flex-col min-h-screen">
+  <div id="appShell" class="hidden flex-1 flex flex-col min-h-screen bg-[#F8F6F0]">
     
-    <!-- Top Bar with Real-Time Sync Indicator -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 safe-top">
-      <div class="max-w-2xl mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-base" id="userAvatar">
+    <!-- Top Bar: Elegant Teacher Identity -->
+    <header class="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E6DFCFA0] px-4 py-2.5 safe-top">
+      <div class="max-w-xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-brand-100 text-brand-800 border border-brand-200/70 flex items-center justify-center font-bold text-base shadow-warm-sm" id="userAvatar">
             م
           </div>
-          <div>
+          <div class="leading-tight">
             <div class="flex items-center gap-2">
-              <h2 id="userName" class="text-sm font-bold text-slate-900 leading-tight">المدرس</h2>
-              <!-- Live Online/Offline Dot -->
-              <span id="syncDot" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <h2 id="userName" class="text-sm font-bold text-stone-900">المدرس</h2>
+              <!-- Subtle status pill -->
+              <span id="syncDot" class="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded-full bg-brand-100/80 text-brand-800 border border-brand-300/60 font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
                 <span id="syncText">متصل</span>
               </span>
             </div>
-            <p id="userLocationText" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
+            <p id="userLocationText" class="text-[11px] text-stone-500 font-medium mt-0.5"></p>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5">
-          <button onclick="refreshLiveBackend()" title="تحديث" class="p-2.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-200/60 transition-all cursor-pointer">
+        <div class="flex items-center gap-1">
+          <button onclick="refreshLiveBackend()" title="تحديث" class="p-2 rounded-xl text-stone-600 hover:text-brand-800 hover:bg-stone-200/50 transition-all cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
           </button>
-          <button onclick="handleLogout()" title="خروج" class="p-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer">
+          <button onclick="handleLogout()" title="خروج" class="p-2 rounded-xl text-stone-500 hover:text-terracotta-600 hover:bg-rose-50/60 transition-all cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
             </svg>
@@ -300,134 +327,120 @@
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-2xl w-full mx-auto p-4 pb-12 safe-bottom">
+    <main class="flex-1 max-w-xl w-full mx-auto p-4 pb-24 safe-bottom">
       
       <!-- ========================================== -->
       <!-- VIEW 1: HOME DASHBOARD                    -->
       <!-- ========================================== -->
       <section id="viewDashboard" class="space-y-4">
         
-        <!-- Chalkboard Banner: Compact with Aref Ruqaa -->
-        <div class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden border border-[#2b5945]/70 shadow-sm">
-          <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 0.6px, transparent 0.6px); background-size: 16px 16px;"></div>
-          
-          <div class="relative z-10 flex flex-col items-center justify-center gap-1">
-            <h2 class="handwritten-chalk text-xl sm:text-2xl font-bold py-0.5 select-none leading-normal">
+        <!-- Chalkboard Motto -->
+        <div class="rounded-2xl py-3 px-4 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden shadow-warm-sm border border-stone-800/40">
+          <div class="relative z-10 flex flex-col items-center justify-center gap-0.5">
+            <h2 class="handwritten-chalk text-xl font-bold py-0.5 select-none">
               المتابعة نصف العمل
             </h2>
-            <div class="w-16 h-[1px] bg-white/30 rounded-full"></div>
           </div>
-
           <span id="widgetDayName" class="hidden"></span>
           <span id="widgetFullDate" class="hidden"></span>
           <span id="widgetAutoWeek" class="hidden"></span>
         </div>
 
-        <!-- 4 DASHBOARD ACTION BUTTONS WITH GLASS CONTRAST & ACCENTS -->
-        <div class="grid grid-cols-2 gap-3.5 pt-1">
+        <!-- 4 Action Cards -->
+        <div class="grid grid-cols-2 gap-3 pt-1">
           
           <!-- 1. تسجيل الحضور -->
-          <button onclick="openAttendanceView()" class="p-5 glass-card rounded-3xl hover:border-emerald-500 active:scale-[0.98] transition-all flex flex-col items-center justify-between text-center group relative cursor-pointer min-h-[190px]">
-            <div class="flex flex-col items-center justify-center w-full">
-              <div class="w-14 h-14 rounded-2xl bg-emerald-100/90 text-emerald-800 border border-emerald-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-emerald-800 transition-colors">تسجيل الحضور</h3>
-              <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">رصد الحضور والغياب</p>
+          <button onclick="openAttendanceView()" class="p-4 bg-white rounded-2xl border border-stone-200/80 hover:border-brand-600 active:scale-[0.98] transition-all flex flex-col justify-between text-right group shadow-warm-sm min-h-[170px] cursor-pointer">
+            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-800 border border-brand-200/80 flex items-center justify-center mb-2 group-hover:bg-brand-700 group-hover:text-white transition-all">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
             </div>
-
-            <div class="w-full flex justify-start pt-3">
-              <span class="w-8 h-8 inline-flex items-center justify-center text-emerald-800 bg-emerald-100/80 group-hover:bg-emerald-600 group-hover:text-white border border-emerald-300/80 group-hover:border-emerald-600 rounded-xl transition-all shadow-xs">
-                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+            <div>
+              <h3 class="text-base font-extrabold text-stone-900 group-hover:text-brand-800">تسجيل الحضور</h3>
+              <p class="text-xs text-stone-500 font-medium mt-0.5">رصد الحضور والغياب</p>
+            </div>
+            <div class="pt-2 flex justify-end">
+              <span class="w-7 h-7 rounded-lg bg-stone-100 group-hover:bg-brand-700 group-hover:text-white flex items-center justify-center text-stone-600 transition-colors">
+                <svg class="w-3.5 h-3.5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
                 </svg>
               </span>
             </div>
           </button>
 
           <!-- 2. الطلبة -->
-          <div onclick="openStudentsView()" class="p-5 glass-card rounded-3xl hover:border-indigo-500 transition-all flex flex-col items-center justify-between text-center group cursor-pointer relative min-h-[190px]">
-            <div class="flex flex-col items-center justify-center w-full">
-              <div class="w-14 h-14 rounded-2xl bg-indigo-100/90 text-indigo-800 border border-indigo-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-              </div>
-              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-indigo-800 transition-colors">الطلبة</h3>
-              <p id="dashStudentsCountText" class="text-xs sm:text-sm text-slate-500 font-semibold mt-1 num-font">0 طالب مسجل</p>
+          <div onclick="openStudentsView()" class="p-4 bg-white rounded-2xl border border-stone-200/80 hover:border-stone-400 transition-all flex flex-col justify-between text-right group shadow-warm-sm min-h-[170px] cursor-pointer">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-900 border border-amber-200/80 flex items-center justify-center mb-2 group-hover:bg-amber-800 group-hover:text-white transition-all">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
             </div>
-            
-            <div class="w-full flex items-center justify-between pt-3 gap-1">
-              <span class="w-8 h-8 inline-flex items-center justify-center text-indigo-800 bg-indigo-100/80 group-hover:bg-indigo-600 group-hover:text-white border border-indigo-300/80 group-hover:border-indigo-600 rounded-xl transition-all shadow-xs" title="عرض القائمة">
-                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+            <div>
+              <h3 class="text-base font-extrabold text-stone-900">الطلبة</h3>
+              <p id="dashStudentsCountText" class="text-xs text-stone-500 font-semibold mt-0.5 num-font">0 طالب مسجل</p>
+            </div>
+            <div class="pt-2 flex items-center justify-between gap-1">
+              <span class="w-7 h-7 rounded-lg bg-stone-100 flex items-center justify-center text-stone-600">
+                <svg class="w-3.5 h-3.5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
                 </svg>
               </span>
               <button 
                 type="button" 
                 onclick="event.stopPropagation(); openAddStudentModal();" 
-                class="py-1.5 px-3 bg-indigo-100/90 hover:bg-indigo-600 text-indigo-900 hover:text-white border border-indigo-300/80 hover:border-indigo-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer"
+                class="py-1 px-2.5 bg-stone-100 hover:bg-stone-800 hover:text-white rounded-lg text-[11px] font-bold text-stone-700 transition-all cursor-pointer"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
-                </svg>
-                <span>إضافة طالب</span>
+                + إضافة
               </button>
             </div>
           </div>
 
           <!-- 3. قائمة الدروس -->
-          <div onclick="openCoursesView()" class="p-5 glass-card rounded-3xl hover:border-teal-500 transition-all flex flex-col items-center justify-between text-center group cursor-pointer relative min-h-[190px]">
-            <div class="flex flex-col items-center justify-center w-full">
-              <div class="w-14 h-14 rounded-2xl bg-teal-100/90 text-teal-800 border border-teal-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-sm">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-              </div>
-              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-teal-800 transition-colors">قائمة الدروس</h3>
-              <p id="dashCoursesCountText" class="text-xs sm:text-sm text-slate-500 font-semibold mt-1 num-font">0 درس مسند</p>
+          <div onclick="openCoursesView()" class="p-4 bg-white rounded-2xl border border-stone-200/80 hover:border-stone-400 transition-all flex flex-col justify-between text-right group shadow-warm-sm min-h-[170px] cursor-pointer">
+            <div class="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 border border-stone-200 flex items-center justify-center mb-2 group-hover:bg-stone-800 group-hover:text-white transition-all">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
             </div>
-
-            <div class="w-full flex items-center justify-between pt-3 gap-1">
-              <span class="w-8 h-8 inline-flex items-center justify-center text-teal-800 bg-teal-100/80 group-hover:bg-teal-600 group-hover:text-white border border-teal-300/80 group-hover:border-teal-600 rounded-xl transition-all shadow-xs" title="عرض القائمة">
-                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+            <div>
+              <h3 class="text-base font-extrabold text-stone-900">قائمة الدروس</h3>
+              <p id="dashCoursesCountText" class="text-xs text-stone-500 font-semibold mt-0.5 num-font">0 درس مسند</p>
+            </div>
+            <div class="pt-2 flex items-center justify-between gap-1">
+              <span class="w-7 h-7 rounded-lg bg-stone-100 flex items-center justify-center text-stone-600">
+                <svg class="w-3.5 h-3.5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
                 </svg>
               </span>
               <button 
                 type="button" 
                 onclick="event.stopPropagation(); openCreateCourseModal();" 
-                class="py-1.5 px-3 bg-teal-100/90 hover:bg-teal-600 text-teal-900 hover:text-white border border-teal-300/80 hover:border-teal-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer"
+                class="py-1 px-2.5 bg-stone-100 hover:bg-stone-800 hover:text-white rounded-lg text-[11px] font-bold text-stone-700 transition-all cursor-pointer"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
-                </svg>
-                <span>فتح درس</span>
+                + فتح درس
               </button>
             </div>
           </div>
 
           <!-- 4. متابعة الغائبين -->
-          <button onclick="openFollowUpView()" class="p-5 glass-card rounded-3xl hover:border-amber-500 active:scale-[0.98] transition-all flex flex-col items-center justify-between text-center relative group cursor-pointer min-h-[190px]">
-            <div id="dashAbsentAlertPing" class="absolute top-4 left-4 w-3.5 h-3.5 bg-red-500 rounded-full animate-ping hidden"></div>
-            <div id="dashAbsentAlertDot" class="absolute top-4 left-4 w-3.5 h-3.5 bg-red-500 rounded-full hidden"></div>
+          <button onclick="openFollowUpView()" class="p-4 bg-white rounded-2xl border border-stone-200/80 hover:border-amber-600 active:scale-[0.98] transition-all flex flex-col justify-between text-right relative group shadow-warm-sm min-h-[170px] cursor-pointer">
+            <div id="dashAbsentAlertPing" class="absolute top-3.5 left-3.5 w-2.5 h-2.5 bg-terracotta-500 rounded-full animate-ping hidden"></div>
+            <div id="dashAbsentAlertDot" class="absolute top-3.5 left-3.5 w-2.5 h-2.5 bg-terracotta-500 rounded-full hidden"></div>
             
-            <div class="flex flex-col items-center justify-center w-full">
-              <div class="w-14 h-14 rounded-2xl bg-amber-100/90 text-amber-800 border border-amber-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-sm">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-              </div>
-              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-amber-800 transition-colors">متابعة الغائبين</h3>
-              <p id="dashAbsentCountText" class="text-xs sm:text-sm text-slate-500 font-semibold mt-1 num-font">غياب متكرر</p>
+            <div class="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 border border-stone-200 flex items-center justify-center mb-2 group-hover:bg-terracotta-600 group-hover:text-white transition-all">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
             </div>
-
-            <div class="w-full flex justify-start pt-3">
-              <span class="w-8 h-8 inline-flex items-center justify-center text-amber-800 bg-amber-100/80 group-hover:bg-amber-600 group-hover:text-white border border-amber-300/80 group-hover:border-amber-600 rounded-xl transition-all shadow-xs" title="عرض القائمة">
-                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+            <div>
+              <h3 class="text-base font-extrabold text-stone-900 group-hover:text-terracotta-600">متابعة الغياب</h3>
+              <p id="dashAbsentCountText" class="text-xs text-stone-500 font-semibold mt-0.5 num-font">غياب متكرر</p>
+            </div>
+            <div class="pt-2 flex justify-end">
+              <span class="w-7 h-7 rounded-lg bg-stone-100 group-hover:bg-terracotta-600 group-hover:text-white flex items-center justify-center text-stone-600 transition-colors">
+                <svg class="w-3.5 h-3.5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
                 </svg>
               </span>
             </div>
@@ -442,65 +455,61 @@
       <!-- ========================================== -->
       <section id="viewAttendance" class="hidden space-y-4">
         
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-          <div class="flex items-center gap-2">
-            <button onclick="handleAttendanceBackNav()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 transition-all cursor-pointer">
+        <!-- Clean, Balanced Navigation Header (Fixes crowding) -->
+        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
+          <div class="flex items-center gap-2.5">
+            <button onclick="handleAttendanceBackNav()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 transition-all cursor-pointer shadow-warm-sm">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
             </button>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">تسجيل الحضور</h2>
+            <div>
+              <h2 class="text-base font-bold text-stone-900">تسجيل الحضور</h2>
+              <span class="text-[11px] text-stone-500">اختر الدرس وسجّل حضور الطلاب</span>
+            </div>
           </div>
 
-          <div class="flex items-center gap-2">
-            <button 
-              type="button" 
-              onclick="submitAttendanceSession()" 
-              id="topSaveAttendanceBtn"
-              class="hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"/>
-              </svg>
-              <span>حفظ ورجوع</span>
-            </button>
-
-            <div id="attendanceStatsPill" class="hidden text-xs sm:text-sm font-bold px-3.5 py-1.5 rounded-full bg-slate-200/80 text-slate-800 num-font border border-slate-300">
-              <span id="presentSummaryCount" class="text-emerald-700">0 حاضر</span> • <span id="absentSummaryCount" class="text-red-600">0 غائب</span>
-            </div>
+          <!-- Live stats pill in top bar -->
+          <div id="attendanceStatsPill" class="hidden text-xs font-bold px-3 py-1 rounded-full bg-stone-100 text-stone-700 num-font border border-stone-200">
+            <span id="presentSummaryCount" class="text-brand-800">0 حاضر</span> • <span id="absentSummaryCount" class="text-terracotta-600">0 غائب</span>
           </div>
         </div>
 
-        <!-- Course Selector Bar -->
-        <div class="space-y-2">
-          <label class="block text-xs sm:text-sm font-bold text-slate-700">اختر الدرس أولاً:</label>
+        <!-- Course Selector: Redesigned to NEVER truncate book titles -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-stone-700 mr-1">الدرس المحدد:</label>
           
           <div class="relative">
             <button 
               type="button"
               id="attCourseDropdownBtn"
               onclick="toggleAttendanceCourseDropdown()"
-              class="w-full p-3.5 glass-card hover:border-emerald-500 rounded-2xl flex items-center justify-between text-right transition-all group cursor-pointer"
+              class="w-full p-4 bg-white hover:bg-stone-50/80 border border-stone-200 hover:border-brand-600 rounded-2xl flex items-center justify-between text-right transition-all group cursor-pointer shadow-warm-sm"
             >
-              <div class="flex items-center gap-3 overflow-hidden">
-                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center font-bold text-sm shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <div class="flex items-start gap-3 w-full pr-0.5">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-800 border border-brand-200/80 flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                   </svg>
                 </div>
-                <div class="truncate">
-                  <div class="flex items-center gap-2 truncate">
-                    <span id="attDropdownSelectedTitle" class="text-sm font-bold text-slate-900 truncate">-- اضغط لاختيار الدرس من القائمة --</span>
-                    <span id="attDropdownSelectedCategory" class="text-xs text-slate-600 bg-slate-200/90 px-2 py-0.5 rounded-lg font-semibold hidden"></span>
+                <!-- Clean multi-line title container without horizontal squishing -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span id="attDropdownSelectedTitle" class="text-sm font-extrabold text-stone-900 leading-snug">
+                      -- اضغط لاختيار الدرس من القائمة --
+                    </span>
+                    <span id="attDropdownSelectedCategory" class="text-[10px] text-stone-600 bg-stone-100 border border-stone-200/80 px-2 py-0.5 rounded-md font-semibold hidden"></span>
                   </div>
-                  <p id="attDropdownSelectedMeta" class="text-xs text-slate-500 truncate mt-0.5 font-medium"></p>
+                  <div class="flex items-center gap-2 mt-1 text-xs text-stone-500 font-medium">
+                    <span id="attDropdownSelectedMeta"></span>
+                    <span id="attDropdownSelectedCount" class="num-font font-bold text-brand-800 hidden"></span>
+                  </div>
                 </div>
               </div>
 
-              <div class="flex items-center gap-2 shrink-0">
-                <span id="attDropdownSelectedCount" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-200/80 text-slate-700 num-font hidden">0 طالب</span>
-                <svg id="attDropdownArrow" class="w-4 h-4 text-slate-500 group-hover:text-emerald-700 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7"/>
+              <div class="shrink-0 mr-2 text-stone-400 group-hover:text-stone-700">
+                <svg id="attDropdownArrow" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
               </div>
             </button>
@@ -508,87 +517,86 @@
             <!-- Dropdown Menu List -->
             <div 
               id="attendanceCoursesList" 
-              class="hidden absolute z-30 top-full left-0 right-0 mt-1.5 max-h-60 overflow-y-auto glass-card rounded-2xl shadow-float p-1.5 space-y-1.5"
-            >
-              <!-- Populated dynamically -->
-            </div>
+              class="hidden absolute z-30 top-full left-0 right-0 mt-2 max-h-64 overflow-y-auto bg-white rounded-2xl shadow-warm-lg border border-stone-200 p-2 space-y-1.5"
+            ></div>
           </div>
         </div>
 
-        <!-- Attendance Details Form -->
-        <div id="attendanceActiveForm" class="hidden space-y-4 pt-2">
+        <!-- Attendance Details Form (Warm Canvas & Solid Borders) -->
+        <div id="attendanceActiveForm" class="hidden space-y-4">
           
-          <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5">
-            <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white rounded-2xl p-4 border border-stone-200/90 shadow-warm-sm space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1">تاريخ الدرس</label>
+                <label class="block text-xs font-bold text-stone-700 mb-1">تاريخ الحصة</label>
                 <input 
                   type="date" 
                   id="attDateInput" 
                   onchange="syncWeekAndMonthWithDate(this.value)"
-                  class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-900 num-font focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  class="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 num-font focus:outline-none focus:border-brand-600 focus:bg-white"
                 />
               </div>
               <div>
-                <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1">الأسبوع والشهر</label>
+                <label class="block text-xs font-bold text-stone-700 mb-1">الأسبوع والشهر</label>
                 <input 
                   type="text" 
                   id="attWeekMonthInput" 
                   readonly
-                  class="w-full px-3 py-2.5 bg-slate-200/70 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-700 focus:outline-none cursor-default"
+                  class="w-full px-3 py-2.5 bg-stone-100 border border-stone-200/80 rounded-xl text-xs font-bold text-stone-600 cursor-default"
                 />
               </div>
             </div>
 
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label class="block text-xs sm:text-sm font-bold text-slate-700">ما تم شرحه (الباب المقرر / الموضع)</label>
-                <span id="lastTaughtHint" class="text-xs text-emerald-800 font-bold bg-emerald-100/80 px-2 py-0.5 rounded-md border border-emerald-200"></span>
+                <label class="block text-xs font-bold text-stone-700">ما تم شرحه في الحصة</label>
+                <span id="lastTaughtHint" class="text-[11px] text-brand-800 font-semibold bg-brand-50 px-2 py-0.5 rounded-md border border-brand-200/60"></span>
               </div>
               <select 
                 id="attSyllabusSelect" 
                 required
-                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                class="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 text-xs font-bold focus:outline-none focus:border-brand-600 focus:bg-white"
               >
                 <option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>
               </select>
             </div>
           </div>
 
-          <!-- Students Checklist -->
-          <div class="relative">
-            <div class="flex items-center justify-between mb-3 px-1">
-              <h3 class="text-sm font-extrabold text-slate-800">قائمة حضور الطلاب</h3>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="setAllAttendanceState(true)" class="text-xs sm:text-sm font-bold text-emerald-900 bg-emerald-100 border border-emerald-300/70 px-3 py-1.5 rounded-xl hover:bg-emerald-200 transition-all shadow-xs cursor-pointer">
+          <!-- Students Checklist Header & Actions -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-sm font-extrabold text-stone-900">قائمة حضور الطلاب</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="setAllAttendanceState(true)" class="text-xs font-bold text-brand-800 bg-brand-50 border border-brand-200 px-3 py-1.5 rounded-xl hover:bg-brand-100 active:scale-95 transition-all cursor-pointer">
                   الكل حاضر
                 </button>
-                <button type="button" onclick="setAllAttendanceState(false)" class="text-xs sm:text-sm font-bold text-red-900 bg-red-100 border border-red-300/70 px-3 py-1.5 rounded-xl hover:bg-red-200 transition-all shadow-xs cursor-pointer">
+                <button type="button" onclick="setAllAttendanceState(false)" class="text-xs font-bold text-terracotta-700 bg-terracotta-50 border border-terracotta-100 px-3 py-1.5 rounded-xl hover:bg-terracotta-100 active:scale-95 transition-all cursor-pointer">
                   الكل غائب
                 </button>
               </div>
             </div>
 
-            <!-- Alphabet Quick-Jump Floating Rail -->
-            <div id="attendanceAlphaRail" class="hidden fixed left-2 top-1/2 -translate-y-1/2 z-40 bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-float p-1 flex flex-col items-center gap-0.5 max-h-[70vh] overflow-y-auto no-scrollbar select-none">
-            </div>
+            <!-- Alphabet Rail -->
+            <div id="attendanceAlphaRail" class="hidden fixed left-2 top-1/2 -translate-y-1/2 z-40 bg-white/95 backdrop-blur-md border border-stone-200 rounded-2xl shadow-warm-md p-1 flex flex-col items-center gap-0.5 max-h-[70vh] overflow-y-auto no-scrollbar select-none"></div>
 
-            <div id="attendanceStudentList" class="space-y-2.5"></div>
+            <div id="attendanceStudentList" class="space-y-2"></div>
           </div>
 
-          <!-- Submit Button -->
-          <div class="pt-2">
-            <button 
-              type="button" 
-              onclick="submitAttendanceSession()" 
-              id="saveAttendanceBtn"
-              class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-card transition-all flex items-center justify-center gap-2 active:scale-[0.98] text-base cursor-pointer"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/>
-              </svg>
-              <span>حفظ الحضور والغياب</span>
-            </button>
+          <!-- Floating Bottom Save Bar for Thumb Comfort -->
+          <div class="fixed bottom-0 left-0 right-0 p-3 bg-white/90 backdrop-blur-md border-t border-stone-200/80 z-40 safe-bottom">
+            <div class="max-w-xl mx-auto">
+              <button 
+                type="button" 
+                onclick="submitAttendanceSession()" 
+                id="saveAttendanceBtn"
+                class="w-full py-3.5 px-4 bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-extrabold rounded-2xl shadow-warm-md transition-all flex items-center justify-center gap-2 active:scale-[0.99] text-sm cursor-pointer"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>حفظ بيانات الحضور والغياب</span>
+              </button>
+            </div>
           </div>
 
         </div>
@@ -600,50 +608,47 @@
       <!-- ========================================== -->
       <section id="viewStudents" class="hidden space-y-4">
         
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
           <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
+            <button onclick="openDashboardView()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer shadow-warm-sm">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
             </button>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">الطلبة</h2>
+            <h2 class="text-base font-bold text-stone-900">سجل الطلبة</h2>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="openAddStudentModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
+            <button onclick="openAddStudentModal()" class="px-3 py-1.5 bg-brand-700 hover:bg-brand-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-warm-sm cursor-pointer">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
               </svg>
               <span>إضافة طالب</span>
             </button>
-            <span id="studentsTotalBadge" class="text-xs sm:text-sm font-bold px-3 py-1 bg-slate-200/80 rounded-full text-slate-800 num-font border border-slate-300">0</span>
+            <span id="studentsTotalBadge" class="text-xs font-bold px-2.5 py-1 bg-stone-100 rounded-full text-stone-700 num-font border border-stone-200">0</span>
           </div>
         </div>
 
-        <!-- Filter by Course Pills -->
         <div>
-          <label class="block text-xs sm:text-sm font-bold text-slate-600 mb-1.5">تصفية حسب الدرس:</label>
+          <label class="block text-xs font-bold text-stone-600 mb-1.5 mr-1">تصفية حسب الدرس:</label>
           <div id="studentCourseFilterBar" class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar"></div>
         </div>
 
-        <!-- Search Bar with Arabic Fuzzy Filter -->
         <div class="relative">
           <input 
             type="text" 
             id="studentSearchInput" 
             oninput="renderStudentsDirectory()"
             placeholder="بحث بالاسم أو رقم الهاتف أو الحي..."
-            class="w-full pr-10 pl-3 py-3 glass-card rounded-2xl text-slate-900 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            class="w-full pr-10 pl-3 py-2.5 bg-white border border-stone-200/90 rounded-2xl text-stone-900 text-xs font-medium focus:outline-none focus:border-brand-600 shadow-warm-sm"
           />
-          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
           </div>
         </div>
 
-        <!-- Student Cards List -->
-        <div id="studentsDirectoryList" class="space-y-3"></div>
+        <div id="studentsDirectoryList" class="space-y-2.5"></div>
 
       </section>
 
@@ -652,27 +657,27 @@
       <!-- ========================================== -->
       <section id="viewCourses" class="hidden space-y-4">
         
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
           <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
+            <button onclick="openDashboardView()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer shadow-warm-sm">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
             </button>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">قائمة الدروس</h2>
+            <h2 class="text-base font-bold text-stone-900">قائمة الدروس</h2>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="openCreateCourseModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
+            <button onclick="openCreateCourseModal()" class="px-3 py-1.5 bg-brand-700 hover:bg-brand-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-warm-sm cursor-pointer">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
               </svg>
               <span>فتح درس جديد</span>
             </button>
-            <span id="coursesTotalBadge" class="text-xs sm:text-sm font-bold px-3 py-1 bg-slate-200/80 rounded-full text-slate-800 num-font border border-slate-300">0</span>
+            <span id="coursesTotalBadge" class="text-xs font-bold px-2.5 py-1 bg-stone-100 rounded-full text-stone-700 num-font border border-stone-200">0</span>
           </div>
         </div>
 
-        <div id="coursesDirectoryList" class="space-y-3.5"></div>
+        <div id="coursesDirectoryList" class="space-y-3"></div>
 
       </section>
 
@@ -680,32 +685,30 @@
       <!-- VIEW 5: متابعة الغائبين (Follow-up)         -->
       <!-- ========================================== -->
       <section id="viewFollowUp" class="hidden space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
           <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
+            <button onclick="openDashboardView()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer shadow-warm-sm">
               <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
             </button>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">متابعة الغائبين</h2>
+            <h2 class="text-base font-bold text-stone-900">متابعة الغائبين</h2>
           </div>
-          <span class="text-xs sm:text-sm font-bold text-slate-600">غياب حصتين متتاليتين</span>
+          <span class="text-xs text-stone-600 font-medium">غياب حصتين متتاليتين</span>
         </div>
 
-        <div id="followUpList" class="space-y-3.5"></div>
+        <div id="followUpList" class="space-y-3"></div>
       </section>
 
     </main>
   </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: ADD STUDENT                         -->
-  <!-- ========================================== -->
-  <div id="addStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">إضافة طالب جديد</h3>
-        <button onclick="closeAddStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+  <!-- MODALS (Rendered with Warm Clean Aesthetic) -->
+  <div id="addStudentModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-stone-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-stone-100 mb-3">
+        <h3 class="text-sm font-bold text-stone-900">إضافة طالب جديد</h3>
+        <button onclick="closeAddStudentModal()" class="text-stone-400 hover:text-stone-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -714,19 +717,18 @@
 
       <form id="addStudentForm" onsubmit="event.preventDefault(); submitAddStudent();" class="space-y-3">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
-          <input type="text" id="addStudentName" required placeholder="الاسم واللقب..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">اسم الطالب</label>
+          <input type="text" id="addStudentName" required placeholder="الاسم واللقب..." class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600"/>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الدرس المسند إليه</label>
-            <select id="addStudentCourse" onchange="handleCourseSelectionChange(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">الدرس المسند إليه</label>
+            <select id="addStudentCourse" onchange="handleCourseSelectionChange(this.value)" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
-            <select id="addStudentCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <label class="block text-xs font-semibold text-stone-600 mb-1">الصنف</label>
+            <select id="addStudentCategory" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600">
               <option value="رجال">رجال</option>
               <option value="نساء">نساء</option>
             </select>
@@ -735,50 +737,47 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
-            <input type="tel" id="addStudentPhone" placeholder="8 أرقام" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-left num-font"/>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">رقم الهاتف</label>
+            <input type="tel" id="addStudentPhone" placeholder="8 أرقام" dir="ltr" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600 text-left num-font"/>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
-            <select id="addStudentLevel" onchange="toggleAddStudentCompletedBooks(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المستوى</label>
+            <select id="addStudentLevel" onchange="toggleAddStudentCompletedBooks(this.value)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
-            <select id="addStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">الفئة العمرية</label>
+            <select id="addStudentAgeGroup" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="addStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المقر</label>
+            <select id="addStudentLocation" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
-          <input type="text" id="addStudentCity" placeholder="مثال: باردو، المروج (أو البلد إن كان خارج تونس)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">الحي / المدينة</label>
+          <input type="text" id="addStudentCity" placeholder="مثال: باردو، المروج..." class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"/>
         </div>
 
         <div id="addStudentCompletedBooksWrapper" class="hidden">
-          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
           <div class="space-y-2">
-            <select id="addStudentBooksDropdown" onchange="handleAddCompletedBook(this)" class="w-full px-3 py-2 bg-slate-50 border border-indigo-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="">+ اختر كتاباً لإضافته للمنجزات...</option>
+            <select id="addStudentBooksDropdown" onchange="handleAddCompletedBook(this)" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600">
+              <option value="">+ اختر كتاباً لإضافته...</option>
             </select>
-            <div id="addStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-200 min-h-[38px]"></div>
+            <div id="addStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-stone-50 rounded-xl border border-stone-200 min-h-[38px]"></div>
           </div>
           <input type="hidden" id="addStudentCompletedBooks" />
         </div>
 
         <div class="pt-2 flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm cursor-pointer">
+          <button type="submit" class="flex-1 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl text-xs transition-all cursor-pointer">
             حفظ وإضافة الطالب
           </button>
-          <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+          <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
             إلغاء
           </button>
         </div>
@@ -786,51 +785,35 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: CONFIRM LEAVE WITHOUT SAVING        -->
-  <!-- ========================================== -->
-  <div id="confirmLeaveAttendanceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 text-center space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+  <div id="confirmLeaveAttendanceModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-stone-200 text-center space-y-3.5">
+      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center mx-auto">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
         </svg>
       </div>
-
       <div>
-        <h3 class="text-sm font-bold text-slate-900 mb-1">مغادرة تسجيل الحضور؟</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">
+        <h3 class="text-sm font-bold text-stone-900 mb-1">مغادرة تسجيل الحضور؟</h3>
+        <p class="text-xs text-stone-500 leading-relaxed">
           لم يتم حفظ بيانات حضور هذا الدرس بعد. هل ترغب في الخروج دون حفظ؟
         </p>
       </div>
-
       <div class="flex gap-2 pt-1">
-        <button 
-          type="button" 
-          onclick="confirmDiscardAttendance()" 
-          class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition-all shadow-sm cursor-pointer"
-        >
+        <button type="button" onclick="confirmDiscardAttendance()" class="flex-1 py-2.5 bg-terracotta-600 hover:bg-terracotta-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer">
           خروج دون حفظ
         </button>
-        <button 
-          type="button" 
-          onclick="closeConfirmLeaveModal()" 
-          class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all cursor-pointer"
-        >
-          البقاء في الصفحة
+        <button type="button" onclick="closeConfirmLeaveModal()" class="flex-1 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition-all cursor-pointer">
+          البقاء
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: EDIT STUDENT                        -->
-  <!-- ========================================== -->
-  <div id="editStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">تحيين بيانات الطالب</h3>
-        <button onclick="closeEditStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+  <div id="editStudentModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-stone-200">
+      <div class="flex items-center justify-between pb-2 border-b border-stone-100 mb-3">
+        <h3 class="text-sm font-bold text-stone-900">تحيين بيانات الطالب</h3>
+        <button onclick="closeEditStudentModal()" class="text-stone-400 hover:text-stone-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -839,15 +822,14 @@
 
       <form id="editStudentForm" onsubmit="event.preventDefault(); submitStudentUpdate();" class="space-y-3">
         <input type="hidden" id="editStudentOrigName" />
-
         <div class="grid grid-cols-3 gap-2">
           <div class="col-span-2">
-            <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
-            <input type="text" id="editStudentName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"/>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">اسم الطالب</label>
+            <input type="text" id="editStudentName" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600"/>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
-            <select id="editStudentCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="block text-xs font-semibold text-stone-600 mb-1">الصنف</label>
+            <select id="editStudentCategory" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600">
               <option value="رجال">رجال</option>
               <option value="نساء">نساء</option>
             </select>
@@ -856,50 +838,47 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
-            <input type="tel" id="editStudentPhone" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-left num-font"/>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">رقم الهاتف</label>
+            <input type="tel" id="editStudentPhone" dir="ltr" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600 text-left num-font"/>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
-            <select id="editStudentLevel" onchange="toggleCompletedBooksField(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المستوى</label>
+            <select id="editStudentLevel" onchange="toggleCompletedBooksField(this.value)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
-            <select id="editStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">الفئة العمرية</label>
+            <select id="editStudentAgeGroup" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="editStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المقر</label>
+            <select id="editStudentLocation" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
-          <input type="text" id="editStudentCity" placeholder="مثال: باردو، المروج (أو البلد إن كان خارج تونس)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"/>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">الحي / المدينة</label>
+          <input type="text" id="editStudentCity" placeholder="مثال: باردو، المروج..." class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"/>
         </div>
 
         <div id="completedBooksWrapper" class="hidden">
-          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
           <div class="space-y-2">
-            <select id="editStudentBooksDropdown" onchange="handleEditCompletedBook(this)" class="w-full px-3 py-2 bg-slate-50 border border-emerald-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-              <option value="">+ اختر كتاباً لإضافته للمنجزات...</option>
+            <select id="editStudentBooksDropdown" onchange="handleEditCompletedBook(this)" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600">
+              <option value="">+ اختر كتاباً لإضافته...</option>
             </select>
-            <div id="editStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-200 min-h-[38px]"></div>
+            <div id="editStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-stone-50 rounded-xl border border-stone-200 min-h-[38px]"></div>
           </div>
           <input type="hidden" id="editStudentCompletedBooks" />
         </div>
 
         <div class="pt-2 flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-            حفظ وتوثيق التحيين
+          <button type="submit" class="flex-1 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl text-xs transition-all cursor-pointer">
+            حفظ التحيين
           </button>
-          <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+          <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
             إلغاء
           </button>
         </div>
@@ -907,14 +886,11 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: CREATE NEW COURSE                   -->
-  <!-- ========================================== -->
-  <div id="createCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">فتح درس جديد</h3>
-        <button onclick="closeCreateCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+  <div id="createCourseModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-stone-200">
+      <div class="flex items-center justify-between pb-2 border-b border-stone-100 mb-3">
+        <h3 class="text-sm font-bold text-stone-900">فتح درس جديد</h3>
+        <button onclick="closeCreateCourseModal()" class="text-stone-400 hover:text-stone-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -923,15 +899,14 @@
 
       <form id="createCourseForm" onsubmit="event.preventDefault(); submitCreateCourse();" class="space-y-3">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">صنف الدرس</label>
-          <select id="newCourseCategory" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          </select>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">صنف الدرس</label>
+          <select id="newCourseCategory" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
-            <select id="newCourseDay" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="block text-xs font-semibold text-stone-600 mb-1">اليوم</label>
+            <select id="newCourseDay" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600">
               <option value="السبت">السبت</option>
               <option value="الأحد">الأحد</option>
               <option value="الاثنين">الاثنين</option>
@@ -942,42 +917,36 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
-            <input type="time" id="newCourseTiming" value="20:00" oninput="trackFieldChange(this)" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center num-font"/>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">التوقيت</label>
+            <input type="time" id="newCourseTiming" value="20:00" oninput="trackFieldChange(this)" required dir="ltr" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:border-brand-600 text-center num-font"/>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
-            <select id="newCourseLocation" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المكان</label>
+            <select id="newCourseLocation" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600">
               <option value="مقر">مقر</option>
               <option value="بيت">بيت</option>
               <option value="عن بعد">عن بعد</option>
             </select>
           </div>
           <div id="newCourseVenueWrapper">
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="newCourseVenue" onchange="trackFieldChange(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المقر</label>
+            <select id="newCourseVenue" onchange="trackFieldChange(this)" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">الكتاب المقرر</label>
-          <select id="newCourseBook" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          </select>
+          <label class="block text-xs font-semibold text-stone-600 mb-1">الكتاب المقرر</label>
+          <select id="newCourseBook" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
         </div>
 
         <div class="pt-2 flex gap-2">
-          <button 
-            type="submit" 
-            id="submitCreateCourseBtn"
-            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer"
-          >
+          <button type="submit" id="submitCreateCourseBtn" class="flex-1 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl text-xs transition-all cursor-pointer">
             تأكيد فتح الدرس
           </button>
-          <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+          <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
             إلغاء
           </button>
         </div>
@@ -985,14 +954,11 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: EDIT COURSE                         -->
-  <!-- ========================================== -->
-  <div id="editCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">تعديل بيانات الدرس</h3>
-        <button onclick="closeEditCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+  <div id="editCourseModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-stone-200">
+      <div class="flex items-center justify-between pb-2 border-b border-stone-100 mb-3">
+        <h3 class="text-sm font-bold text-stone-900">تعديل بيانات الدرس</h3>
+        <button onclick="closeEditCourseModal()" class="text-stone-400 hover:text-stone-600 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -1001,22 +967,15 @@
 
       <form id="editCourseForm" onsubmit="event.preventDefault(); submitCourseUpdate();" class="space-y-3">
         <input type="hidden" id="editCourseCode" />
-
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتاب المقرر</label>
-          <select 
-            id="editCourseBookInput" 
-            onchange="trackFieldChange(this)"
-            required
-            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          >
-          </select>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">الكتاب المقرر</label>
+          <select id="editCourseBookInput" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:border-brand-600"></select>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
-            <select id="editCourseDay" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="block text-xs font-semibold text-stone-600 mb-1">اليوم</label>
+            <select id="editCourseDay" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600">
               <option value="السبت">السبت</option>
               <option value="الأحد">الأحد</option>
               <option value="الاثنين">الاثنين</option>
@@ -1027,39 +986,31 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
-            <input type="time" id="editCourseTiming" oninput="trackFieldChange(this)" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center num-font"/>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">التوقيت</label>
+            <input type="time" id="editCourseTiming" oninput="trackFieldChange(this)" required dir="ltr" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:border-brand-600 text-center num-font"/>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
-            <select id="editCourseLocation" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المكان</label>
+            <select id="editCourseLocation" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600">
               <option value="مقر">مقر</option>
               <option value="بيت">بيت</option>
               <option value="عن بعد">عن بعد</option>
             </select>
           </div>
           <div id="editCourseVenueWrapper">
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="editCourseVenue" onchange="trackFieldChange(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </select>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">المقر</label>
+            <select id="editCourseVenue" onchange="trackFieldChange(this)" class="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:border-brand-600"></select>
           </div>
         </div>
 
         <div class="pt-2 flex gap-2">
-          <button 
-            type="submit" 
-            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer"
-          >
+          <button type="submit" class="flex-1 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl text-xs transition-all cursor-pointer">
             حفظ التعديلات
           </button>
-          <button 
-            type="button" 
-            onclick="closeEditCourseModal()" 
-            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer"
-          >
+          <button type="button" onclick="closeEditCourseModal()" class="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
             إلغاء
           </button>
         </div>
@@ -1068,7 +1019,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- JAVASCRIPT CLIENT LOGIC                    -->
+  <!-- JAVASCRIPT LOGIC                           -->
   <!-- ========================================== -->
   <script>
     let isAttendanceDirty = false;
@@ -1092,8 +1043,7 @@
         const el = document.getElementById(id);
         if (el) {
           initialFieldValues[id] = el.value !== undefined ? String(el.value) : "";
-          el.classList.remove('border-emerald-500', 'bg-emerald-50/30', 'ring-1', 'ring-emerald-500');
-          el.classList.add('border-slate-200', 'bg-slate-50');
+          el.classList.remove('border-brand-600', 'bg-brand-50/20');
         }
       });
     }
@@ -1102,16 +1052,13 @@
       if (!el || !el.id) return;
       const initialVal = initialFieldValues[el.id];
       const currentVal = el.value !== undefined ? String(el.value) : "";
-
       const isChanged = (initialVal !== undefined && initialVal !== "" && initialVal !== currentVal) || 
                         (initialVal === "" && currentVal !== "");
 
       if (isChanged) {
-        el.classList.add('border-emerald-500', 'bg-emerald-50/30', 'ring-1', 'ring-emerald-500');
-        el.classList.remove('border-slate-200', 'bg-slate-50');
+        el.classList.add('border-brand-600', 'bg-brand-50/20');
       } else {
-        el.classList.remove('border-emerald-500', 'bg-emerald-50/30', 'ring-1', 'ring-emerald-500');
-        el.classList.add('border-slate-200', 'bg-slate-50');
+        el.classList.remove('border-brand-600', 'bg-brand-50/20');
       }
     }
 
@@ -1161,7 +1108,7 @@
       }
 
       if (successNotice) {
-        successNotice.innerText = `جارٍ التحقق من الحساب والرمز السري...`;
+        successNotice.innerText = `جارٍ التحقق من الحساب...`;
         successNotice.classList.remove('hidden');
       }
 
@@ -1243,22 +1190,14 @@
 
     function getAvailableBooksList() {
       const booksSet = new Set();
-
       if (Array.isArray(AppState.books) && AppState.books.length > 0) {
-        AppState.books.forEach(b => {
-          if (b && b.trim()) booksSet.add(b.trim());
-        });
+        AppState.books.forEach(b => { if (b && b.trim()) booksSet.add(b.trim()); });
       }
-
       if (AppState.syllabus && AppState.syllabus.length > 0) {
-        AppState.syllabus.forEach(s => {
-          if (s.book && s.book.trim()) booksSet.add(s.book.trim());
-        });
+        AppState.syllabus.forEach(s => { if (s.book && s.book.trim()) booksSet.add(s.book.trim()); });
       }
       if (AppState.courses && AppState.courses.length > 0) {
-        AppState.courses.forEach(c => {
-          if (c.book && c.book.trim()) booksSet.add(c.book.trim());
-        });
+        AppState.courses.forEach(c => { if (c.book && c.book.trim()) booksSet.add(c.book.trim()); });
       }
 
       const excluded = ["المختصر س1", "القول الجلي"];
@@ -1305,7 +1244,7 @@
       container.innerHTML = "";
 
       if (AppState.selectedEditBooks.size === 0) {
-        container.innerHTML = `<span class="text-[11px] text-slate-400 py-1 px-1">لم يتم اختيار أي كتاب بعد</span>`;
+        container.innerHTML = `<span class="text-[11px] text-stone-400 py-1 px-1">لم يتم اختيار أي كتاب بعد</span>`;
         if (hiddenInput) hiddenInput.value = "";
         return;
       }
@@ -1315,10 +1254,10 @@
 
       arr.forEach(book => {
         const chip = document.createElement('span');
-        chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-semibold";
+        chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-50 text-brand-800 border border-brand-200 rounded-xl text-xs font-semibold";
         chip.innerHTML = `
           <span>${escapeHtml(book)}</span>
-          <button type="button" onclick="removeEditCompletedBook('${escapeHtml(book)}')" class="text-emerald-500 hover:text-red-600 transition-colors cursor-pointer">
+          <button type="button" onclick="removeEditCompletedBook('${escapeHtml(book)}')" class="text-brand-600 hover:text-terracotta-600 transition-colors cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -1348,7 +1287,7 @@
       container.innerHTML = "";
 
       if (AppState.selectedAddBooks.size === 0) {
-        container.innerHTML = `<span class="text-[11px] text-slate-400 py-1 px-1">لم يتم اختيار أي كتاب بعد</span>`;
+        container.innerHTML = `<span class="text-[11px] text-stone-400 py-1 px-1">لم يتم اختيار أي كتاب بعد</span>`;
         if (hiddenInput) hiddenInput.value = "";
         return;
       }
@@ -1358,10 +1297,10 @@
 
       arr.forEach(book => {
         const chip = document.createElement('span');
-        chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-semibold";
+        chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-stone-100 text-stone-800 border border-stone-200 rounded-xl text-xs font-semibold";
         chip.innerHTML = `
           <span>${escapeHtml(book)}</span>
-          <button type="button" onclick="removeAddCompletedBook('${escapeHtml(book)}')" class="text-indigo-500 hover:text-red-600 transition-colors cursor-pointer">
+          <button type="button" onclick="removeAddCompletedBook('${escapeHtml(book)}')" class="text-stone-500 hover:text-terracotta-600 transition-colors cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -1658,11 +1597,11 @@
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       
-      let bg = "bg-slate-900 text-white";
-      if (type === 'success') bg = "bg-emerald-700 text-white";
-      else if (type === 'error') bg = "bg-red-600 text-white";
+      let bg = "bg-stone-900 text-white";
+      if (type === 'success') bg = "bg-brand-800 text-white";
+      else if (type === 'error') bg = "bg-terracotta-700 text-white";
 
-      toast.className = `${bg} px-4 py-3 rounded-2xl shadow-card flex items-center gap-2 text-xs font-semibold transition-all duration-300 pointer-events-auto`;
+      toast.className = `${bg} px-4 py-3 rounded-2xl shadow-warm-lg flex items-center gap-2 text-xs font-semibold transition-all duration-300 pointer-events-auto border border-white/10`;
       toast.innerText = message;
       
       container.appendChild(toast);
@@ -1718,18 +1657,47 @@
       if (!syncDot || !syncText) return;
 
       if (navigator.onLine) {
-        syncDot.className = "inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
-        syncDot.firstElementChild.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
+        syncDot.className = "inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded-full bg-brand-100/80 text-brand-800 border border-brand-300/60 font-semibold";
+        syncDot.firstElementChild.className = "w-1.5 h-1.5 rounded-full bg-brand-600";
         syncText.innerText = "متصل";
       } else {
-        syncDot.className = "inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300";
-        syncDot.firstElementChild.className = "w-1.5 h-1.5 rounded-full bg-amber-500";
+        syncDot.className = "inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-semibold";
+        syncDot.firstElementChild.className = "w-1.5 h-1.5 rounded-full bg-amber-600";
         syncText.innerText = "غير متصل";
       }
     }
 
     window.addEventListener('online', updateNetworkStatus);
     window.addEventListener('offline', updateNetworkStatus);
+
+    function handleDirectDownload(e) {
+      if (deferredInstallPrompt) {
+        e.preventDefault();
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showToast("جارٍ إضافة التطبيق إلى شاشتك...", "success");
+          }
+          deferredInstallPrompt = null;
+        });
+        return;
+      }
+
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        e.preventDefault();
+        const guideModal = document.getElementById('pwaGuideModal');
+        if (guideModal) guideModal.classList.remove('hidden');
+        return;
+      }
+
+      showToast("بدأ تحميل ملف التطبيق (APK)...", "success");
+    }
+
+    function closePwaGuideModal() {
+      const guideModal = document.getElementById('pwaGuideModal');
+      if (guideModal) guideModal.classList.add('hidden');
+    }
 
     async function refreshLiveBackend() {
       if (!AppState.currentUser) return;
@@ -1788,7 +1756,7 @@
 
       if (AppState.courses.length === 0) {
         container.innerHTML = `
-          <div class="p-4 text-center text-slate-400 text-xs">
+          <div class="p-4 text-center text-stone-400 text-xs">
             لا توجد دروس مسندة إليك
           </div>
         `;
@@ -1804,10 +1772,10 @@
         const isSelected = AppState.selectedCourseForAtt && AppState.selectedCourseForAtt.code === c.code;
 
         const item = document.createElement('div');
-        item.className = `p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between text-right ${
+        item.className = `p-3 rounded-xl transition-all cursor-pointer flex items-center justify-between text-right ${
           isSelected 
-            ? 'bg-emerald-50 text-emerald-900 font-bold border border-emerald-200' 
-            : 'hover:bg-slate-50 text-slate-700'
+            ? 'bg-brand-50 text-brand-900 font-bold border border-brand-200' 
+            : 'hover:bg-stone-50 text-stone-800'
         }`;
 
         item.onclick = (e) => {
@@ -1817,13 +1785,17 @@
         };
 
         item.innerHTML = `
-          <div class="flex items-center gap-2 truncate">
-            <span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-600' : 'bg-slate-300'}"></span>
-            <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(c.book || 'درس')}</span>
-            ${c.category ? `<span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(c.category)}</span>` : ''}
-            <span class="text-[10px] text-slate-400">${escapeHtml(c.day || '')} ${c.timing ? '• ' + escapeHtml(c.timing) : ''}</span>
+          <div class="flex items-center gap-2.5 min-w-0 pr-1">
+            <span class="w-2 h-2 rounded-full shrink-0 ${isSelected ? 'bg-brand-700' : 'bg-stone-300'}"></span>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-extrabold text-stone-900">${escapeHtml(c.book || 'درس')}</span>
+                ${c.category ? `<span class="text-[10px] text-stone-600 bg-stone-100 px-1.5 py-0.2 rounded">${escapeHtml(c.category)}</span>` : ''}
+              </div>
+              <p class="text-[11px] text-stone-400 mt-0.5">${escapeHtml(c.day || '')} ${c.timing ? '• ' + escapeHtml(c.timing) : ''} ${c.location ? '• ' + escapeHtml(c.location) : ''}</p>
+            </div>
           </div>
-          <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600 num-font shrink-0">
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 num-font shrink-0 mr-2">
             ${count} طالب
           </span>
         `;
@@ -1850,7 +1822,7 @@
         metaEl.innerText = `${course.day || ''} ${course.timing ? '• ' + course.timing : ''} ${course.location ? '• ' + course.location : ''}`;
       }
       if (countEl) {
-        countEl.innerText = `${count} طالب`;
+        countEl.innerText = `• ${count} طالب`;
         countEl.classList.remove('hidden');
       }
     }
@@ -1865,9 +1837,6 @@
 
       const formSection = document.getElementById('attendanceActiveForm');
       formSection.classList.remove('hidden');
-
-      const topSaveBtn = document.getElementById('topSaveAttendanceBtn');
-      if (topSaveBtn) topSaveBtn.classList.remove('hidden');
 
       const pastRecords = AppState.attendance.filter(a => a.courseCode === course.code && a.lastTopic);
       const lastTaught = pastRecords.length > 0 ? pastRecords[pastRecords.length - 1].lastTopic : "";
@@ -1941,10 +1910,8 @@
       const target = document.getElementById(`alpha-anchor-${letter}`);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        target.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50');
-        setTimeout(() => {
-          target.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-50');
-        }, 1200);
+        target.classList.add('bg-brand-50');
+        setTimeout(() => target.classList.remove('bg-brand-50'), 1000);
       }
     }
 
@@ -1960,7 +1927,7 @@
       if (AppState.currentAttendanceRoster.length === 0) {
         if (alphaRail) alphaRail.classList.add('hidden');
         container.innerHTML = `
-          <div class="p-6 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+          <div class="p-6 text-center bg-white rounded-2xl border border-stone-200/80 text-stone-400 text-xs">
             لا يوجد طلاب مسجلون في هذا الدرس
           </div>
         `;
@@ -1969,14 +1936,11 @@
       }
 
       const showAlphaIndex = AppState.currentAttendanceRoster.length > 15;
-
       const lettersMap = new Map();
       if (showAlphaIndex) {
         AppState.currentAttendanceRoster.forEach((item, idx) => {
           const letter = getNormalizedFirstLetter(item.studentName);
-          if (!lettersMap.has(letter)) {
-            lettersMap.set(letter, idx);
-          }
+          if (!lettersMap.has(letter)) lettersMap.set(letter, idx);
         });
       }
 
@@ -1985,11 +1949,10 @@
         lettersMap.forEach((firstIdx, letter) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = "w-6 h-6 flex items-center justify-center text-[11px] font-bold text-slate-700 hover:text-white hover:bg-emerald-600 active:scale-95 rounded-lg transition-all cursor-pointer";
+          btn.className = "w-6 h-6 flex items-center justify-center text-[11px] font-bold text-stone-700 hover:text-white hover:bg-brand-700 rounded-lg transition-all cursor-pointer";
           btn.innerText = letter;
           btn.onclick = (e) => {
             e.preventDefault();
-            e.stopPropagation();
             scrollToAlphaSection(letter);
           };
           alphaRail.appendChild(btn);
@@ -2007,18 +1970,17 @@
 
         if (showAlphaIndex) {
           const studentLetter = getNormalizedFirstLetter(item.studentName);
-
           if (studentLetter !== currentLetterHeader) {
             currentLetterHeader = studentLetter;
             const sectionHeader = document.createElement('div');
             sectionHeader.id = `alpha-anchor-${studentLetter}`;
-            sectionHeader.className = "pt-2 pb-1 transition-all rounded-xl";
+            sectionHeader.className = "pt-2 pb-1 transition-all";
             sectionHeader.innerHTML = `
               <div class="flex items-center gap-2 px-1">
-                <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shadow-xs">
+                <span class="w-5 h-5 rounded-md bg-stone-100 text-stone-700 font-bold text-[11px] flex items-center justify-center border border-stone-200">
                   ${studentLetter}
                 </span>
-                <div class="h-[1px] flex-1 bg-slate-200"></div>
+                <div class="h-[1px] flex-1 bg-stone-200"></div>
               </div>
             `;
             container.appendChild(sectionHeader);
@@ -2026,32 +1988,33 @@
         }
 
         const card = document.createElement('div');
-        card.className = `p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none ${
+        // Clean white card surface without neon borders
+        card.className = `p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none shadow-warm-sm ${
           isPresent 
-            ? 'glass-card border-emerald-400 hover:border-emerald-500' 
-            : 'bg-red-50/90 border-red-300 hover:border-red-400'
+            ? 'bg-white border-stone-200/90 hover:border-brand-600' 
+            : 'bg-terracotta-50/70 border-terracotta-100 hover:border-terracotta-500'
         }`;
 
         card.onclick = () => toggleAttendanceStatus(idx);
 
         card.innerHTML = `
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm ${
-              isPresent ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs num-font ${
+              isPresent ? 'bg-stone-100 text-stone-700 border border-stone-200' : 'bg-terracotta-100 text-terracotta-700 border border-terracotta-100'
             }">
               ${idx + 1}
             </div>
             <div>
-              <h4 class="text-sm font-bold text-slate-900">${escapeHtml(item.studentName)}</h4>
-              ${item.phone ? `<span class="text-xs text-slate-500 font-semibold num-font">${escapeHtml(item.phone)}</span>` : ''}
+              <h4 class="text-sm font-bold text-stone-900 leading-tight">${escapeHtml(item.studentName)}</h4>
+              ${item.phone ? `<span class="text-xs text-stone-500 font-semibold num-font mt-0.5 block">${escapeHtml(item.phone)}</span>` : ''}
             </div>
           </div>
 
           <div class="flex items-center gap-2">
-            <span class="text-xs sm:text-sm font-bold px-3.5 py-1.5 rounded-xl transition-all ${
+            <span class="text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-warm-sm ${
               isPresent 
-                ? 'bg-emerald-600 text-white shadow-sm' 
-                : 'bg-red-600 text-white shadow-sm'
+                ? 'bg-brand-700 text-white' 
+                : 'bg-terracotta-600 text-white'
             }">
               ${isPresent ? '✓ حاضر' : '✕ غائب'}
             </span>
@@ -2105,7 +2068,7 @@
       const lastTopic = syllabusSelect ? syllabusSelect.value.trim() : "";
 
       if (!lastTopic) {
-        showToast("يرجى اختيار الباب المشروح من القائمة المنسدلة", "error");
+        showToast("يرجى اختيار الباب المشروح من القائمة", "error");
         if (syllabusSelect) syllabusSelect.focus();
         return;
       }
@@ -2127,9 +2090,7 @@
       }
 
       const btn = document.getElementById('saveAttendanceBtn');
-      const topBtn = document.getElementById('topSaveAttendanceBtn');
       if (btn) btn.disabled = true;
-      if (topBtn) topBtn.disabled = true;
       showLoading("جارٍ حفظ الحضور...");
 
       try {
@@ -2168,7 +2129,6 @@
         showToast("تعذر إتمام التسجيل: " + err.message, "error");
       } finally {
         if (btn) btn.disabled = false;
-        if (topBtn) topBtn.disabled = false;
         hideLoading();
       }
     }
@@ -2182,7 +2142,9 @@
 
       const allBtn = document.createElement('button');
       allBtn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-        AppState.selectedStudentCourseFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
+        AppState.selectedStudentCourseFilter === 'ALL' 
+          ? 'bg-brand-700 text-white shadow-warm-sm' 
+          : 'bg-white text-stone-700 border border-stone-200'
       }`;
       allBtn.innerText = `الكل (${AppState.students.length})`;
       allBtn.onclick = () => {
@@ -2198,9 +2160,9 @@
         const active = AppState.selectedStudentCourseFilter === c.code;
 
         btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-          active ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
+          active ? 'bg-brand-700 text-white shadow-warm-sm' : 'bg-white text-stone-700 border border-stone-200'
         }`;
-        btn.innerHTML = `${escapeHtml(c.book || 'درس')} <span class="num-font text-[10px] opacity-80">(${count})</span>`;
+        btn.innerHTML = `${escapeHtml(c.book || 'درس')} <span class="num-font text-[10px] opacity-75">(${count})</span>`;
         btn.onclick = () => {
           AppState.selectedStudentCourseFilter = c.code;
           buildStudentCourseFilterBar();
@@ -2243,8 +2205,8 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `
-          <div class="p-6 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
-            لا يوجد طلاب مطابقين للبحث أو التصفية
+          <div class="p-6 text-center bg-white rounded-2xl border border-stone-200 text-stone-400 text-xs">
+            لا يوجد طلاب مطابقين للبحث
           </div>
         `;
         return;
@@ -2252,28 +2214,27 @@
 
       filtered.forEach(st => {
         const card = document.createElement('div');
-        card.className = "p-4 sm:p-5 glass-card rounded-3xl space-y-3";
+        card.className = "p-3.5 bg-white rounded-2xl border border-stone-200/90 shadow-warm-sm space-y-2.5";
 
         const isLevel3Plus = parseInt(st.level, 10) >= 3;
-
         const studentLogs = AppState.attendance.filter(a => a.studentName && a.studentName.trim() === st.name.trim());
         let attendanceRateBadge = '';
         if (studentLogs.length > 0) {
           const presentCount = studentLogs.filter(a => a.value === 1 || a.status === 'حاضر').length;
           const ratePercent = Math.round((presentCount / studentLogs.length) * 100);
           
-          let rateColor = 'bg-emerald-100/90 text-emerald-900 border-emerald-300';
+          let rateColor = 'bg-brand-50 text-brand-900 border-brand-200';
           if (ratePercent < 50) {
-            rateColor = 'bg-red-100/90 text-red-900 border-red-300';
+            rateColor = 'bg-terracotta-50 text-terracotta-700 border-terracotta-100';
           } else if (ratePercent < 75) {
-            rateColor = 'bg-amber-100/90 text-amber-900 border-amber-300';
+            rateColor = 'bg-amber-50 text-amber-900 border-amber-200';
           }
 
           attendanceRateBadge = `
-            <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-xl border num-font ${rateColor}">
+            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg border num-font ${rateColor}">
               <span>الحضور:</span>
               <span>${ratePercent}%</span>
-              <span class="text-[11px] opacity-75 font-normal">(${presentCount}/${studentLogs.length})</span>
+              <span class="opacity-70 font-normal">(${presentCount}/${studentLogs.length})</span>
             </span>
           `;
         }
@@ -2285,46 +2246,46 @@
           <div class="flex items-start justify-between">
             <div>
               <div class="flex items-center gap-2">
-                <h4 class="text-sm sm:text-base font-extrabold text-slate-900">${escapeHtml(st.name)}</h4>
-                ${st.isUnassigned ? `<span class="text-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded-lg font-bold">بلا درس حالياً</span>` : ''}
+                <h4 class="text-sm font-extrabold text-stone-900">${escapeHtml(st.name)}</h4>
+                ${st.isUnassigned ? `<span class="text-[11px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md font-bold">بلا درس حالياً</span>` : ''}
               </div>
-              <div class="flex flex-wrap items-center gap-2 mt-1.5">
-                <span class="text-xs font-bold text-indigo-900 bg-indigo-100/90 border border-indigo-200 px-2.5 py-0.5 rounded-lg">
+              <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                <span class="text-[11px] font-bold text-stone-700 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded-md">
                   مستوى ${escapeHtml(st.level || '1')}
                 </span>
-                ${st.category ? `<span class="text-xs text-slate-700 bg-slate-200/90 border border-slate-300 px-2 py-0.5 rounded-lg font-semibold">${escapeHtml(st.category)}</span>` : ''}
-                ${st.ageGroup ? `<span class="text-xs text-slate-700 bg-slate-200/90 border border-slate-300 px-2 py-0.5 rounded-lg font-semibold">${escapeHtml(st.ageGroup)}</span>` : ''}
+                ${st.category ? `<span class="text-[11px] text-stone-600 bg-stone-50 border border-stone-200 px-2 py-0.5 rounded-md font-medium">${escapeHtml(st.category)}</span>` : ''}
+                ${st.ageGroup ? `<span class="text-[11px] text-stone-600 bg-stone-50 border border-stone-200 px-2 py-0.5 rounded-md font-medium">${escapeHtml(st.ageGroup)}</span>` : ''}
               </div>
             </div>
 
-            <button onclick="openEditStudentModal('${escapeHtml(st.name)}')" class="px-3.5 py-1.5 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
+            <button onclick="openEditStudentModal('${escapeHtml(st.name)}')" class="px-2.5 py-1 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-all cursor-pointer">
               تحيين
             </button>
           </div>
 
           ${isLevel3Plus && st.completedBooks ? `
-            <div class="p-2.5 bg-emerald-50 rounded-xl text-xs sm:text-sm text-emerald-900 border border-emerald-200">
+            <div class="p-2 bg-brand-50/50 rounded-xl text-xs text-brand-900 border border-brand-100">
               <span class="font-bold">الكتب المنجزة:</span> ${escapeHtml(st.completedBooks)}
             </div>
           ` : ''}
 
-          <div class="pt-2.5 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-slate-700 font-medium">
+          <div class="pt-2 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-600 font-medium">
             <div class="flex items-center gap-2 flex-wrap">
-              <span>المكان: <strong class="text-slate-900">${escapeHtml(cityLabel)}</strong></span>
-              <span class="text-slate-400">•</span>
-              <span>المقر: <strong class="text-emerald-800">${escapeHtml(locLabel)}</strong></span>
+              <span>المكان: <strong class="text-stone-900">${escapeHtml(cityLabel)}</strong></span>
+              <span class="text-stone-300">•</span>
+              <span>المقر: <strong class="text-brand-800">${escapeHtml(locLabel)}</strong></span>
               ${attendanceRateBadge}
             </div>
 
             ${st.phone ? `
-              <a href="tel:${escapeHtml(st.phone)}" class="flex items-center gap-1.5 font-bold text-emerald-700 hover:text-emerald-800 num-font shrink-0 text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <a href="tel:${escapeHtml(st.phone)}" class="flex items-center gap-1 font-bold text-brand-800 hover:text-brand-900 num-font text-xs">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                 </svg>
                 <span>${escapeHtml(st.phone)}</span>
               </a>
             ` : `
-              <span class="text-slate-400 text-xs">لا يوجد هاتف</span>
+              <span class="text-stone-400 text-[11px]">لا يوجد هاتف</span>
             `}
           </div>
         `;
@@ -2357,10 +2318,8 @@
       }
 
       handleCourseSelectionChange("");
-
       const addLevel = document.getElementById('addStudentLevel');
       if (addLevel) toggleAddStudentCompletedBooks(addLevel.value || "1");
-
       document.getElementById('addStudentModal').classList.remove('hidden');
     }
 
@@ -2368,7 +2327,6 @@
       const catSelect = document.getElementById('addStudentCategory');
       const locSelect = document.getElementById('addStudentLocation');
       if (!catSelect) return;
-
       catSelect.disabled = false;
 
       if (!courseCode) {
@@ -2382,9 +2340,7 @@
       const course = AppState.courses.find(c => c.code === courseCode);
       if (course) {
         const rawCategory = (course.category || "").trim();
-        const cleanGender = rawCategory.includes("نساء") ? "نساء" : "رجال";
-        catSelect.value = cleanGender;
-
+        catSelect.value = rawCategory.includes("نساء") ? "نساء" : "رجال";
         if (locSelect && course.venue) {
           locSelect.value = course.venue;
         }
@@ -2427,7 +2383,7 @@
       const teacherName = AppState.currentUser ? AppState.currentUser.name : "";
       const teacherEmail = AppState.currentUser ? AppState.currentUser.email : "";
 
-      showLoading("جارٍ إضافة الطالب وتوثيق البيانات...");
+      showLoading("جارٍ إضافة الطالب...");
 
       try {
         const response = await callBackend({
@@ -2506,7 +2462,6 @@
       }
       populateBooksDropdown('editStudentBooksDropdown');
       renderEditBookChips();
-
       toggleCompletedBooksField(student.level || "1");
       document.getElementById('editStudentModal').classList.remove('hidden');
     }
@@ -2527,7 +2482,7 @@
       const phone = document.getElementById('editStudentPhone').value;
       const completedBooks = Array.from(AppState.selectedEditBooks).join('، ');
 
-      showLoading("حفظ وتوثيق تحيين الطالب...");
+      showLoading("حفظ التحيين...");
 
       try {
         const response = await callBackend({
@@ -2549,7 +2504,7 @@
         });
 
         if (response && response.success) {
-          showToast("تم تحيين بيانات الطالب وتسجيلها في السجل", "success");
+          showToast("تم تحيين بيانات الطالب بنجاح", "success");
           const st = AppState.students.find(s => s.name === origName);
           if (st) {
             st.name = name;
@@ -2595,9 +2550,7 @@
       }
 
       const timeInput = document.getElementById('newCourseTiming');
-      if (timeInput) {
-        timeInput.value = "20:00";
-      }
+      if (timeInput) timeInput.value = "20:00";
 
       recordInitialFormValues([
         'newCourseCategory',
@@ -2634,7 +2587,7 @@
       isCreatingCourse = true;
       if (submitBtn) submitBtn.disabled = true;
       closeCreateCourseModal();
-      showLoading("جارٍ فتح الدرس وتوثيقه...");
+      showLoading("جارٍ فتح الدرس...");
 
       try {
         const response = await callBackend({
@@ -2653,7 +2606,7 @@
         });
 
         if (response && response.success) {
-          showToast("تم فتح الدرس وتوثيقه بنجاح: " + response.course.code, "success");
+          showToast("تم فتح الدرس بنجاح: " + response.course.code, "success");
           AppState.courses.push(response.course);
           renderCoursesDirectory();
           renderAttendanceCoursesList();
@@ -2676,7 +2629,7 @@
 
       if (AppState.courses.length === 0) {
         container.innerHTML = `
-          <div class="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+          <div class="p-6 text-center bg-white rounded-2xl border border-stone-200 text-stone-400 text-xs">
             لا توجد دروس مسندة إليك
           </div>
         `;
@@ -2686,59 +2639,53 @@
       AppState.courses.forEach(c => {
         const studentCount = getStudentCountForCourse(c.code);
         const card = document.createElement('div');
-        card.className = "p-4 sm:p-5 glass-card rounded-3xl space-y-3.5";
+        card.className = "p-4 bg-white rounded-2xl border border-stone-200/90 shadow-warm-sm space-y-3";
 
         const locLabel = c.location || 'مقر';
         const venueLabel = c.venue || (AppState.currentUser ? AppState.currentUser.location : '') || 'منفلوري';
 
         card.innerHTML = `
           <div class="flex items-start justify-between gap-3">
-            <div class="space-y-1.5">
-              <div class="flex items-center gap-2">
-                ${c.category ? `<span class="text-xs bg-slate-200/90 text-slate-800 px-3 py-1 rounded-xl font-bold border border-slate-300">${escapeHtml(c.category)}</span>` : ''}
+            <div class="space-y-1">
+              <div class="flex items-center gap-1.5">
+                ${c.category ? `<span class="text-[11px] bg-stone-100 text-stone-700 px-2 py-0.5 rounded-md font-bold border border-stone-200">${escapeHtml(c.category)}</span>` : ''}
               </div>
-              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 pt-0.5">${escapeHtml(c.book || 'درس')}</h3>
+              <h3 class="text-base font-extrabold text-stone-900">${escapeHtml(c.book || 'درس')}</h3>
               
-              <div class="flex items-center gap-2 pt-1">
-                <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-800 bg-slate-200/80 border border-slate-300 px-3 py-1.5 rounded-xl">
-                  <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                  </svg>
-                  <span>${escapeHtml(c.day || 'يوم غير محدد')}</span>
-                </div>
+              <div class="flex items-center gap-2 pt-0.5">
+                <span class="text-xs font-bold text-stone-700 bg-stone-50 border border-stone-200 px-2.5 py-1 rounded-lg">
+                  ${escapeHtml(c.day || 'يوم غير محدد')}
+                </span>
                 ${c.timing ? `
-                  <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-900 bg-emerald-100/90 px-3 py-1.5 rounded-xl num-font border border-emerald-300">
-                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>${escapeHtml(c.timing)}</span>
-                  </div>
+                  <span class="text-xs font-bold text-brand-900 bg-brand-50 border border-brand-200 px-2.5 py-1 rounded-lg num-font">
+                    ${escapeHtml(c.timing)}
+                  </span>
                 ` : ''}
               </div>
             </div>
 
-            <span class="text-xs sm:text-sm font-bold px-3 py-1.5 bg-slate-200/90 rounded-xl text-slate-800 border border-slate-300 num-font whitespace-nowrap">
+            <span class="text-xs font-bold px-2.5 py-1 bg-stone-100 rounded-lg text-stone-700 border border-stone-200 num-font whitespace-nowrap">
               ${studentCount} طالب
             </span>
           </div>
 
-          <div class="flex items-center justify-between text-xs sm:text-sm text-slate-700 font-medium pt-2.5 border-t border-slate-200/80">
-            <div class="flex items-center gap-3">
-              <div>المكان: <span class="font-bold text-slate-900">${escapeHtml(locLabel)}</span></div>
-              <span class="text-slate-400">•</span>
-              <div>المقر: <span class="font-bold text-emerald-800">${escapeHtml(venueLabel)}</span></div>
+          <div class="flex items-center justify-between text-xs text-stone-600 font-medium pt-2 border-t border-stone-100">
+            <div class="flex items-center gap-2">
+              <div>المكان: <strong class="text-stone-900">${escapeHtml(locLabel)}</strong></div>
+              <span class="text-stone-300">•</span>
+              <div>المقر: <strong class="text-brand-800">${escapeHtml(venueLabel)}</strong></div>
             </div>
           </div>
 
-          <div class="flex items-center gap-2 pt-1">
-            <button onclick="selectCourseAndOpenAttendance('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
+          <div class="flex items-center gap-2 pt-0.5">
+            <button onclick="selectCourseAndOpenAttendance('${escapeHtml(c.code)}')" class="flex-1 py-2.5 bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-warm-sm">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
               <span>تسجيل الحضور</span>
             </button>
-            <button onclick="openEditCourseModal('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 active:scale-[0.98] text-slate-800 text-xs sm:text-sm font-bold rounded-xl transition-all border border-slate-300 cursor-pointer">
-              تعديل الدرس
+            <button onclick="openEditCourseModal('${escapeHtml(c.code)}')" class="px-3.5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold rounded-xl transition-all border border-stone-200 cursor-pointer">
+              تعديل
             </button>
           </div>
         `;
@@ -2756,7 +2703,6 @@
       if (!course) return;
 
       document.getElementById('editCourseCode').value = course.code;
-      
       const bookSelect = document.getElementById('editCourseBookInput');
       if (bookSelect) {
         bookSelect.innerHTML = '<option value="">-- اختر الكتاب المقرر --</option>';
@@ -2819,7 +2765,7 @@
         return;
       }
 
-      showLoading("جارٍ حفظ التعديلات...");
+      showLoading("حفظ التعديلات...");
 
       try {
         const response = await callBackend({
@@ -2911,13 +2857,13 @@
       if (flaggedStudents.length > 0) {
         pingEl.classList.remove('hidden');
         dotEl.classList.remove('hidden');
-        textEl.innerText = `${flaggedStudents.length} طلاب بحاجة للتواصل`;
-        textEl.classList.add('text-amber-600', 'font-bold');
+        textEl.innerText = `${flaggedStudents.length} طلاب بحاجة للمتابعة`;
+        textEl.classList.add('text-terracotta-600', 'font-bold');
       } else {
         pingEl.classList.add('hidden');
         dotEl.classList.add('hidden');
         textEl.innerText = "لا يوجد غياب متكرر";
-        textEl.classList.remove('text-amber-600', 'font-bold');
+        textEl.classList.remove('text-terracotta-600', 'font-bold');
       }
 
       renderFollowUpList(flaggedStudents);
@@ -2930,7 +2876,7 @@
 
       if (!flaggedStudents || flaggedStudents.length === 0) {
         container.innerHTML = `
-          <div class="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+          <div class="p-6 text-center bg-white rounded-2xl border border-stone-200 text-stone-400 text-xs">
             لا يوجد طلاب لديهم غياب متتالي حالياً
           </div>
         `;
@@ -2939,7 +2885,7 @@
 
       flaggedStudents.forEach(item => {
         const card = document.createElement('div');
-        card.className = "p-4 bg-white rounded-3xl border border-amber-300 shadow-soft space-y-3";
+        card.className = "p-3.5 bg-white rounded-2xl border border-terracotta-100 shadow-warm-sm space-y-2.5";
 
         const crs = AppState.courses.find(c => c.code === item.courseCode);
         const displayCourse = crs ? (crs.book || crs.category || 'الدرس') : 'الدرس';
@@ -2947,35 +2893,35 @@
         card.innerHTML = `
           <div class="flex items-start justify-between">
             <div>
-              <h4 class="text-xs font-bold text-slate-900">${escapeHtml(item.name)}</h4>
-              <p class="text-[11px] text-slate-500 mt-0.5">
-                الدرس: <span class="font-bold text-slate-800">${escapeHtml(displayCourse)}</span>
+              <h4 class="text-xs font-bold text-stone-900">${escapeHtml(item.name)}</h4>
+              <p class="text-[11px] text-stone-500 mt-0.5">
+                الدرس: <span class="font-bold text-stone-800">${escapeHtml(displayCourse)}</span>
                 ${item.location ? ` • ${escapeHtml(item.location)}` : ''}
               </p>
             </div>
-            <span class="px-2.5 py-1 rounded-xl text-xs font-bold bg-red-100 text-red-700">
-              غياب متتالي (مرتين)
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-terracotta-50 text-terracotta-700 border border-terracotta-100">
+              غياب مرتين متتاليتين
             </span>
           </div>
 
-          <div class="p-2.5 bg-amber-50 rounded-2xl text-[11px] text-amber-900">
+          <div class="p-2 bg-stone-50 rounded-xl text-[11px] text-stone-700">
             تاريخ الغيابين: <span class="font-bold num-font">${escapeHtml(item.lastDate2)}</span> و <span class="font-bold num-font">${escapeHtml(item.lastDate1)}</span>
           </div>
 
-          <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
+          <div class="flex items-center gap-2 pt-1 border-t border-stone-100">
             ${item.phone ? `
-              <a href="tel:${escapeHtml(item.phone)}" class="flex-1 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-center text-xs font-bold transition-all flex items-center justify-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <a href="tel:${escapeHtml(item.phone)}" class="flex-1 py-2 bg-brand-50 hover:bg-brand-100 text-brand-800 rounded-xl text-center text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                 </svg>
                 <span>اتصال (${escapeHtml(item.phone)})</span>
               </a>
             ` : `
-              <button onclick="openEditStudentModal('${escapeHtml(item.name)}')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all cursor-pointer">
+              <button onclick="openEditStudentModal('${escapeHtml(item.name)}')" class="flex-1 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold transition-all cursor-pointer">
                 + إضافة رقم هاتف
               </button>
             `}
-            <button onclick="acknowledgeFollowUp('${escapeHtml(item.name)}', '${escapeHtml(item.courseCode)}')" class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer">
+            <button onclick="acknowledgeFollowUp('${escapeHtml(item.name)}', '${escapeHtml(item.courseCode)}')" class="px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer">
               تم التواصل
             </button>
           </div>
@@ -3035,10 +2981,6 @@
     function openDashboardView(push = true) { switchView('viewDashboard', push); }
     function openAttendanceView(push = true) { 
       renderAttendanceCoursesList(); 
-      if (!AppState.selectedCourseForAtt) {
-        const topSaveBtn = document.getElementById('topSaveAttendanceBtn');
-        if (topSaveBtn) topSaveBtn.classList.add('hidden');
-      }
       switchView('viewAttendance', push); 
     }
     function openStudentsView(push = true) { renderStudentsDirectory(); switchView('viewStudents', push); }
@@ -3051,7 +2993,8 @@
         'createCourseModal',
         'editCourseModal',
         'addStudentModal',
-        'editStudentModal'
+        'editStudentModal',
+        'pwaGuideModal'
       ];
       for (const mId of openModals) {
         const modalEl = document.getElementById(mId);
