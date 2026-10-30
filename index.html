@@ -301,7 +301,6 @@
           <div class="leading-tight">
             <div class="flex items-center gap-2">
               <h2 id="userName" class="text-sm font-bold text-stone-900">المدرس</h2>
-              <!-- Subtle status pill -->
               <span id="syncDot" class="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded-full bg-brand-100/80 text-brand-800 border border-brand-300/60 font-semibold">
                 <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
                 <span id="syncText">متصل</span>
@@ -455,71 +454,67 @@
       <!-- ========================================== -->
       <section id="viewAttendance" class="hidden space-y-4">
         
-        <!-- Clean, Balanced Navigation Header (Fixes crowding) -->
-        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
-          <div class="flex items-center gap-2.5">
-            <button onclick="handleAttendanceBackNav()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 transition-all cursor-pointer shadow-warm-sm">
-              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-              </svg>
-            </button>
-            <div>
-              <h2 class="text-base font-bold text-stone-900">تسجيل الحضور</h2>
-              <span class="text-[11px] text-stone-500">اختر الدرس وسجّل حضور الطلاب</span>
-            </div>
+        <!-- Clean, Balanced Navigation Header: Titles on Right, Return Button on Left -->
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200/80">
+          <!-- Right side: Dedicated exclusively to title and subtitle -->
+          <div class="text-right">
+            <h2 class="text-lg font-extrabold text-stone-900 tracking-tight">تسجيل الحضور</h2>
+            <p id="attHeaderSubtitle" class="text-xs text-stone-500 mt-0.5">اختر الدرس أولاً لمباشرة تسجيل الحضور</p>
           </div>
 
-          <!-- Live stats pill in top bar -->
-          <div id="attendanceStatsPill" class="hidden text-xs font-bold px-3 py-1 rounded-full bg-stone-100 text-stone-700 num-font border border-stone-200">
-            <span id="presentSummaryCount" class="text-brand-800">0 حاضر</span> • <span id="absentSummaryCount" class="text-terracotta-600">0 غائب</span>
+          <!-- Left side: Clear Return / Back button -->
+          <div class="flex items-center gap-2">
+            <div id="attendanceStatsPill" class="hidden text-xs font-bold px-3 py-1 rounded-full bg-stone-100 text-stone-700 num-font border border-stone-200">
+              <span id="presentSummaryCount" class="text-brand-800">0 حاضر</span> • <span id="absentSummaryCount" class="text-terracotta-600">0 غائب</span>
+            </div>
+            <button 
+              type="button" 
+              onclick="handleAttendanceBackNav()" 
+              class="px-3 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300/90 text-stone-800 font-bold text-xs flex items-center gap-1.5 shadow-warm-sm transition-all active:scale-95 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+              <span>الرجوع</span>
+            </button>
           </div>
         </div>
 
-        <!-- Course Selector: Redesigned to NEVER truncate book titles -->
-        <div class="space-y-1.5">
-          <label class="block text-xs font-bold text-stone-700 mr-1">الدرس المحدد:</label>
-          
-          <div class="relative">
-            <button 
-              type="button"
-              id="attCourseDropdownBtn"
-              onclick="toggleAttendanceCourseDropdown()"
-              class="w-full p-4 bg-white hover:bg-stone-50/80 border border-stone-200 hover:border-brand-600 rounded-2xl flex items-center justify-between text-right transition-all group cursor-pointer shadow-warm-sm"
-            >
-              <div class="flex items-start gap-3 w-full pr-0.5">
-                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-800 border border-brand-200/80 flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                  </svg>
-                </div>
-                <!-- Clean multi-line title container without horizontal squishing -->
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span id="attDropdownSelectedTitle" class="text-sm font-extrabold text-stone-900 leading-snug">
-                      -- اضغط لاختيار الدرس من القائمة --
-                    </span>
-                    <span id="attDropdownSelectedCategory" class="text-[10px] text-stone-600 bg-stone-100 border border-stone-200/80 px-2 py-0.5 rounded-md font-semibold hidden"></span>
-                  </div>
-                  <div class="flex items-center gap-2 mt-1 text-xs text-stone-500 font-medium">
-                    <span id="attDropdownSelectedMeta"></span>
-                    <span id="attDropdownSelectedCount" class="num-font font-bold text-brand-800 hidden"></span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="shrink-0 mr-2 text-stone-400 group-hover:text-stone-700">
-                <svg id="attDropdownArrow" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </div>
-            </button>
-
-            <!-- Dropdown Menu List -->
-            <div 
-              id="attendanceCoursesList" 
-              class="hidden absolute z-30 top-full left-0 right-0 mt-2 max-h-64 overflow-y-auto bg-white rounded-2xl shadow-warm-lg border border-stone-200 p-2 space-y-1.5"
-            ></div>
+        <!-- 1. Lesson Selection: Fully Visible Cards List (No Dropdown / No Accordion) -->
+        <div id="attendanceCoursesSelectionWrapper" class="space-y-2.5">
+          <div class="flex items-center justify-between px-1">
+            <label class="block text-xs font-bold text-stone-700">اختر الدرس المطلوب من القائمة:</label>
+            <span id="attAvailableCoursesCountBadge" class="text-[11px] font-bold text-stone-500 num-font"></span>
           </div>
+
+          <!-- Direct Visible Cards Container: No escalator, every course is displayed directly -->
+          <div id="attendanceDirectCardsList" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Selected Lesson Active Ribbon (Visible only after a lesson is chosen) -->
+        <div id="attendanceSelectedLessonRibbon" class="hidden bg-brand-50/70 border border-brand-200 rounded-2xl p-3.5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand-700 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-warm-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 id="activeRibbonTitle" class="text-sm font-extrabold text-stone-900 leading-snug"></h3>
+                <span id="activeRibbonCategory" class="text-[10px] text-brand-800 bg-white border border-brand-200 px-1.5 py-0.5 rounded font-semibold"></span>
+              </div>
+              <p id="activeRibbonMeta" class="text-[11px] text-stone-600 mt-0.5"></p>
+            </div>
+          </div>
+
+          <button 
+            type="button" 
+            onclick="resetSelectedCourseForAttendance()" 
+            class="px-2.5 py-1.5 rounded-lg bg-white border border-stone-200 text-stone-700 hover:text-stone-900 text-xs font-bold transition-all shadow-warm-sm cursor-pointer shrink-0"
+          >
+            تغيير الدرس
+          </button>
         </div>
 
         <!-- Attendance Details Form (Warm Canvas & Solid Borders) -->
@@ -608,14 +603,10 @@
       <!-- ========================================== -->
       <section id="viewStudents" class="hidden space-y-4">
         
-        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
-          <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer shadow-warm-sm">
-              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-              </svg>
-            </button>
-            <h2 class="text-base font-bold text-stone-900">سجل الطلبة</h2>
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200/80">
+          <div class="text-right">
+            <h2 class="text-lg font-extrabold text-stone-900">سجل الطلبة</h2>
+            <p class="text-xs text-stone-500 mt-0.5">بيانات الطلاب المسجلين ونسب الحضور</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="openAddStudentModal()" class="px-3 py-1.5 bg-brand-700 hover:bg-brand-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-warm-sm cursor-pointer">
@@ -624,7 +615,16 @@
               </svg>
               <span>إضافة طالب</span>
             </button>
-            <span id="studentsTotalBadge" class="text-xs font-bold px-2.5 py-1 bg-stone-100 rounded-full text-stone-700 num-font border border-stone-200">0</span>
+            <button 
+              type="button" 
+              onclick="openDashboardView()" 
+              class="px-3 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-stone-800 font-bold text-xs flex items-center gap-1.5 shadow-warm-sm transition-all active:scale-95 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+              <span>الرجوع</span>
+            </button>
           </div>
         </div>
 
@@ -657,14 +657,10 @@
       <!-- ========================================== -->
       <section id="viewCourses" class="hidden space-y-4">
         
-        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
-          <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer shadow-warm-sm">
-              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-              </svg>
-            </button>
-            <h2 class="text-base font-bold text-stone-900">قائمة الدروس</h2>
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200/80">
+          <div class="text-right">
+            <h2 class="text-lg font-extrabold text-stone-900">قائمة الدروس</h2>
+            <p class="text-xs text-stone-500 mt-0.5">إدارة ومتابعة الدروس المسندة</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="openCreateCourseModal()" class="px-3 py-1.5 bg-brand-700 hover:bg-brand-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-warm-sm cursor-pointer">
@@ -673,7 +669,16 @@
               </svg>
               <span>فتح درس جديد</span>
             </button>
-            <span id="coursesTotalBadge" class="text-xs font-bold px-2.5 py-1 bg-stone-100 rounded-full text-stone-700 num-font border border-stone-200">0</span>
+            <button 
+              type="button" 
+              onclick="openDashboardView()" 
+              class="px-3 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-stone-800 font-bold text-xs flex items-center gap-1.5 shadow-warm-sm transition-all active:scale-95 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+              <span>الرجوع</span>
+            </button>
           </div>
         </div>
 
@@ -685,16 +690,21 @@
       <!-- VIEW 5: متابعة الغائبين (Follow-up)         -->
       <!-- ========================================== -->
       <section id="viewFollowUp" class="hidden space-y-4">
-        <div class="flex items-center justify-between pb-2 border-b border-stone-200/80">
-          <div class="flex items-center gap-2">
-            <button onclick="openDashboardView()" class="p-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer shadow-warm-sm">
-              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-              </svg>
-            </button>
-            <h2 class="text-base font-bold text-stone-900">متابعة الغائبين</h2>
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200/80">
+          <div class="text-right">
+            <h2 class="text-lg font-extrabold text-stone-900">متابعة الغائبين</h2>
+            <p class="text-xs text-stone-500 mt-0.5">الطلاب الذين تغيبوا حصتين متتاليتين</p>
           </div>
-          <span class="text-xs text-stone-600 font-medium">غياب حصتين متتاليتين</span>
+          <button 
+            type="button" 
+            onclick="openDashboardView()" 
+            class="px-3 py-2 rounded-xl bg-white hover:bg-stone-100 border border-stone-300 text-stone-800 font-bold text-xs flex items-center gap-1.5 shadow-warm-sm transition-all active:scale-95 cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+            <span>الرجوع</span>
+          </button>
         </div>
 
         <div id="followUpList" class="space-y-3"></div>
@@ -1173,7 +1183,7 @@
       document.getElementById('coursesTotalBadge').innerText = `${AppState.courses.length}`;
 
       checkConsecutiveAbsences();
-      renderAttendanceCoursesList();
+      renderAttendanceDirectCardsList();
       buildStudentCourseFilterBar();
       openDashboardView();
     }
@@ -1733,98 +1743,90 @@
     }
 
     // ==========================================
-    // 1. تسجيل الحضور (Attendance Workflow)
+    // 1. تسجيل الحضور (Attendance Workflow - Fully Visible Cards)
     // ==========================================
-    function toggleAttendanceCourseDropdown() {
-      const menu = document.getElementById('attendanceCoursesList');
-      const arrow = document.getElementById('attDropdownArrow');
-      if (!menu) return;
-      const isHidden = menu.classList.contains('hidden');
-      if (isHidden) {
-        menu.classList.remove('hidden');
-        if (arrow) arrow.classList.add('rotate-180');
-      } else {
-        menu.classList.add('hidden');
-        if (arrow) arrow.classList.remove('rotate-180');
-      }
-    }
-
-    function renderAttendanceCoursesList() {
-      const container = document.getElementById('attendanceCoursesList');
+    function renderAttendanceDirectCardsList() {
+      const container = document.getElementById('attendanceDirectCardsList');
+      const countBadge = document.getElementById('attAvailableCoursesCountBadge');
       if (!container) return;
       container.innerHTML = "";
 
+      if (countBadge) {
+        countBadge.innerText = `${AppState.courses.length} درس متاح`;
+      }
+
       if (AppState.courses.length === 0) {
         container.innerHTML = `
-          <div class="p-4 text-center text-stone-400 text-xs">
-            لا توجد دروس مسندة إليك
+          <div class="p-6 text-center bg-white rounded-2xl border border-stone-200 text-stone-400 text-xs">
+            لا توجد دروس مسندة إليك حالياً
           </div>
         `;
         return;
       }
 
-      if (AppState.selectedCourseForAtt) {
-        updateAttendanceDropdownHeader(AppState.selectedCourseForAtt);
-      }
-
       AppState.courses.forEach(c => {
         const count = getStudentCountForCourse(c.code);
-        const isSelected = AppState.selectedCourseForAtt && AppState.selectedCourseForAtt.code === c.code;
-
-        const item = document.createElement('div');
-        item.className = `p-3 rounded-xl transition-all cursor-pointer flex items-center justify-between text-right ${
-          isSelected 
-            ? 'bg-brand-50 text-brand-900 font-bold border border-brand-200' 
-            : 'hover:bg-stone-50 text-stone-800'
-        }`;
-
-        item.onclick = (e) => {
-          e.stopPropagation();
+        const card = document.createElement('div');
+        card.className = "p-4 bg-white hover:bg-stone-50/80 active:bg-brand-50/40 border border-stone-200/90 hover:border-brand-600 rounded-2xl shadow-warm-sm transition-all cursor-pointer flex items-center justify-between gap-3 text-right group";
+        
+        card.onclick = () => {
           selectCourseForAttendance(c.code);
-          toggleAttendanceCourseDropdown();
         };
 
-        item.innerHTML = `
-          <div class="flex items-center gap-2.5 min-w-0 pr-1">
-            <span class="w-2 h-2 rounded-full shrink-0 ${isSelected ? 'bg-brand-700' : 'bg-stone-300'}"></span>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="text-xs font-extrabold text-stone-900">${escapeHtml(c.book || 'درس')}</span>
-                ${c.category ? `<span class="text-[10px] text-stone-600 bg-stone-100 px-1.5 py-0.2 rounded">${escapeHtml(c.category)}</span>` : ''}
+        const locLabel = c.location || 'مقر';
+        const venueLabel = c.venue || (AppState.currentUser ? AppState.currentUser.location : '') || 'منفلوري';
+
+        card.innerHTML = `
+          <div class="flex items-start gap-3 min-w-0 flex-1">
+            <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-800 border border-brand-200/80 flex items-center justify-center font-bold text-sm shrink-0 mt-0.5 group-hover:bg-brand-700 group-hover:text-white transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h4 class="text-sm font-extrabold text-stone-900 group-hover:text-brand-800 leading-snug">
+                  ${escapeHtml(c.book || 'درس')}
+                </h4>
+                ${c.category ? `<span class="text-[10px] text-stone-600 bg-stone-100 border border-stone-200/80 px-2 py-0.5 rounded font-semibold">${escapeHtml(c.category)}</span>` : ''}
               </div>
-              <p class="text-[11px] text-stone-400 mt-0.5">${escapeHtml(c.day || '')} ${c.timing ? '• ' + escapeHtml(c.timing) : ''} ${c.location ? '• ' + escapeHtml(c.location) : ''}</p>
+              <p class="text-xs text-stone-500 font-medium mt-1">
+                ${escapeHtml(c.day || 'يوم غير محدد')} ${c.timing ? '• ' + escapeHtml(c.timing) : ''} • ${escapeHtml(locLabel)} (${escapeHtml(venueLabel)})
+              </p>
             </div>
           </div>
-          <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 num-font shrink-0 mr-2">
-            ${count} طالب
-          </span>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 border border-stone-200 num-font">
+              ${count} طالب
+            </span>
+            <span class="w-8 h-8 rounded-xl bg-stone-100 group-hover:bg-brand-700 group-hover:text-white flex items-center justify-center text-stone-500 transition-colors">
+              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
         `;
 
-        container.appendChild(item);
+        container.appendChild(card);
       });
     }
 
-    function updateAttendanceDropdownHeader(course) {
-      if (!course) return;
-      const count = getStudentCountForCourse(course.code);
-
-      const titleEl = document.getElementById('attDropdownSelectedTitle');
-      const catEl = document.getElementById('attDropdownSelectedCategory');
-      const metaEl = document.getElementById('attDropdownSelectedMeta');
-      const countEl = document.getElementById('attDropdownSelectedCount');
-
-      if (titleEl) titleEl.innerText = course.book || 'درس';
-      if (catEl) {
-        catEl.innerText = course.category || '';
-        catEl.classList.toggle('hidden', !course.category);
+    function resetSelectedCourseForAttendance() {
+      if (isAttendanceDirty && AppState.selectedCourseForAtt && AppState.currentAttendanceRoster.length > 0) {
+        const modal = document.getElementById('confirmLeaveAttendanceModal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          return;
+        }
       }
-      if (metaEl) {
-        metaEl.innerText = `${course.day || ''} ${course.timing ? '• ' + course.timing : ''} ${course.location ? '• ' + course.location : ''}`;
-      }
-      if (countEl) {
-        countEl.innerText = `• ${count} طالب`;
-        countEl.classList.remove('hidden');
-      }
+      AppState.selectedCourseForAtt = null;
+      document.getElementById('attendanceCoursesSelectionWrapper').classList.remove('hidden');
+      document.getElementById('attendanceSelectedLessonRibbon').classList.add('hidden');
+      document.getElementById('attendanceActiveForm').classList.add('hidden');
+      document.getElementById('attendanceStatsPill').classList.add('hidden');
+      document.getElementById('attHeaderSubtitle').innerText = "اختر الدرس أولاً لمباشرة تسجيل الحضور";
+      renderAttendanceDirectCardsList();
     }
 
     function selectCourseForAttendance(courseCode) {
@@ -1832,11 +1834,31 @@
       if (!course) return;
 
       AppState.selectedCourseForAtt = course;
-      updateAttendanceDropdownHeader(course);
-      renderAttendanceCoursesList();
 
-      const formSection = document.getElementById('attendanceActiveForm');
-      formSection.classList.remove('hidden');
+      // Update Ribbon details
+      const ribbonTitle = document.getElementById('activeRibbonTitle');
+      const ribbonCategory = document.getElementById('activeRibbonCategory');
+      const ribbonMeta = document.getElementById('activeRibbonMeta');
+      const subtitle = document.getElementById('attHeaderSubtitle');
+
+      if (ribbonTitle) ribbonTitle.innerText = course.book || 'درس';
+      if (ribbonCategory) {
+        ribbonCategory.innerText = course.category || '';
+        ribbonCategory.classList.toggle('hidden', !course.category);
+      }
+      if (ribbonMeta) {
+        const locLabel = course.location || 'مقر';
+        const venueLabel = course.venue || (AppState.currentUser ? AppState.currentUser.location : '') || 'منفلوري';
+        ribbonMeta.innerText = `${course.day || ''} ${course.timing ? '• ' + course.timing : ''} • ${locLabel} (${venueLabel})`;
+      }
+      if (subtitle) {
+        subtitle.innerText = `تسجيل الحضور لدرس: ${course.book || 'الدرس'}`;
+      }
+
+      // Hide direct course cards list and show the active form + sticky ribbon
+      document.getElementById('attendanceCoursesSelectionWrapper').classList.add('hidden');
+      document.getElementById('attendanceSelectedLessonRibbon').classList.remove('hidden');
+      document.getElementById('attendanceActiveForm').classList.remove('hidden');
 
       const pastRecords = AppState.attendance.filter(a => a.courseCode === course.code && a.lastTopic);
       const lastTaught = pastRecords.length > 0 ? pastRecords[pastRecords.length - 1].lastTopic : "";
@@ -1988,7 +2010,6 @@
         }
 
         const card = document.createElement('div');
-        // Clean white card surface without neon borders
         card.className = `p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none shadow-warm-sm ${
           isPresent 
             ? 'bg-white border-stone-200/90 hover:border-brand-600' 
@@ -2414,7 +2435,7 @@
           document.getElementById('studentsTotalBadge').innerText = `${AppState.students.length}`;
           buildStudentCourseFilterBar();
           renderStudentsDirectory();
-          renderAttendanceCoursesList();
+          renderAttendanceDirectCardsList();
           closeAddStudentModal();
         } else {
           showToast(response.error || "فشل إضافة الطالب", "error");
@@ -2609,7 +2630,7 @@
           showToast("تم فتح الدرس بنجاح: " + response.course.code, "success");
           AppState.courses.push(response.course);
           renderCoursesDirectory();
-          renderAttendanceCoursesList();
+          renderAttendanceDirectCardsList();
           buildStudentCourseFilterBar();
         } else {
           showToast(response.error || "فشل فتح الدرس", "error");
@@ -2794,7 +2815,7 @@
             crs.venue = venue;
           }
           renderCoursesDirectory();
-          renderAttendanceCoursesList();
+          renderAttendanceDirectCardsList();
           buildStudentCourseFilterBar();
           closeEditCourseModal();
         } else {
@@ -2980,7 +3001,10 @@
 
     function openDashboardView(push = true) { switchView('viewDashboard', push); }
     function openAttendanceView(push = true) { 
-      renderAttendanceCoursesList(); 
+      // If no course is currently actively chosen, display the direct visible cards list
+      if (!AppState.selectedCourseForAtt) {
+        resetSelectedCourseForAttendance();
+      }
       switchView('viewAttendance', push); 
     }
     function openStudentsView(push = true) { renderStudentsDirectory(); switchView('viewStudents', push); }
