@@ -452,7 +452,7 @@
           <div class="flex items-center gap-2">
             <h2 class="text-base sm:text-lg font-bold text-slate-900">تسجيل الحضور</h2>
           </div>
-          <button onclick="handleAttendanceBackNav()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+          <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
             <span>الرجوع</span>
             <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
@@ -572,7 +572,7 @@
               </svg>
               <span>فتح درس جديد</span>
             </button>
-            <button onclick="openDashboardView()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+            <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
               <span>الرجوع</span>
               <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
@@ -602,8 +602,8 @@
               </svg>
               <span>إضافة طالب</span>
             </button>
-            <button onclick="openCoursesView()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-              <span>الرجوع للدروس</span>
+            <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+              <span>الرجوع</span>
               <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
               </svg>
@@ -636,7 +636,7 @@
       <section id="viewFollowUp" class="hidden space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
           <h2 class="text-base sm:text-lg font-bold text-slate-900">متابعة الغائبين</h2>
-          <button onclick="openDashboardView()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+          <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
             <span>الرجوع</span>
             <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
@@ -648,6 +648,27 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: APP EXIT CONFIRMATION               -->
+  <!-- ========================================== -->
+  <div id="exitAppConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-900 mb-1">الخروج من التطبيق؟</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">هل تريد بالتأكيد الخروج وإغلاق التطبيق؟</p>
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button type="button" onclick="confirmExitApp()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs cursor-pointer">نعم، خروج</button>
+        <button type="button" onclick="closeExitAppModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer">البقاء في التطبيق</button>
+      </div>
+    </div>
   </div>
 
   <!-- ========================================== -->
@@ -1018,7 +1039,7 @@
   <script>
     let isAttendanceDirty = false;
     let isCreatingCourse = false;
-    let deferredInstallPrompt = null;
+    let viewHistoryStack = ['viewDashboard'];
 
     function normalizeArabic(text) {
       if (!text) return "";
@@ -1054,7 +1075,6 @@
       selectedAddBooks: new Set()
     };
 
-    // DEFINED EARLY TO PREVENT 'is not defined' REFERENCE ERROR
     function getAvailableBooksList() {
       const booksSet = new Set();
       if (Array.isArray(AppState.books) && AppState.books.length > 0) {
@@ -1176,7 +1196,7 @@
 
       checkWeeklyAttendanceNotifications();
       checkConsecutiveAbsences();
-      openDashboardView();
+      openDashboardView(false);
     }
 
     function handleLogout() {
@@ -1601,7 +1621,7 @@
             studentName: r[0],
             value: r[1]
           })));
-          openDashboardView();
+          openDashboardView(true);
         } else {
           showToast(response.error || "فشل الحفظ", "error");
         }
@@ -1658,13 +1678,18 @@
       });
     }
 
+    function selectCourseAndOpenAttendance(courseCode) {
+      openAttendanceView(true);
+      selectCourseForAttendance(courseCode);
+    }
+
     function openCourseStudents(courseCode) {
       const course = AppState.courses.find(c => c.code === courseCode);
       if (!course) return;
       AppState.currentSelectedCourseForStudents = course;
       document.getElementById('courseStudentsHeaderTitle').innerText = `${course.book} (${course.category || ''})`;
       renderCourseStudentsList();
-      switchView('viewCourseStudents');
+      switchView('viewCourseStudents', true);
     }
 
     function renderCourseStudentsList() {
@@ -1815,19 +1840,97 @@
     }
 
     let currentActiveView = 'viewDashboard';
-    function switchView(targetId) {
+
+    function switchView(targetId, pushHistory = true) {
       ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('hidden', id !== targetId);
       });
       currentActiveView = targetId;
+
+      if (pushHistory) {
+        viewHistoryStack.push(targetId);
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function openDashboardView() { switchView('viewDashboard'); }
-    function openAttendanceView() { renderAttendanceCoursesGrid(); switchView('viewAttendance'); }
-    function openCoursesView() { renderCoursesDirectory(); switchView('viewCourses'); }
-    function openFollowUpView() { checkConsecutiveAbsences(); switchView('viewFollowUp'); }
+    function openDashboardView(push = true) {
+      viewHistoryStack = ['viewDashboard'];
+      switchView('viewDashboard', push);
+    }
+    function openAttendanceView(push = true) { renderAttendanceCoursesGrid(); switchView('viewAttendance', push); }
+    function openCoursesView(push = true) { renderCoursesDirectory(); switchView('viewCourses', push); }
+    function openFollowUpView(push = true) { checkConsecutiveAbsences(); switchView('viewFollowUp', push); }
+
+    function navigateBack() {
+      const openModals = ['addStudentModal', 'editStudentModal', 'createCourseModal', 'editCourseModal', 'notificationsModal'];
+      for (let mId of openModals) {
+        const modal = document.getElementById(mId);
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.add('hidden');
+          return;
+        }
+      }
+
+      if (currentActiveView === 'viewAttendance' && isAttendanceDirty && AppState.selectedCourseForAtt) {
+        document.getElementById('confirmLeaveAttendanceModal').classList.remove('hidden');
+        return;
+      }
+
+      if (viewHistoryStack.length > 1) {
+        viewHistoryStack.pop();
+        const prevView = viewHistoryStack[viewHistoryStack.length - 1];
+        switchView(prevView, false);
+      } else {
+        openDashboardView(false);
+      }
+    }
+
+    function closeConfirmLeaveModal() {
+      document.getElementById('confirmLeaveAttendanceModal').classList.add('hidden');
+    }
+
+    function confirmDiscardAttendance() {
+      isAttendanceDirty = false;
+      closeConfirmLeaveModal();
+      openDashboardView(true);
+    }
+
+    // Android physical/gesture back button handling with exit confirmation
+    window.addEventListener('popstate', (e) => {
+      e.preventDefault();
+      const openModals = ['addStudentModal', 'editStudentModal', 'createCourseModal', 'editCourseModal', 'notificationsModal', 'confirmLeaveAttendanceModal'];
+      let modalClosed = false;
+      for (let mId of openModals) {
+        const modal = document.getElementById(mId);
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.add('hidden');
+          modalClosed = true;
+        }
+      }
+      if (modalClosed) {
+        history.pushState(null, '', window.location.href);
+        return;
+      }
+
+      if (currentActiveView !== 'viewDashboard') {
+        navigateBack();
+        history.pushState(null, '', window.location.href);
+      } else {
+        document.getElementById('exitAppConfirmModal').classList.remove('hidden');
+        history.pushState(null, '', window.location.href);
+      }
+    });
+
+    function closeExitAppModal() {
+      document.getElementById('exitAppConfirmModal').classList.add('hidden');
+    }
+
+    function confirmExitApp() {
+      closeExitAppModal();
+      window.close();
+      try { navigator.app.exitApp(); } catch (err) {}
+    }
 
     function openAddStudentModal() { document.getElementById('addStudentModal').classList.remove('hidden'); }
     function closeAddStudentModal() { document.getElementById('addStudentModal').classList.add('hidden'); }
@@ -1841,6 +1944,7 @@
 
     window.addEventListener('load', () => {
       updateDateWidget();
+      history.pushState(null, '', window.location.href);
       const savedEmail = localStorage.getItem('al_rawad_saved_email');
       if (savedEmail) document.getElementById('loginEmailInput').value = savedEmail;
     });
