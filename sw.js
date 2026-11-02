@@ -3,7 +3,7 @@
  * Designed for GitHub Pages and production offline resilience.
  */
 
-const CACHE_NAME = 'dourous-cache-v7';
+const CACHE_NAME = 'dourous-cache-v10';
 
 // Essential static shell assets to cache on install
 const PRECACHE_ASSETS = [
