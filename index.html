@@ -1,649 +1,98 @@
-<div class="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/55 pointer-events-none"></div>
-
-<div class="w-full max-w-sm z-10 flex flex-col items-center animate-float">
-  
-  <div class="text-center mb-5">
-    <h1 class="text-2xl sm:text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
-      تطبيق المتابعة
-    </h1>
-    <p class="text-xs sm:text-sm text-amber-200/90 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">
-      بوابة تسجيل دخول المدرسين
-    </p>
-  </div>
-
-  <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] space-y-4">
-    
+  <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-xl space-y-4">
     <form onsubmit="event.preventDefault(); submitEmailPinLogin();" class="space-y-4">
       <div>
-        <label for="loginEmailInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">
-          البريد الإلكتروني
-        </label>
-        <div class="relative shadow-inner">
-          <input 
-            type="email" 
-            id="loginEmailInput" 
-            required 
-            placeholder="teacher@example.com"
-            dir="ltr"
-            class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none transition-all text-left shadow-sm"
-          />
-          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
-            </svg>
-          </div>
-        </div>
+        <label class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">البريد الإلكتروني</label>
+        <input type="email" id="loginEmailInput" required placeholder="teacher@example.com" dir="ltr" class="w-full px-4 py-3.5 bg-black/35 border border-white/20 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none text-left"/>
       </div>
-
       <div>
-        <label for="loginPinInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">
-          الرمز السري (PIN)
-        </label>
-        <div class="relative shadow-inner">
-          <input 
-            type="password" 
-            id="loginPinInput" 
-            required 
-            placeholder="••••••"
-            dir="ltr"
-            class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none transition-all text-left num-font tracking-widest shadow-sm"
-          />
-          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
-          </div>
-        </div>
+        <label class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">الرمز السري (PIN)</label>
+        <input type="password" id="loginPinInput" required placeholder="••••••" dir="ltr" class="w-full px-4 py-3.5 bg-black/35 border border-white/20 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none text-left num-font tracking-widest"/>
       </div>
-
-      <button 
-        type="submit" 
-        id="loginSubmitBtn"
-        class="w-full min-h-[50px] py-3.5 px-5 bg-olive-700 hover:bg-olive-600 active:scale-[0.98] text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md select-none mt-4 cursor-pointer border border-emerald-400/30"
-      >
+      <button type="submit" class="w-full py-3.5 bg-olive-700 hover:bg-olive-600 text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2 cursor-pointer mt-4">
         <span>تسجيل الدخول</span>
-        <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-        </svg>
       </button>
     </form>
-
-    <div id="loginErrorMsg" class="hidden text-xs text-red-200 bg-red-950/80 border border-red-500/50 p-3 rounded-2xl text-center leading-relaxed"></div>
-    <div id="loginSuccessNotice" class="hidden text-xs text-amber-200 bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-center"></div>
-
+    <div id="loginErrorMsg" class="hidden text-xs text-red-200 bg-red-950/80 p-3 rounded-2xl text-center"></div>
   </div>
-
-  <div id="loginInstallWrapper" class="mt-4 w-full">
-    <a 
-      href="./app.apk"
-      download="app.apk"
-      id="loginInstallBtn"
-      class="w-full min-h-[46px] py-2.5 px-4 bg-black/40 hover:bg-black/55 backdrop-blur-xl border border-white/20 rounded-2xl text-amber-200 hover:text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg cursor-pointer"
-    >
-      <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-      </svg>
-      <span>تحميل تطبيق الهاتف مباشرة (APK)</span>
-    </a>
-  </div>
-
 </div>
 
 
-<!-- Top Bar -->
-<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 safe-top">
-  <div class="max-w-2xl mx-auto flex items-center justify-between">
-    <div class="flex items-center gap-2.5">
-      <div class="w-10 h-10 rounded-2xl bg-olive-100 text-olive-800 flex items-center justify-center font-bold text-base" id="userAvatar">
-        م
-      </div>
-      <div>
-        <div class="flex items-center gap-2">
-          <h2 id="userName" class="text-sm font-bold text-slate-900 leading-tight">المدرس</h2>
-          <span id="syncDot" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="syncText">متصل</span>
-          </span>
-        </div>
-        <p id="userLocationText" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-1.5">
-      <!-- Notification Bell for Supervisors/Managers (T2-T4) -->
-      <button id="notificationBellBtn" onclick="openNotificationsModal()" class="hidden relative p-2.5 rounded-xl text-slate-700 hover:bg-slate-200/60 transition-all cursor-pointer" title="تنبيهات المتابعة الأسبوعية">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-        </svg>
-        <span id="notificationBadgeCount" class="absolute top-1 left-1 w-4 h-4 bg-red-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center num-font hidden">0</span>
-      </button>
-
-      <button onclick="refreshLiveBackend()" title="تحديث" class="p-2.5 rounded-xl text-slate-600 hover:text-olive-700 hover:bg-slate-200/60 transition-all cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-        </svg>
-      </button>
-      <button onclick="handleLogout()" title="خروج" class="p-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-</header>
-
-<!-- Main Container -->
 <main class="flex-1 max-w-2xl w-full mx-auto p-4 pb-16 safe-bottom">
   
-  <!-- ========================================== -->
-  <!-- VIEW 1: HOME DASHBOARD                    -->
-  <!-- ========================================== -->
+  <!-- VIEW 1: DASHBOARD -->
   <section id="viewDashboard" class="space-y-4">
-    
-    <!-- Chalkboard Banner -->
-    <div class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden border border-olive-700/70 shadow-sm">
-      <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 0.6px, transparent 0.6px); background-size: 16px 16px;"></div>
-      
-      <div class="relative z-10 flex flex-col items-center justify-center gap-1">
-        <h2 class="handwritten-chalk text-xl sm:text-2xl font-bold py-0.5 select-none leading-normal">
-          المتابعة نصف العمل
-        </h2>
-        <div class="w-16 h-[1px] bg-white/30 rounded-full"></div>
-      </div>
+    <div class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white text-center">
+      <h2 class="handwritten-chalk text-xl font-bold">المتابعة نصف العمل</h2>
     </div>
-
-    <!-- Supervisor Quick Notification Alert Banner (T2-T4) -->
-    <div id="supervisorAlertBanner" class="hidden p-4 bg-amber-50 border border-amber-300 rounded-2xl shadow-soft flex items-center justify-between cursor-pointer" onclick="openNotificationsModal()">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-          ⚠️
-        </div>
+    <div class="grid grid-cols-2 gap-3.5">
+      <button onclick="openAttendanceView()" class="p-5 glass-card rounded-3xl flex flex-col items-center justify-center text-center cursor-pointer min-h-[150px]">
+        <h3 class="text-base font-extrabold text-slate-900 mt-2">تسجيل الحضور</h3>
+      </button>
+      <div onclick="openCoursesView()" class="p-5 glass-card rounded-3xl flex flex-col items-center justify-center text-center cursor-pointer min-h-[150px]">
+        <h3 class="text-base font-extrabold text-slate-900 mt-2">قائمة الدروس</h3>
+        <p id="dashCoursesCountText" class="text-xs text-slate-500 mt-1 num-font">0 درس</p>
+      </div>
+      <button onclick="openFollowUpView()" class="col-span-2 p-4 glass-card rounded-3xl flex items-center justify-between text-right cursor-pointer">
         <div>
-          <h4 class="text-xs font-bold text-slate-900">تنبيه غياب تحديث الحضور الأسبوعي</h4>
-          <p id="supervisorAlertText" class="text-[11px] text-slate-600 mt-0.5">يوجد مدرسون لم يقوموا بتحديث الحضور لهذا الأسبوع</p>
+          <h3 class="text-base font-extrabold text-slate-900">متابعة الغائبين</h3>
+          <p id="dashAbsentCountText" class="text-xs text-slate-500 mt-0.5">فحص الغياب المتكرر للطلاب</p>
         </div>
-      </div>
-      <span class="text-xs font-bold text-amber-800 underline">عرض القائمة</span>
-    </div>
-
-    <!-- T2/T3/T4 Navigation Tabs -->
-    <div id="roleWorkspaceTabs" class="hidden grid grid-cols-2 gap-2 p-1.5 bg-slate-200/80 rounded-2xl">
-      <button type="button" onclick="switchWorkspaceTab('personal')" id="tabBtnPersonal" class="py-2.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-sm">
-        دروسي
-      </button>
-      <button type="button" onclick="switchWorkspaceTab('supervision')" id="tabBtnSupervision" class="py-2.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-        الدروس التي أتابعها
       </button>
     </div>
-
-    <!-- WORKSPACE A: Personal Teaching -->
-    <div id="workspacePersonal" class="space-y-3.5">
-      <div class="grid grid-cols-2 gap-3.5">
-        
-        <!-- 1. تسجيل الحضور -->
-        <button onclick="openAttendanceView()" class="p-5 glass-card rounded-3xl hover:border-olive-600 active:scale-[0.98] transition-all flex flex-col items-center justify-between text-center group relative cursor-pointer min-h-[170px]">
-          <div class="flex flex-col items-center justify-center w-full">
-            <div class="w-14 h-14 rounded-2xl bg-olive-100 text-olive-800 border border-olive-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-olive-700 group-hover:text-white transition-all shadow-sm">
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </div>
-            <h3 class="text-base font-extrabold text-slate-900 group-hover:text-olive-800 transition-colors">تسجيل الحضور</h3>
-            <p class="text-xs text-slate-500 font-medium mt-1">رصد الحضور والغياب</p>
-          </div>
-
-          <div class="w-full flex justify-start pt-3">
-            <span class="w-8 h-8 inline-flex items-center justify-center text-olive-800 bg-olive-100 group-hover:bg-olive-700 group-hover:text-white rounded-xl transition-all shadow-xs">
-              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </button>
-
-        <!-- 2. قائمة الدروس -->
-        <div onclick="openCoursesView()" class="p-5 glass-card rounded-3xl hover:border-teal-500 transition-all flex flex-col items-center justify-between text-center group cursor-pointer relative min-h-[170px]">
-          <div class="flex flex-col items-center justify-center w-full">
-            <div class="w-14 h-14 rounded-2xl bg-teal-100 text-teal-800 border border-teal-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-sm">
-              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-              </svg>
-            </div>
-            <h3 class="text-base font-extrabold text-slate-900 group-hover:text-teal-800 transition-colors">قائمة الدروس</h3>
-            <p id="dashCoursesCountText" class="text-xs text-slate-500 font-semibold mt-1 num-font">0 درس مسند</p>
-          </div>
-
-          <div class="w-full flex items-center justify-between pt-3 gap-1">
-            <span class="w-8 h-8 inline-flex items-center justify-center text-teal-800 bg-teal-100 group-hover:bg-teal-600 group-hover:text-white rounded-xl transition-all shadow-xs">
-              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
-              </svg>
-            </span>
-            <button 
-              type="button" 
-              onclick="event.stopPropagation(); openCreateCourseModal();" 
-              class="py-1.5 px-3 bg-teal-100 hover:bg-teal-600 text-teal-900 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
-              </svg>
-              <span>فتح درس</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 3. متابعة الغائبين -->
-        <button onclick="openFollowUpView()" class="col-span-2 p-4 glass-card rounded-3xl hover:border-amber-500 active:scale-[0.98] transition-all flex items-center justify-between text-right relative group cursor-pointer">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-sm">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-base font-extrabold text-slate-900 group-hover:text-amber-800 transition-colors">متابعة الغائبين</h3>
-              <p id="dashAbsentCountText" class="text-xs text-slate-500 font-semibold mt-0.5 num-font">فحص الغياب المتكرر للطلاب</p>
-            </div>
-          </div>
-          <span class="w-8 h-8 inline-flex items-center justify-center text-amber-800 bg-amber-100 group-hover:bg-amber-600 group-hover:text-white rounded-xl transition-all shadow-xs">
-            <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </button>
-
-      </div>
-    </div>
-
-    <!-- WORKSPACE B: Supervision Portal -->
-    <div id="workspaceSupervision" class="hidden space-y-4">
-      <div class="p-4 bg-olive-50 border border-olive-200 rounded-2xl space-y-2">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-extrabold text-olive-900">مدرسي الفوج والمجموعات التابعة لإشرافك</h3>
-          <span id="supervisedTeachersCountBadge" class="text-xs font-bold px-2.5 py-0.5 bg-olive-200 text-olive-900 rounded-full num-font">0 مدرس</span>
-        </div>
-        <p class="text-xs text-olive-700 leading-relaxed">يمكنك متابعة جدول دروس كل مدرس، الاطلاع على قوائم طلابهم، والتأكد من تسجيل الحضور الأسبوعي.</p>
-      </div>
-
-      <div id="supervisedTeachersContainer" class="space-y-3"></div>
-    </div>
-
   </section>
 
-  <!-- ========================================== -->
-  <!-- VIEW 2: تسجيل الحضور                      -->
-  <!-- ========================================== -->
+  <!-- VIEW 2: ATTENDANCE -->
   <section id="viewAttendance" class="hidden space-y-4">
-    
     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-      <div class="flex items-center gap-2">
-        <h2 class="text-base sm:text-lg font-bold text-slate-900">تسجيل الحضور</h2>
-      </div>
-      <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-        <span>الرجوع</span>
-        <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
-        </svg>
-      </button>
+      <h2 class="text-base font-bold text-slate-900">تسجيل الحضور</h2>
+      <button onclick="navigateBack()" class="px-3 py-1.5 bg-slate-200 rounded-xl text-xs font-bold cursor-pointer">الرجوع</button>
     </div>
-
-    <div class="space-y-2.5">
-      <label class="block text-xs sm:text-sm font-bold text-slate-700">اختر الدرس للبدء:</label>
-      <div id="attendanceCoursesGrid" class="space-y-2"></div>
-    </div>
-
+    <div id="attendanceCoursesGrid" class="space-y-2"></div>
     <div id="attendanceActiveForm" class="hidden space-y-4 pt-2">
-      
       <div class="p-3 bg-olive-50 border border-olive-200 rounded-2xl flex items-center justify-between">
-        <div>
-          <span class="text-[11px] text-olive-700 block font-bold">الدرس المحدد:</span>
-          <span id="activeSelectedCourseTitle" class="text-sm font-black text-olive-900">--</span>
-        </div>
-        <button type="button" onclick="resetActiveCourseSelection()" class="text-xs font-bold text-olive-700 hover:text-olive-900 underline">
-          تغيير الدرس
-        </button>
+        <span id="activeSelectedCourseTitle" class="text-sm font-black text-olive-900">--</span>
+        <button type="button" onclick="resetActiveCourseSelection()" class="text-xs font-bold text-olive-700 underline">تغيير الدرس</button>
       </div>
-
-      <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ الدرس</label>
-            <input 
-              type="date" 
-              id="attDateInput" 
-              onchange="syncWeekAndMonthWithDate(this.value)"
-              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-900 num-font focus:outline-none focus:ring-2 focus:ring-olive-600"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">الأسبوع والشهر</label>
-            <input 
-              type="text" 
-              id="attWeekMonthInput" 
-              readonly
-              class="w-full px-3 py-2.5 bg-slate-200/70 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-700 focus:outline-none cursor-default"
-            />
-          </div>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-bold text-slate-700">ما تم شرحه (الباب المقرر / الموضع)</label>
-            <span id="lastTaughtHint" class="text-xs text-olive-800 font-bold bg-olive-100 px-2 py-0.5 rounded-md border border-olive-200"></span>
-          </div>
-          <select 
-            id="attSyllabusSelect" 
-            required
-            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-olive-600"
-          >
-            <option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>
-          </select>
-        </div>
+      <div class="glass-card rounded-3xl p-4 space-y-3">
+        <input type="date" id="attDateInput" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"/>
+        <select id="attSyllabusSelect" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs font-bold"><option value="">-- اختر الباب --</option></select>
       </div>
-
-      <div class="relative">
-        <div class="flex items-center justify-between mb-3 px-1">
-          <div class="flex items-center gap-2">
-            <h3 class="text-sm font-extrabold text-slate-800">قائمة حضور الطلاب</h3>
-            <span id="attendanceStatsPill" class="hidden text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800 num-font">
-              <span id="presentSummaryCount" class="text-olive-700">0 حاضر</span> • <span id="absentSummaryCount" class="text-red-600">0 غائب</span>
-            </span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="setAllAttendanceState(true)" class="text-xs font-bold text-olive-900 bg-olive-100 border border-olive-300 px-3 py-1.5 rounded-xl hover:bg-olive-200 transition-all cursor-pointer">
-              الكل حاضر
-            </button>
-            <button type="button" onclick="setAllAttendanceState(false)" class="text-xs font-bold text-red-900 bg-red-100 border border-red-300 px-3 py-1.5 rounded-xl hover:bg-red-200 transition-all cursor-pointer">
-              الكل غائب
-            </button>
-          </div>
-        </div>
-
-        <div id="attendanceAlphaRail" class="hidden fixed left-2 top-1/2 -translate-y-1/2 z-40 bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-float p-1 flex flex-col items-center gap-0.5 max-h-[70vh] overflow-y-auto no-scrollbar select-none">
-        </div>
-
-        <div id="attendanceStudentList" class="space-y-2.5"></div>
-      </div>
-
-      <div class="pt-2">
-        <button 
-          type="button" 
-          onclick="submitAttendanceSession()" 
-          id="saveAttendanceBtn"
-          class="w-full py-4 bg-olive-700 hover:bg-olive-600 text-white font-extrabold rounded-2xl shadow-card transition-all flex items-center justify-center gap-2 active:scale-[0.98] text-base cursor-pointer"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/>
-          </svg>
-          <span>حفظ الحضور والغياب</span>
-        </button>
-      </div>
-
+      <div id="attendanceStudentList" class="space-y-2.5"></div>
+      <button onclick="submitAttendanceSession()" class="w-full py-3 bg-olive-700 text-white font-extrabold rounded-2xl cursor-pointer">حفظ الحضور والغياب</button>
     </div>
-
   </section>
 
-  <!-- ========================================== -->
-  <!-- VIEW 3: قائمة الدروس                      -->
-  <!-- ========================================== -->
+  <!-- VIEW 3: COURSES -->
   <section id="viewCourses" class="hidden space-y-4">
-    
     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-      <div class="flex items-center gap-2">
-        <h2 id="coursesViewTitle" class="text-base sm:text-lg font-bold text-slate-900">قائمة الدروس</h2>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="openCreateCourseModal()" class="px-3.5 py-2 bg-olive-700 hover:bg-olive-600 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
-          </svg>
-          <span>فتح درس جديد</span>
-        </button>
-        <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-          <span>الرجوع</span>
-          <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </button>
+      <h2 class="text-base font-bold text-slate-900">قائمة الدروس</h2>
+      <div class="flex gap-2">
+        <button onclick="openCreateCourseModal()" class="px-3 py-2 bg-olive-700 text-white rounded-xl text-xs font-bold cursor-pointer">فتح درس</button>
+        <button onclick="navigateBack()" class="px-3 py-1.5 bg-slate-200 rounded-xl text-xs font-bold cursor-pointer">الرجوع</button>
       </div>
     </div>
-
-    <div id="coursesDirectoryList" class="space-y-3.5"></div>
-
+    <div id="coursesDirectoryList" class="space-y-3"></div>
   </section>
 
-  <!-- ========================================== -->
-  <!-- VIEW 3B: طلاب الدرس                        -->
-  <!-- ========================================== -->
+  <!-- VIEW 3B: COURSE STUDENTS -->
   <section id="viewCourseStudents" class="hidden space-y-4">
-    
     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-      <div>
-        <span class="text-[11px] text-slate-500 block">طلاب الدرس:</span>
-        <h2 id="courseStudentsHeaderTitle" class="text-base font-extrabold text-slate-900">--</h2>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="openAddStudentForCurrentCourse()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
-          </svg>
-          <span>إضافة طالب</span>
-        </button>
-        <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-          <span>الرجوع</span>
-          <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </button>
+      <h2 id="courseStudentsHeaderTitle" class="text-base font-extrabold text-slate-900">--</h2>
+      <div class="flex gap-2">
+        <button onclick="openAddStudentForCurrentCourse()" class="px-3 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold cursor-pointer">إضافة طالب</button>
+        <button onclick="navigateBack()" class="px-3 py-1.5 bg-slate-200 rounded-xl text-xs font-bold cursor-pointer">الرجوع</button>
       </div>
     </div>
-
-    <div class="relative">
-      <input 
-        type="text" 
-        id="courseStudentSearchInput" 
-        oninput="renderCourseStudentsList()"
-        placeholder="بحث في طلاب هذا الدرس..."
-        class="w-full pr-10 pl-3 py-3 glass-card rounded-2xl text-slate-900 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-olive-600"
-      />
-      <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-      </div>
-    </div>
-
     <div id="courseStudentsDirectoryList" class="space-y-3"></div>
-
   </section>
 
-  <!-- ========================================== -->
-  <!-- VIEW 4: متابعة الغائبين                      -->
-  <!-- ========================================== -->
+  <!-- VIEW 4: FOLLOW UP -->
   <section id="viewFollowUp" class="hidden space-y-4">
     <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-      <h2 class="text-base sm:text-lg font-bold text-slate-900">متابعة الغائبين</h2>
-      <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-        <span>الرجوع</span>
-        <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
-        </svg>
-      </button>
+      <h2 class="text-base font-bold text-slate-900">متابعة الغائبين (3 غيابات متتالية)</h2>
+      <button onclick="navigateBack()" class="px-3 py-1.5 bg-slate-200 rounded-xl text-xs font-bold cursor-pointer">الرجوع</button>
     </div>
-
-    <div id="followUpList" class="space-y-3.5"></div>
+    <div id="followUpList" class="space-y-3"></div>
   </section>
 
 </main>
-
-
-  <div id="notificationsModalList" class="space-y-2.5"></div>
-
-  <button type="button" onclick="closeNotificationsModal()" class="w-full py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs cursor-pointer">
-    إغلاق
-  </button>
-</div>
-
-
-  <form id="addStudentForm" onsubmit="event.preventDefault(); submitAddStudent();" class="space-y-3">
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
-      <input type="text" id="addStudentName" required placeholder="الاسم واللقب..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">الدرس المسند إليه</label>
-        <select id="addStudentCourse" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
-        <select id="addStudentCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-          <option value="رجال">رجال</option>
-          <option value="نساء">نساء</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
-        <input type="tel" id="addStudentPhone" placeholder="8 أرقام" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 text-left num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
-        <select id="addStudentLevel" onchange="toggleAddStudentCompletedBooks(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-        </select>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
-        <select id="addStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-        <select id="addStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-        </select>
-      </div>
-    </div>
-
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
-      <input type="text" id="addStudentCity" placeholder="مثال: باردو، المروج..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-    </div>
-
-    <div class="pt-2 flex gap-2">
-      <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-        حفظ وإضافة الطالب
-      </button>
-      <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
-        إلغاء
-      </button>
-    </div>
-  </form>
-</div>
-
-
-  <form id="editStudentForm" onsubmit="event.preventDefault(); submitStudentUpdate();" class="space-y-3">
-    <input type="hidden" id="editStudentOrigName" />
-
-    <div class="grid grid-cols-3 gap-2">
-      <div class="col-span-2">
-        <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
-        <input type="text" id="editStudentName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
-        <select id="editStudentCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-          <option value="رجال">رجال</option>
-          <option value="نساء">نساء</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
-        <input type="tel" id="editStudentPhone" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 text-left num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
-        <select id="editStudentLevel" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-        </select>
-      </div>
-    </div>
-
-    <div class="pt-2 flex gap-2">
-      <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-        حفظ وتوثيق التحيين
-      </button>
-      <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
-        إلغاء
-      </button>
-    </div>
-  </form>
-</div>
-
-
-  <form id="createCourseForm" onsubmit="event.preventDefault(); submitCreateCourse();" class="space-y-3">
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 mb-1">صنف الدرس</label>
-      <select id="newCourseCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-      </select>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
-        <select id="newCourseDay" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-          <option value="السبت">السبت</option>
-          <option value="الأحد">الأحد</option>
-          <option value="الاثنين">الاثنين</option>
-          <option value="الثلاثاء">الثلاثاء</option>
-          <option value="الأربعاء">الأربعاء</option>
-          <option value="الخميس">الخميس</option>
-          <option value="الجمعة">الجمعة</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
-        <input type="time" id="newCourseTiming" value="20:00" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 text-center num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
-        <select id="newCourseLocation" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-          <option value="مقر">مقر</option>
-          <option value="بيت">بيت</option>
-          <option value="عن بعد">عن بعد</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-        <select id="newCourseVenue" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-        </select>
-      </div>
-    </div>
-
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 mb-1">الكتاب المقرر</label>
-      <select id="newCourseBook" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-      </select>
-    </div>
-
-    <div class="pt-2 flex gap-2">
-      <button type="submit" id="submitCreateCourseBtn" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-        تأكيد فتح الدرس
-      </button>
-      <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
-        إلغاء
-      </button>
-    </div>
-  </form>
-</div>
