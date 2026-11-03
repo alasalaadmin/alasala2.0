@@ -998,7 +998,7 @@
         locations: ["مقر", "بيت", "عن بعد"],
         venues: ["منفلوري", "المرسى", "أريانة"],
         studentLevels: ["1", "2", "3", "4", "5", "6"],
-        studentAgeGroups: ["15-", "15+"]
+        studentAgeGroups: ["15-", "16-35", "36-60", "60+"]
       },
       selectedCourseForAtt: null,
       currentAttendanceRoster: [],
@@ -1338,7 +1338,7 @@
         }
       });
 
-      const ageGroups = AppState.dropdowns.studentAgeGroups || ["15-", "15+"];
+      const ageGroups = AppState.dropdowns.studentAgeGroups || ["15-", "16-35", "36-60", "60+"];
       ['editStudentAgeGroup', 'addStudentAgeGroup'].forEach(id => {
         const sel = document.getElementById(id);
         if (sel) {
@@ -1346,7 +1346,7 @@
           ageGroups.forEach(ag => {
             const opt = document.createElement('option');
             opt.value = ag;
-            opt.innerText = ag;
+            opt.innerText = '\u200E' + ag + '\u200E';   // LRM: keeps "60+" / "15-" from being shown reversed in an RTL page
             sel.appendChild(opt);
           });
         }
