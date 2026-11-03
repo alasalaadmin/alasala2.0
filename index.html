@@ -1,1953 +1,649 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl" class="h-full">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>نظام إدارة ومتابعة الدروس</title>
+<div class="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/55 pointer-events-none"></div>
 
-  <!-- PWA & Mobile Web App Meta Tags -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="المتابعة">
-  <meta name="application-name" content="المتابعة">
-  <meta name="theme-color" content="#1e382b">
-
-  <!-- Link to Web App Manifest -->
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon-192.png">
-  <link rel="icon" type="image/png" href="./icon-192.png">
+<div class="w-full max-w-sm z-10 flex flex-col items-center animate-float">
   
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,700;1,700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Marhey:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Reem+Kufi+Ink&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-  
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Tajawal', 'Plus Jakarta Sans', 'sans-serif'],
-            num: ['Plus Jakarta Sans', 'Tajawal', 'sans-serif'],
-            naskh: ['"Noto Naskh Arabic"', 'Amiri', 'serif'],
-            handwritten: ['"Marhey"', '"Aref Ruqaa"', 'cursive', 'sans-serif'],
-            calligraphy: ['"Aref Ruqaa Ink"', '"Amiri Quran"', '"Noto Naskh Arabic"', 'serif']
-          },
-          colors: {
-            olive: {
-              50: '#f4f7f5',
-              100: '#e2eae5',
-              600: '#2c4c3b',
-              700: '#223d2f',
-              800: '#1e382b',
-              900: '#15281e'
-            }
-          },
-          boxShadow: {
-            'soft': '0 4px 20px -2px rgba(16, 24, 40, 0.05)',
-            'card': '0 10px 25px -4px rgba(15, 23, 42, 0.08)',
-            'float': '0 20px 40px -8px rgba(15, 23, 42, 0.12)'
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    :root {
-      --sat: env(safe-area-inset-top, 0px);
-      --sab: env(safe-area-inset-bottom, 0px);
-    }
-    .safe-top {
-      padding-top: max(0.75rem, env(safe-area-inset-top));
-    }
-    .safe-bottom {
-      padding-bottom: max(1rem, env(safe-area-inset-bottom));
-    }
-    .handwritten-chalk {
-      font-family: 'Aref Ruqaa', serif;
-      color: #FFFFFF;
-      text-shadow: 
-        0 0 1px rgba(255, 255, 255, 0.95),
-        0 0 3px rgba(255, 255, 255, 0.5),
-        1px 2px 2px rgba(0, 0, 0, 0.4);
-      letter-spacing: 0.01em;
-    }
-    .chalkboard-bg {
-      background: radial-gradient(circle at 50% 50%, #2c4c3b 0%, #1e382b 65%, #15281e 100%);
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45), 0 6px 16px -3px rgba(15, 23, 42, 0.08);
-    }
-    body {
-      background-color: #F8F6F0;
-      font-family: 'Tajawal', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      touch-action: manipulation;
-    }
-    input, textarea, select {
-      user-select: text;
-      font-size: 16px;
-    }
-    @media (min-width: 640px) {
-      input, textarea, select {
-        font-size: 0.875rem;
-      }
-    }
-    .num-font {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    .glass-card {
-      background: rgba(253, 251, 247, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(220, 214, 202, 0.9);
-      box-shadow: 0 4px 20px -2px rgba(30, 56, 43, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
-    }
-    .glass-card:active {
-      transform: scale(0.985);
-    }
-    @keyframes floatingCard {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
-    }
-    .animate-float {
-      animation: floatingCard 6s ease-in-out infinite;
-    }
-    .login-bg-cover {
-      background-image: url('./Cover.webp'), url('Cover.webp');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-  </style>
-</head>
-<body class="h-full bg-slate-100 text-slate-900 antialiased flex flex-col justify-between overflow-x-hidden">
-
-  <!-- CONFIGURATION & PWA SERVICE WORKER REGISTRATION -->
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxoVf_eJi8auuiG8u8hY4tI-4gyfXu8zZ2StOcmb2FZZszyXWY7FOgX72dcjcif6BBgXA/exec";
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
-          .then((reg) => {
-            console.log('PWA Service Worker registered successfully:', reg.scope);
-          })
-          .catch((err) => {
-            console.warn('Service Worker registration skipped or failed:', err);
-          });
-      });
-    }
-  </script>
-
-  <!-- Notifications & Loader -->
-  <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-11/12 max-w-sm pointer-events-none transition-all duration-300"></div>
-
-  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
-    <div class="bg-white p-5 rounded-3xl shadow-float flex flex-col items-center gap-3 max-w-xs text-center border border-slate-100">
-      <div class="w-10 h-10 rounded-full border-3 border-slate-100 border-t-emerald-600 animate-spin"></div>
-      <p id="loadingMessage" class="text-slate-800 font-bold text-sm">جارٍ المعالجة...</p>
-    </div>
+  <div class="text-center mb-5">
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+      تطبيق المتابعة
+    </h1>
+    <p class="text-xs sm:text-sm text-amber-200/90 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">
+      بوابة تسجيل دخول المدرسين
+    </p>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 1. LOGIN SCREEN (Email + PIN)              -->
-  <!-- ========================================== -->
-  <div id="loginScreen" class="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 login-bg-cover selection:bg-amber-500 selection:text-white safe-top safe-bottom overflow-hidden">
+  <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] space-y-4">
     
-    <div class="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/55 pointer-events-none"></div>
-
-    <div class="w-full max-w-sm z-10 flex flex-col items-center animate-float">
-      
-      <div class="text-center mb-5">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
-          تطبيق المتابعة
-        </h1>
-        <p class="text-xs sm:text-sm text-amber-200/90 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">
-          بوابة تسجيل دخول المدرسين
-        </p>
-      </div>
-
-      <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] space-y-4">
-        
-        <form onsubmit="event.preventDefault(); submitEmailPinLogin();" class="space-y-4">
-          <div>
-            <label for="loginEmailInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">
-              البريد الإلكتروني
-            </label>
-            <div class="relative shadow-inner">
-              <input 
-                type="email" 
-                id="loginEmailInput" 
-                required 
-                placeholder="teacher@example.com"
-                dir="ltr"
-                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none transition-all text-left shadow-sm"
-              />
-              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label for="loginPinInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">
-              الرمز السري (PIN)
-            </label>
-            <div class="relative shadow-inner">
-              <input 
-                type="password" 
-                id="loginPinInput" 
-                required 
-                placeholder="••••••"
-                dir="ltr"
-                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none transition-all text-left num-font tracking-widest shadow-sm"
-              />
-              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <button 
-            type="submit" 
-            id="loginSubmitBtn"
-            class="w-full min-h-[50px] py-3.5 px-5 bg-olive-700 hover:bg-olive-600 active:scale-[0.98] text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md select-none mt-4 cursor-pointer border border-emerald-400/30"
-          >
-            <span>تسجيل الدخول</span>
-            <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-            </svg>
-          </button>
-        </form>
-
-        <div id="loginErrorMsg" class="hidden text-xs text-red-200 bg-red-950/80 border border-red-500/50 p-3 rounded-2xl text-center leading-relaxed"></div>
-        <div id="loginSuccessNotice" class="hidden text-xs text-amber-200 bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-center"></div>
-
-      </div>
-
-      <div id="loginInstallWrapper" class="mt-4 w-full">
-        <a 
-          href="./app.apk"
-          download="app.apk"
-          id="loginInstallBtn"
-          class="w-full min-h-[46px] py-2.5 px-4 bg-black/40 hover:bg-black/55 backdrop-blur-xl border border-white/20 rounded-2xl text-amber-200 hover:text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg cursor-pointer"
-        >
-          <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          <span>تحميل تطبيق الهاتف مباشرة (APK)</span>
-        </a>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- 2. MAIN APPLICATION SHELL                  -->
-  <!-- ========================================== -->
-  <div id="appShell" class="hidden flex-1 flex flex-col min-h-screen">
-    
-    <!-- Top Bar -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 safe-top">
-      <div class="max-w-2xl mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-olive-100 text-olive-800 flex items-center justify-center font-bold text-base" id="userAvatar">
-            م
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 id="userName" class="text-sm font-bold text-slate-900 leading-tight">المدرس</h2>
-              <span id="syncDot" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="syncText">متصل</span>
-              </span>
-            </div>
-            <p id="userLocationText" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <!-- Notification Bell for Supervisors/Managers (T2-T4) -->
-          <button id="notificationBellBtn" onclick="openNotificationsModal()" class="hidden relative p-2.5 rounded-xl text-slate-700 hover:bg-slate-200/60 transition-all cursor-pointer" title="تنبيهات المتابعة الأسبوعية">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-            </svg>
-            <span id="notificationBadgeCount" class="absolute top-1 left-1 w-4 h-4 bg-red-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center num-font hidden">0</span>
-          </button>
-
-          <button onclick="refreshLiveBackend()" title="تحديث" class="p-2.5 rounded-xl text-slate-600 hover:text-olive-700 hover:bg-slate-200/60 transition-all cursor-pointer">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-          </button>
-          <button onclick="handleLogout()" title="خروج" class="p-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="flex-1 max-w-2xl w-full mx-auto p-4 pb-16 safe-bottom">
-      
-      <!-- ========================================== -->
-      <!-- VIEW 1: HOME DASHBOARD                    -->
-      <!-- ========================================== -->
-      <section id="viewDashboard" class="space-y-4">
-        
-        <!-- Chalkboard Banner -->
-        <div class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden border border-olive-700/70 shadow-sm">
-          <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 0.6px, transparent 0.6px); background-size: 16px 16px;"></div>
-          
-          <div class="relative z-10 flex flex-col items-center justify-center gap-1">
-            <h2 class="handwritten-chalk text-xl sm:text-2xl font-bold py-0.5 select-none leading-normal">
-              المتابعة نصف العمل
-            </h2>
-            <div class="w-16 h-[1px] bg-white/30 rounded-full"></div>
-          </div>
-        </div>
-
-        <!-- Supervisor Quick Notification Alert Banner (T2-T4) -->
-        <div id="supervisorAlertBanner" class="hidden p-4 bg-amber-50 border border-amber-300 rounded-2xl shadow-soft flex items-center justify-between cursor-pointer" onclick="openNotificationsModal()">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-              ⚠️
-            </div>
-            <div>
-              <h4 class="text-xs font-bold text-slate-900">تنبيه غياب تحديث الحضور الأسبوعي</h4>
-              <p id="supervisorAlertText" class="text-[11px] text-slate-600 mt-0.5">يوجد مدرسون لم يقوموا بتحديث الحضور لهذا الأسبوع</p>
-            </div>
-          </div>
-          <span class="text-xs font-bold text-amber-800 underline">عرض القائمة</span>
-        </div>
-
-        <!-- T2/T3/T4 Navigation Tabs -->
-        <div id="roleWorkspaceTabs" class="hidden grid grid-cols-2 gap-2 p-1.5 bg-slate-200/80 rounded-2xl">
-          <button type="button" onclick="switchWorkspaceTab('personal')" id="tabBtnPersonal" class="py-2.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-sm">
-            دروسي
-          </button>
-          <button type="button" onclick="switchWorkspaceTab('supervision')" id="tabBtnSupervision" class="py-2.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-            الدروس التي أتابعها
-          </button>
-        </div>
-
-        <!-- WORKSPACE A: Personal Teaching -->
-        <div id="workspacePersonal" class="space-y-3.5">
-          <div class="grid grid-cols-2 gap-3.5">
-            
-            <!-- 1. تسجيل الحضور -->
-            <button onclick="openAttendanceView()" class="p-5 glass-card rounded-3xl hover:border-olive-600 active:scale-[0.98] transition-all flex flex-col items-center justify-between text-center group relative cursor-pointer min-h-[170px]">
-              <div class="flex flex-col items-center justify-center w-full">
-                <div class="w-14 h-14 rounded-2xl bg-olive-100 text-olive-800 border border-olive-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-olive-700 group-hover:text-white transition-all shadow-sm">
-                  <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                </div>
-                <h3 class="text-base font-extrabold text-slate-900 group-hover:text-olive-800 transition-colors">تسجيل الحضور</h3>
-                <p class="text-xs text-slate-500 font-medium mt-1">رصد الحضور والغياب</p>
-              </div>
-
-              <div class="w-full flex justify-start pt-3">
-                <span class="w-8 h-8 inline-flex items-center justify-center text-olive-800 bg-olive-100 group-hover:bg-olive-700 group-hover:text-white rounded-xl transition-all shadow-xs">
-                  <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </span>
-              </div>
-            </button>
-
-            <!-- 2. قائمة الدروس -->
-            <div onclick="openCoursesView()" class="p-5 glass-card rounded-3xl hover:border-teal-500 transition-all flex flex-col items-center justify-between text-center group cursor-pointer relative min-h-[170px]">
-              <div class="flex flex-col items-center justify-center w-full">
-                <div class="w-14 h-14 rounded-2xl bg-teal-100 text-teal-800 border border-teal-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-sm">
-                  <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                  </svg>
-                </div>
-                <h3 class="text-base font-extrabold text-slate-900 group-hover:text-teal-800 transition-colors">قائمة الدروس</h3>
-                <p id="dashCoursesCountText" class="text-xs text-slate-500 font-semibold mt-1 num-font">0 درس مسند</p>
-              </div>
-
-              <div class="w-full flex items-center justify-between pt-3 gap-1">
-                <span class="w-8 h-8 inline-flex items-center justify-center text-teal-800 bg-teal-100 group-hover:bg-teal-600 group-hover:text-white rounded-xl transition-all shadow-xs">
-                  <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </span>
-                <button 
-                  type="button" 
-                  onclick="event.stopPropagation(); openCreateCourseModal();" 
-                  class="py-1.5 px-3 bg-teal-100 hover:bg-teal-600 text-teal-900 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
-                  </svg>
-                  <span>فتح درس</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- 3. متابعة الغائبين -->
-            <button onclick="openFollowUpView()" class="col-span-2 p-4 glass-card rounded-3xl hover:border-amber-500 active:scale-[0.98] transition-all flex items-center justify-between text-right relative group cursor-pointer">
-              <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-sm">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="text-base font-extrabold text-slate-900 group-hover:text-amber-800 transition-colors">متابعة الغائبين</h3>
-                  <p id="dashAbsentCountText" class="text-xs text-slate-500 font-semibold mt-0.5 num-font">فحص الغياب المتكرر للطلاب</p>
-                </div>
-              </div>
-              <span class="w-8 h-8 inline-flex items-center justify-center text-amber-800 bg-amber-100 group-hover:bg-amber-600 group-hover:text-white rounded-xl transition-all shadow-xs">
-                <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
-                </svg>
-              </span>
-            </button>
-
-          </div>
-        </div>
-
-        <!-- WORKSPACE B: Supervision Portal -->
-        <div id="workspaceSupervision" class="hidden space-y-4">
-          <div class="p-4 bg-olive-50 border border-olive-200 rounded-2xl space-y-2">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-extrabold text-olive-900">مدرسي الفوج والمجموعات التابعة لإشرافك</h3>
-              <span id="supervisedTeachersCountBadge" class="text-xs font-bold px-2.5 py-0.5 bg-olive-200 text-olive-900 rounded-full num-font">0 مدرس</span>
-            </div>
-            <p class="text-xs text-olive-700 leading-relaxed">يمكنك متابعة جدول دروس كل مدرس، الاطلاع على قوائم طلابهم، والتأكد من تسجيل الحضور الأسبوعي.</p>
-          </div>
-
-          <div id="supervisedTeachersContainer" class="space-y-3"></div>
-        </div>
-
-      </section>
-
-      <!-- ========================================== -->
-      <!-- VIEW 2: تسجيل الحضور                      -->
-      <!-- ========================================== -->
-      <section id="viewAttendance" class="hidden space-y-4">
-        
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-          <div class="flex items-center gap-2">
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">تسجيل الحضور</h2>
-          </div>
-          <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-            <span>الرجوع</span>
-            <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="space-y-2.5">
-          <label class="block text-xs sm:text-sm font-bold text-slate-700">اختر الدرس للبدء:</label>
-          <div id="attendanceCoursesGrid" class="space-y-2"></div>
-        </div>
-
-        <div id="attendanceActiveForm" class="hidden space-y-4 pt-2">
-          
-          <div class="p-3 bg-olive-50 border border-olive-200 rounded-2xl flex items-center justify-between">
-            <div>
-              <span class="text-[11px] text-olive-700 block font-bold">الدرس المحدد:</span>
-              <span id="activeSelectedCourseTitle" class="text-sm font-black text-olive-900">--</span>
-            </div>
-            <button type="button" onclick="resetActiveCourseSelection()" class="text-xs font-bold text-olive-700 hover:text-olive-900 underline">
-              تغيير الدرس
-            </button>
-          </div>
-
-          <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5">
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ الدرس</label>
-                <input 
-                  type="date" 
-                  id="attDateInput" 
-                  onchange="syncWeekAndMonthWithDate(this.value)"
-                  class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-900 num-font focus:outline-none focus:ring-2 focus:ring-olive-600"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">الأسبوع والشهر</label>
-                <input 
-                  type="text" 
-                  id="attWeekMonthInput" 
-                  readonly
-                  class="w-full px-3 py-2.5 bg-slate-200/70 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-700 focus:outline-none cursor-default"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="block text-xs font-bold text-slate-700">ما تم شرحه (الباب المقرر / الموضع)</label>
-                <span id="lastTaughtHint" class="text-xs text-olive-800 font-bold bg-olive-100 px-2 py-0.5 rounded-md border border-olive-200"></span>
-              </div>
-              <select 
-                id="attSyllabusSelect" 
-                required
-                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-olive-600"
-              >
-                <option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="relative">
-            <div class="flex items-center justify-between mb-3 px-1">
-              <div class="flex items-center gap-2">
-                <h3 class="text-sm font-extrabold text-slate-800">قائمة حضور الطلاب</h3>
-                <span id="attendanceStatsPill" class="hidden text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800 num-font">
-                  <span id="presentSummaryCount" class="text-olive-700">0 حاضر</span> • <span id="absentSummaryCount" class="text-red-600">0 غائب</span>
-                </span>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="setAllAttendanceState(true)" class="text-xs font-bold text-olive-900 bg-olive-100 border border-olive-300 px-3 py-1.5 rounded-xl hover:bg-olive-200 transition-all cursor-pointer">
-                  الكل حاضر
-                </button>
-                <button type="button" onclick="setAllAttendanceState(false)" class="text-xs font-bold text-red-900 bg-red-100 border border-red-300 px-3 py-1.5 rounded-xl hover:bg-red-200 transition-all cursor-pointer">
-                  الكل غائب
-                </button>
-              </div>
-            </div>
-
-            <div id="attendanceAlphaRail" class="hidden fixed left-2 top-1/2 -translate-y-1/2 z-40 bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-float p-1 flex flex-col items-center gap-0.5 max-h-[70vh] overflow-y-auto no-scrollbar select-none">
-            </div>
-
-            <div id="attendanceStudentList" class="space-y-2.5"></div>
-          </div>
-
-          <div class="pt-2">
-            <button 
-              type="button" 
-              onclick="submitAttendanceSession()" 
-              id="saveAttendanceBtn"
-              class="w-full py-4 bg-olive-700 hover:bg-olive-600 text-white font-extrabold rounded-2xl shadow-card transition-all flex items-center justify-center gap-2 active:scale-[0.98] text-base cursor-pointer"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/>
-              </svg>
-              <span>حفظ الحضور والغياب</span>
-            </button>
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- ========================================== -->
-      <!-- VIEW 3: قائمة الدروس                      -->
-      <!-- ========================================== -->
-      <section id="viewCourses" class="hidden space-y-4">
-        
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-          <div class="flex items-center gap-2">
-            <h2 id="coursesViewTitle" class="text-base sm:text-lg font-bold text-slate-900">قائمة الدروس</h2>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="openCreateCourseModal()" class="px-3.5 py-2 bg-olive-700 hover:bg-olive-600 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
-              </svg>
-              <span>فتح درس جديد</span>
-            </button>
-            <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-              <span>الرجوع</span>
-              <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div id="coursesDirectoryList" class="space-y-3.5"></div>
-
-      </section>
-
-      <!-- ========================================== -->
-      <!-- VIEW 3B: طلاب الدرس                        -->
-      <!-- ========================================== -->
-      <section id="viewCourseStudents" class="hidden space-y-4">
-        
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-          <div>
-            <span class="text-[11px] text-slate-500 block">طلاب الدرس:</span>
-            <h2 id="courseStudentsHeaderTitle" class="text-base font-extrabold text-slate-900">--</h2>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="openAddStudentForCurrentCourse()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
-              </svg>
-              <span>إضافة طالب</span>
-            </button>
-            <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-              <span>الرجوع</span>
-              <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="relative">
+    <form onsubmit="event.preventDefault(); submitEmailPinLogin();" class="space-y-4">
+      <div>
+        <label for="loginEmailInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">
+          البريد الإلكتروني
+        </label>
+        <div class="relative shadow-inner">
           <input 
-            type="text" 
-            id="courseStudentSearchInput" 
-            oninput="renderCourseStudentsList()"
-            placeholder="بحث في طلاب هذا الدرس..."
-            class="w-full pr-10 pl-3 py-3 glass-card rounded-2xl text-slate-900 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-olive-600"
+            type="email" 
+            id="loginEmailInput" 
+            required 
+            placeholder="teacher@example.com"
+            dir="ltr"
+            class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none transition-all text-left shadow-sm"
           />
-          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
             </svg>
           </div>
         </div>
+      </div>
 
-        <div id="courseStudentsDirectoryList" class="space-y-3"></div>
-
-      </section>
-
-      <!-- ========================================== -->
-      <!-- VIEW 4: متابعة الغائبين                      -->
-      <!-- ========================================== -->
-      <section id="viewFollowUp" class="hidden space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-          <h2 class="text-base sm:text-lg font-bold text-slate-900">متابعة الغائبين</h2>
-          <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
-            <span>الرجوع</span>
-            <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
+      <div>
+        <label for="loginPinInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right">
+          الرمز السري (PIN)
+        </label>
+        <div class="relative shadow-inner">
+          <input 
+            type="password" 
+            id="loginPinInput" 
+            required 
+            placeholder="••••••"
+            dir="ltr"
+            class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none transition-all text-left num-font tracking-widest shadow-sm"
+          />
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
-          </button>
+          </div>
         </div>
+      </div>
 
-        <div id="followUpList" class="space-y-3.5"></div>
-      </section>
+      <button 
+        type="submit" 
+        id="loginSubmitBtn"
+        class="w-full min-h-[50px] py-3.5 px-5 bg-olive-700 hover:bg-olive-600 active:scale-[0.98] text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-md select-none mt-4 cursor-pointer border border-emerald-400/30"
+      >
+        <span>تسجيل الدخول</span>
+        <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </button>
+    </form>
 
-    </main>
+    <div id="loginErrorMsg" class="hidden text-xs text-red-200 bg-red-950/80 border border-red-500/50 p-3 rounded-2xl text-center leading-relaxed"></div>
+    <div id="loginSuccessNotice" class="hidden text-xs text-amber-200 bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-center"></div>
+
   </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: APP EXIT CONFIRMATION               -->
-  <!-- ========================================== -->
-  <div id="exitAppConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 text-center space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
+  <div id="loginInstallWrapper" class="mt-4 w-full">
+    <a 
+      href="./app.apk"
+      download="app.apk"
+      id="loginInstallBtn"
+      class="w-full min-h-[46px] py-2.5 px-4 bg-black/40 hover:bg-black/55 backdrop-blur-xl border border-white/20 rounded-2xl text-amber-200 hover:text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg cursor-pointer"
+    >
+      <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+      </svg>
+      <span>تحميل تطبيق الهاتف مباشرة (APK)</span>
+    </a>
+  </div>
+
+</div>
+
+
+<!-- Top Bar -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 safe-top">
+  <div class="max-w-2xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-10 h-10 rounded-2xl bg-olive-100 text-olive-800 flex items-center justify-center font-bold text-base" id="userAvatar">
+        م
       </div>
       <div>
-        <h3 class="text-sm font-bold text-slate-900 mb-1">الخروج من التطبيق؟</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">هل تريد بالتأكيد الخروج وإغلاق التطبيق؟</p>
-      </div>
-      <div class="flex gap-2 pt-1">
-        <button type="button" onclick="confirmExitApp()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs cursor-pointer">نعم، خروج</button>
-        <button type="button" onclick="closeExitAppModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer">البقاء في التطبيق</button>
+        <div class="flex items-center gap-2">
+          <h2 id="userName" class="text-sm font-bold text-slate-900 leading-tight">المدرس</h2>
+          <span id="syncDot" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="syncText">متصل</span>
+          </span>
+        </div>
+        <p id="userLocationText" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
       </div>
     </div>
-  </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: WEEKLY NOTIFICATIONS                -->
-  <!-- ========================================== -->
-  <div id="notificationsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 max-h-[85vh] overflow-y-auto space-y-4">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-        <div>
-          <h3 class="text-sm font-bold text-slate-900">تنبيهات تحديث الحضور الأسبوعي</h3>
-          <p class="text-[11px] text-slate-500">المدرسون الذين لم يسجلوا حضوراً هذا الأسبوع</p>
-        </div>
-        <button onclick="closeNotificationsModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
+    <div class="flex items-center gap-1.5">
+      <!-- Notification Bell for Supervisors/Managers (T2-T4) -->
+      <button id="notificationBellBtn" onclick="openNotificationsModal()" class="hidden relative p-2.5 rounded-xl text-slate-700 hover:bg-slate-200/60 transition-all cursor-pointer" title="تنبيهات المتابعة الأسبوعية">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <span id="notificationBadgeCount" class="absolute top-1 left-1 w-4 h-4 bg-red-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center num-font hidden">0</span>
+      </button>
 
-      <div id="notificationsModalList" class="space-y-2.5"></div>
-
-      <button type="button" onclick="closeNotificationsModal()" class="w-full py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs cursor-pointer">
-        إغلاق
+      <button onclick="refreshLiveBackend()" title="تحديث" class="p-2.5 rounded-xl text-slate-600 hover:text-olive-700 hover:bg-slate-200/60 transition-all cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+      <button onclick="handleLogout()" title="خروج" class="p-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
       </button>
     </div>
   </div>
+</header>
 
+<!-- Main Container -->
+<main class="flex-1 max-w-2xl w-full mx-auto p-4 pb-16 safe-bottom">
+  
   <!-- ========================================== -->
-  <!-- MODAL: ADD STUDENT                         -->
+  <!-- VIEW 1: HOME DASHBOARD                    -->
   <!-- ========================================== -->
-  <div id="addStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">إضافة طالب جديد للدرس</h3>
-        <button onclick="closeAddStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
+  <section id="viewDashboard" class="space-y-4">
+    
+    <!-- Chalkboard Banner -->
+    <div class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden border border-olive-700/70 shadow-sm">
+      <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 0.6px, transparent 0.6px); background-size: 16px 16px;"></div>
+      
+      <div class="relative z-10 flex flex-col items-center justify-center gap-1">
+        <h2 class="handwritten-chalk text-xl sm:text-2xl font-bold py-0.5 select-none leading-normal">
+          المتابعة نصف العمل
+        </h2>
+        <div class="w-16 h-[1px] bg-white/30 rounded-full"></div>
       </div>
-
-      <form id="addStudentForm" onsubmit="event.preventDefault(); submitAddStudent();" class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
-          <input type="text" id="addStudentName" required placeholder="الاسم واللقب..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الدرس المسند إليه</label>
-            <select id="addStudentCourse" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
-            <select id="addStudentCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-              <option value="رجال">رجال</option>
-              <option value="نساء">نساء</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
-            <input type="tel" id="addStudentPhone" placeholder="8 أرقام" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 text-left num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
-            <select id="addStudentLevel" onchange="toggleAddStudentCompletedBooks(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
-            <select id="addStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="addStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
-          <input type="text" id="addStudentCity" placeholder="مثال: باردو، المروج..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-        </div>
-
-        <div id="addStudentCompletedBooksWrapper" class="hidden">
-          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
-          <div class="space-y-2">
-            <select id="addStudentBooksDropdown" onchange="handleAddCompletedBook(this)" class="w-full px-3 py-2 bg-slate-50 border border-olive-200 rounded-xl text-xs text-slate-800 focus:outline-none">
-              <option value="">+ اختر كتاباً لإضافته للمنجزات...</option>
-            </select>
-            <div id="addStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-200 min-h-[38px]"></div>
-          </div>
-          <input type="hidden" id="addStudentCompletedBooks" />
-        </div>
-
-        <div class="pt-2 flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-            حفظ وإضافة الطالب
-          </button>
-          <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
-            إلغاء
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: EDIT STUDENT                        -->
-  <!-- ========================================== -->
-  <div id="editStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">تحيين بيانات الطالب</h3>
-        <button onclick="closeEditStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-
-      <form id="editStudentForm" onsubmit="event.preventDefault(); submitStudentUpdate();" class="space-y-3">
-        <input type="hidden" id="editStudentOrigName" />
-
-        <div class="grid grid-cols-3 gap-2">
-          <div class="col-span-2">
-            <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
-            <input type="text" id="editStudentName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
-            <select id="editStudentCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-              <option value="رجال">رجال</option>
-              <option value="نساء">نساء</option>
-            </select>
-          </div>
+    <!-- Supervisor Quick Notification Alert Banner (T2-T4) -->
+    <div id="supervisorAlertBanner" class="hidden p-4 bg-amber-50 border border-amber-300 rounded-2xl shadow-soft flex items-center justify-between cursor-pointer" onclick="openNotificationsModal()">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+          ⚠️
         </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
-            <input type="tel" id="editStudentPhone" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 text-left num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
-            <select id="editStudentLevel" onchange="toggleCompletedBooksField(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
-            <select id="editStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="editStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-        </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
-          <input type="text" id="editStudentCity" placeholder="مثال: باردو، المروج..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+          <h4 class="text-xs font-bold text-slate-900">تنبيه غياب تحديث الحضور الأسبوعي</h4>
+          <p id="supervisorAlertText" class="text-[11px] text-slate-600 mt-0.5">يوجد مدرسون لم يقوموا بتحديث الحضور لهذا الأسبوع</p>
         </div>
-
-        <div id="completedBooksWrapper" class="hidden">
-          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
-          <div class="space-y-2">
-            <select id="editStudentBooksDropdown" onchange="handleEditCompletedBook(this)" class="w-full px-3 py-2 bg-slate-50 border border-olive-200 rounded-xl text-xs text-slate-800 focus:outline-none">
-              <option value="">+ اختر كتاباً لإضافته للمنجزات...</option>
-            </select>
-            <div id="editStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-200 min-h-[38px]"></div>
-          </div>
-          <input type="hidden" id="editStudentCompletedBooks" />
-        </div>
-
-        <div class="pt-2 flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-            حفظ وتوثيق التحيين
-          </button>
-          <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
-            إلغاء
-          </button>
-        </div>
-      </form>
+      </div>
+      <span class="text-xs font-bold text-amber-800 underline">عرض القائمة</span>
     </div>
-  </div>
+
+    <!-- T2/T3/T4 Navigation Tabs -->
+    <div id="roleWorkspaceTabs" class="hidden grid grid-cols-2 gap-2 p-1.5 bg-slate-200/80 rounded-2xl">
+      <button type="button" onclick="switchWorkspaceTab('personal')" id="tabBtnPersonal" class="py-2.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-sm">
+        دروسي
+      </button>
+      <button type="button" onclick="switchWorkspaceTab('supervision')" id="tabBtnSupervision" class="py-2.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+        الدروس التي أتابعها
+      </button>
+    </div>
+
+    <!-- WORKSPACE A: Personal Teaching -->
+    <div id="workspacePersonal" class="space-y-3.5">
+      <div class="grid grid-cols-2 gap-3.5">
+        
+        <!-- 1. تسجيل الحضور -->
+        <button onclick="openAttendanceView()" class="p-5 glass-card rounded-3xl hover:border-olive-600 active:scale-[0.98] transition-all flex flex-col items-center justify-between text-center group relative cursor-pointer min-h-[170px]">
+          <div class="flex flex-col items-center justify-center w-full">
+            <div class="w-14 h-14 rounded-2xl bg-olive-100 text-olive-800 border border-olive-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-olive-700 group-hover:text-white transition-all shadow-sm">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-base font-extrabold text-slate-900 group-hover:text-olive-800 transition-colors">تسجيل الحضور</h3>
+            <p class="text-xs text-slate-500 font-medium mt-1">رصد الحضور والغياب</p>
+          </div>
+
+          <div class="w-full flex justify-start pt-3">
+            <span class="w-8 h-8 inline-flex items-center justify-center text-olive-800 bg-olive-100 group-hover:bg-olive-700 group-hover:text-white rounded-xl transition-all shadow-xs">
+              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </button>
+
+        <!-- 2. قائمة الدروس -->
+        <div onclick="openCoursesView()" class="p-5 glass-card rounded-3xl hover:border-teal-500 transition-all flex flex-col items-center justify-between text-center group cursor-pointer relative min-h-[170px]">
+          <div class="flex flex-col items-center justify-center w-full">
+            <div class="w-14 h-14 rounded-2xl bg-teal-100 text-teal-800 border border-teal-200 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-sm">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
+            <h3 class="text-base font-extrabold text-slate-900 group-hover:text-teal-800 transition-colors">قائمة الدروس</h3>
+            <p id="dashCoursesCountText" class="text-xs text-slate-500 font-semibold mt-1 num-font">0 درس مسند</p>
+          </div>
+
+          <div class="w-full flex items-center justify-between pt-3 gap-1">
+            <span class="w-8 h-8 inline-flex items-center justify-center text-teal-800 bg-teal-100 group-hover:bg-teal-600 group-hover:text-white rounded-xl transition-all shadow-xs">
+              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+              </svg>
+            </span>
+            <button 
+              type="button" 
+              onclick="event.stopPropagation(); openCreateCourseModal();" 
+              class="py-1.5 px-3 bg-teal-100 hover:bg-teal-600 text-teal-900 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>فتح درس</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. متابعة الغائبين -->
+        <button onclick="openFollowUpView()" class="col-span-2 p-4 glass-card rounded-3xl hover:border-amber-500 active:scale-[0.98] transition-all flex items-center justify-between text-right relative group cursor-pointer">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-sm">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-base font-extrabold text-slate-900 group-hover:text-amber-800 transition-colors">متابعة الغائبين</h3>
+              <p id="dashAbsentCountText" class="text-xs text-slate-500 font-semibold mt-0.5 num-font">فحص الغياب المتكرر للطلاب</p>
+            </div>
+          </div>
+          <span class="w-8 h-8 inline-flex items-center justify-center text-amber-800 bg-amber-100 group-hover:bg-amber-600 group-hover:text-white rounded-xl transition-all shadow-xs">
+            <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- WORKSPACE B: Supervision Portal -->
+    <div id="workspaceSupervision" class="hidden space-y-4">
+      <div class="p-4 bg-olive-50 border border-olive-200 rounded-2xl space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-extrabold text-olive-900">مدرسي الفوج والمجموعات التابعة لإشرافك</h3>
+          <span id="supervisedTeachersCountBadge" class="text-xs font-bold px-2.5 py-0.5 bg-olive-200 text-olive-900 rounded-full num-font">0 مدرس</span>
+        </div>
+        <p class="text-xs text-olive-700 leading-relaxed">يمكنك متابعة جدول دروس كل مدرس، الاطلاع على قوائم طلابهم، والتأكد من تسجيل الحضور الأسبوعي.</p>
+      </div>
+
+      <div id="supervisedTeachersContainer" class="space-y-3"></div>
+    </div>
+
+  </section>
 
   <!-- ========================================== -->
-  <!-- MODAL: CREATE NEW COURSE                   -->
+  <!-- VIEW 2: تسجيل الحضور                      -->
   <!-- ========================================== -->
-  <div id="createCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">فتح درس جديد</h3>
-        <button onclick="closeCreateCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
+  <section id="viewAttendance" class="hidden space-y-4">
+    
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <div class="flex items-center gap-2">
+        <h2 class="text-base sm:text-lg font-bold text-slate-900">تسجيل الحضور</h2>
+      </div>
+      <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+        <span>الرجوع</span>
+        <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-2.5">
+      <label class="block text-xs sm:text-sm font-bold text-slate-700">اختر الدرس للبدء:</label>
+      <div id="attendanceCoursesGrid" class="space-y-2"></div>
+    </div>
+
+    <div id="attendanceActiveForm" class="hidden space-y-4 pt-2">
+      
+      <div class="p-3 bg-olive-50 border border-olive-200 rounded-2xl flex items-center justify-between">
+        <div>
+          <span class="text-[11px] text-olive-700 block font-bold">الدرس المحدد:</span>
+          <span id="activeSelectedCourseTitle" class="text-sm font-black text-olive-900">--</span>
+        </div>
+        <button type="button" onclick="resetActiveCourseSelection()" class="text-xs font-bold text-olive-700 hover:text-olive-900 underline">
+          تغيير الدرس
         </button>
       </div>
 
-      <form id="createCourseForm" onsubmit="event.preventDefault(); submitCreateCourse();" class="space-y-3">
+      <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ الدرس</label>
+            <input 
+              type="date" 
+              id="attDateInput" 
+              onchange="syncWeekAndMonthWithDate(this.value)"
+              class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-900 num-font focus:outline-none focus:ring-2 focus:ring-olive-600"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">الأسبوع والشهر</label>
+            <input 
+              type="text" 
+              id="attWeekMonthInput" 
+              readonly
+              class="w-full px-3 py-2.5 bg-slate-200/70 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-700 focus:outline-none cursor-default"
+            />
+          </div>
+        </div>
+
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">صنف الدرس</label>
-          <select id="newCourseCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700">ما تم شرحه (الباب المقرر / الموضع)</label>
+            <span id="lastTaughtHint" class="text-xs text-olive-800 font-bold bg-olive-100 px-2 py-0.5 rounded-md border border-olive-200"></span>
+          </div>
+          <select 
+            id="attSyllabusSelect" 
+            required
+            class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-olive-600"
+          >
+            <option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>
           </select>
         </div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
-            <select id="newCourseDay" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-              <option value="السبت">السبت</option>
-              <option value="الأحد">الأحد</option>
-              <option value="الاثنين">الاثنين</option>
-              <option value="الثلاثاء">الثلاثاء</option>
-              <option value="الأربعاء">الأربعاء</option>
-              <option value="الخميس">الخميس</option>
-              <option value="الجمعة">الجمعة</option>
-            </select>
+      <div class="relative">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-extrabold text-slate-800">قائمة حضور الطلاب</h3>
+            <span id="attendanceStatsPill" class="hidden text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800 num-font">
+              <span id="presentSummaryCount" class="text-olive-700">0 حاضر</span> • <span id="absentSummaryCount" class="text-red-600">0 غائب</span>
+            </span>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
-            <input type="time" id="newCourseTiming" value="20:00" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 text-center num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
-            <select id="newCourseLocation" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-              <option value="مقر">مقر</option>
-              <option value="بيت">بيت</option>
-              <option value="عن بعد">عن بعد</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="newCourseVenue" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="setAllAttendanceState(true)" class="text-xs font-bold text-olive-900 bg-olive-100 border border-olive-300 px-3 py-1.5 rounded-xl hover:bg-olive-200 transition-all cursor-pointer">
+              الكل حاضر
+            </button>
+            <button type="button" onclick="setAllAttendanceState(false)" class="text-xs font-bold text-red-900 bg-red-100 border border-red-300 px-3 py-1.5 rounded-xl hover:bg-red-200 transition-all cursor-pointer">
+              الكل غائب
+            </button>
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">الكتاب المقرر</label>
-          <select id="newCourseBook" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-          </select>
+        <div id="attendanceAlphaRail" class="hidden fixed left-2 top-1/2 -translate-y-1/2 z-40 bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-float p-1 flex flex-col items-center gap-0.5 max-h-[70vh] overflow-y-auto no-scrollbar select-none">
         </div>
 
-        <div class="pt-2 flex gap-2">
-          <button type="submit" id="submitCreateCourseBtn" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-            تأكيد فتح الدرس
-          </button>
-          <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
-            إلغاء
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+        <div id="attendanceStudentList" class="space-y-2.5"></div>
+      </div>
 
-  <!-- ========================================== -->
-  <!-- MODAL: EDIT COURSE                         -->
-  <!-- ========================================== -->
-  <div id="editCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
-      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-        <h3 class="text-sm font-bold text-slate-900">تعديل بيانات الدرس</h3>
-        <button onclick="closeEditCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+      <div class="pt-2">
+        <button 
+          type="button" 
+          onclick="submitAttendanceSession()" 
+          id="saveAttendanceBtn"
+          class="w-full py-4 bg-olive-700 hover:bg-olive-600 text-white font-extrabold rounded-2xl shadow-card transition-all flex items-center justify-center gap-2 active:scale-[0.98] text-base cursor-pointer"
+        >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/>
           </svg>
+          <span>حفظ الحضور والغياب</span>
         </button>
       </div>
 
-      <form id="editCourseForm" onsubmit="event.preventDefault(); submitCourseUpdate();" class="space-y-3">
-        <input type="hidden" id="editCourseCode" />
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتاب المقرر</label>
-          <select id="editCourseBookInput" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-          </select>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
-            <select id="editCourseDay" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-              <option value="السبت">السبت</option>
-              <option value="الأحد">الأحد</option>
-              <option value="الاثنين">الاثنين</option>
-              <option value="الثلاثاء">الثلاثاء</option>
-              <option value="الأربعاء">الأربعاء</option>
-              <option value="الخميس">الخميس</option>
-              <option value="الجمعة">الجمعة</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
-            <input type="time" id="editCourseTiming" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 text-center num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
-            <select id="editCourseLocation" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-              <option value="مقر">مقر</option>
-              <option value="بيت">بيت</option>
-              <option value="عن بعد">عن بعد</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
-            <select id="editCourseVenue" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
-            </select>
-          </div>
-        </div>
-
-        <div class="pt-2 flex gap-2">
-          <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
-            حفظ التعديلات
-          </button>
-          <button type="button" onclick="closeEditCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
-            إلغاء
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
+
+  </section>
 
   <!-- ========================================== -->
-  <!-- MODAL: CONFIRM LEAVE WITHOUT SAVING        -->
+  <!-- VIEW 3: قائمة الدروس                      -->
   <!-- ========================================== -->
-  <div id="confirmLeaveAttendanceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 text-center space-y-4">
-      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+  <section id="viewCourses" class="hidden space-y-4">
+    
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <div class="flex items-center gap-2">
+        <h2 id="coursesViewTitle" class="text-base sm:text-lg font-bold text-slate-900">قائمة الدروس</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openCreateCourseModal()" class="px-3.5 py-2 bg-olive-700 hover:bg-olive-600 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>فتح درس جديد</span>
+        </button>
+        <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+          <span>الرجوع</span>
+          <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="coursesDirectoryList" class="space-y-3.5"></div>
+
+  </section>
+
+  <!-- ========================================== -->
+  <!-- VIEW 3B: طلاب الدرس                        -->
+  <!-- ========================================== -->
+  <section id="viewCourseStudents" class="hidden space-y-4">
+    
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <div>
+        <span class="text-[11px] text-slate-500 block">طلاب الدرس:</span>
+        <h2 id="courseStudentsHeaderTitle" class="text-base font-extrabold text-slate-900">--</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openAddStudentForCurrentCourse()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>إضافة طالب</span>
+        </button>
+        <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+          <span>الرجوع</span>
+          <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="relative">
+      <input 
+        type="text" 
+        id="courseStudentSearchInput" 
+        oninput="renderCourseStudentsList()"
+        placeholder="بحث في طلاب هذا الدرس..."
+        class="w-full pr-10 pl-3 py-3 glass-card rounded-2xl text-slate-900 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-olive-600"
+      />
+      <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
       </div>
+    </div>
+
+    <div id="courseStudentsDirectoryList" class="space-y-3"></div>
+
+  </section>
+
+  <!-- ========================================== -->
+  <!-- VIEW 4: متابعة الغائبين                      -->
+  <!-- ========================================== -->
+  <section id="viewFollowUp" class="hidden space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <h2 class="text-base sm:text-lg font-bold text-slate-900">متابعة الغائبين</h2>
+      <button onclick="navigateBack()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+        <span>الرجوع</span>
+        <svg class="w-4 h-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="followUpList" class="space-y-3.5"></div>
+  </section>
+
+</main>
+
+
+  <div id="notificationsModalList" class="space-y-2.5"></div>
+
+  <button type="button" onclick="closeNotificationsModal()" class="w-full py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs cursor-pointer">
+    إغلاق
+  </button>
+</div>
+
+
+  <form id="addStudentForm" onsubmit="event.preventDefault(); submitAddStudent();" class="space-y-3">
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
+      <input type="text" id="addStudentName" required placeholder="الاسم واللقب..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
       <div>
-        <h3 class="text-sm font-bold text-slate-900 mb-1">مغادرة تسجيل الحضور؟</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">لم يتم حفظ بيانات حضور هذا الدرس بعد. هل ترغب في الخروج دون حفظ؟</p>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">الدرس المسند إليه</label>
+        <select id="addStudentCourse" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+        </select>
       </div>
-      <div class="flex gap-2 pt-1">
-        <button type="button" onclick="confirmDiscardAttendance()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs cursor-pointer">خروج دون حفظ</button>
-        <button type="button" onclick="closeConfirmLeaveModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer">البقاء</button>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
+        <select id="addStudentCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+          <option value="رجال">رجال</option>
+          <option value="نساء">نساء</option>
+        </select>
       </div>
     </div>
-  </div>
 
-  <!-- ========================================== -->
-  <!-- JAVASCRIPT CLIENT LOGIC                    -->
-  <!-- ========================================== -->
-  <script>
-    let isAttendanceDirty = false;
-    let isCreatingCourse = false;
-    let viewHistoryStack = ['viewDashboard'];
-
-    function normalizeArabic(text) {
-      if (!text) return "";
-      return String(text)
-        .replace(/[\u064B-\u065F\u0670]/g, "")
-        .replace(/[إأآا]/g, "ا")
-        .replace(/ة/g, "ه")
-        .replace(/ى/g, "ي")
-        .trim()
-        .toLowerCase();
-    }
-
-    const AppState = {
-      currentUser: null,
-      courses: [],
-      students: [],
-      syllabus: [],
-      books: [],
-      attendance: [],
-      dropdowns: {
-        courseCategories: ["رجال", "نساء"],
-        locations: ["مقر", "بيت", "عن بعد"],
-        venues: ["منفلوري", "المرسى", "أريانة"],
-        studentLevels: ["1", "2", "3", "4", "5", "6"],
-        studentAgeGroups: ["15-", "15+"]
-      },
-      selectedCourseForAtt: null,
-      currentAttendanceRoster: [],
-      currentSelectedCourseForStudents: null,
-      activeWorkspaceTab: 'personal',
-      acknowledgedFollowUps: new Set(),
-      selectedEditBooks: new Set(),
-      selectedAddBooks: new Set()
-    };
-
-    function getAvailableBooksList() {
-      const booksSet = new Set();
-      if (Array.isArray(AppState.books) && AppState.books.length > 0) {
-        AppState.books.forEach(b => {
-          if (b && typeof b === 'string' && b.trim()) booksSet.add(b.trim());
-        });
-      }
-      if (AppState.syllabus && AppState.syllabus.length > 0) {
-        AppState.syllabus.forEach(s => {
-          if (s.book && typeof s.book === 'string' && s.book.trim()) booksSet.add(s.book.trim());
-        });
-      }
-      if (AppState.courses && AppState.courses.length > 0) {
-        AppState.courses.forEach(c => {
-          if (c.book && typeof c.book === 'string' && c.book.trim()) booksSet.add(c.book.trim());
-        });
-      }
-
-      const excluded = ["المختصر س1", "القول الجلي"];
-      excluded.forEach(ex => booksSet.delete(ex));
-
-      const rawList = Array.from(booksSet).filter(b => b && !excluded.includes(b));
-      const priorityOrder = ["أوجز س1", "أوجز س2", "إظهار س1"];
-      const prioritized = priorityOrder.filter(p => rawList.includes(p) || true);
-      const remaining = rawList.filter(b => !priorityOrder.includes(b)).sort((a, b) => a.localeCompare(b, 'ar'));
-
-      return Array.from(new Set([...prioritized, ...remaining]));
-    }
-
-    async function submitEmailPinLogin() {
-      const emailInput = document.getElementById('loginEmailInput');
-      const pinInput = document.getElementById('loginPinInput');
-      const errorBox = document.getElementById('loginErrorMsg');
-      const successNotice = document.getElementById('loginSuccessNotice');
-
-      if (errorBox) errorBox.classList.add('hidden');
-
-      const email = (emailInput ? emailInput.value : "").trim().toLowerCase();
-      const pin = (pinInput ? pinInput.value : "").trim();
-
-      if (!email || !email.includes('@')) {
-        showLoginError("يرجى كتابة عنوان بريد إلكتروني صحيح.");
-        if (emailInput) emailInput.focus();
-        return;
-      }
-
-      if (!pin) {
-        showLoginError("يرجى إدخال الرمز السري (PIN).");
-        if (pinInput) pinInput.focus();
-        return;
-      }
-
-      if (successNotice) {
-        successNotice.innerText = `جارٍ التحقق من الحساب والرمز السري...`;
-        successNotice.classList.remove('hidden');
-      }
-
-      showLoading("التحقق من صحة البيانات...");
-
-      try {
-        const response = await callBackend({
-          method: 'GET',
-          params: { action: 'init', email: email, pin: pin }
-        });
-
-        if (response && response.success) {
-          AppState.currentUser = response.user;
-          AppState.courses = response.courses || [];
-          AppState.students = response.students || [];
-          AppState.syllabus = response.syllabus || [];
-          AppState.books = response.books || [];
-          AppState.attendance = response.attendance || [];
-          if (response.dropdowns) AppState.dropdowns = response.dropdowns;
-
-          populateDropdownMenus();
-          localStorage.setItem('al_rawad_saved_email', email);
-          if (successNotice) successNotice.classList.add('hidden');
-          setupDashboardAfterLogin();
-        } else {
-          showLoginError(response.error || "البريد أو الرمز السري غير صحيح.");
-        }
-      } catch (err) {
-        showLoginError(err.message || "تعذر إتمام الدخول، يرجى التأكد من اتصال الإنترنت.");
-      } finally {
-        hideLoading();
-        if (successNotice) successNotice.classList.add('hidden');
-      }
-    }
-
-    function showLoginError(msg) {
-      const errorBox = document.getElementById('loginErrorMsg');
-      if (errorBox) {
-        errorBox.innerText = msg;
-        errorBox.classList.remove('hidden');
-      }
-    }
-
-    function setupDashboardAfterLogin() {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('appShell').classList.remove('hidden');
-
-      const user = AppState.currentUser;
-      document.getElementById('userName').innerText = user.name || "المدرس";
-      document.getElementById('userAvatar').innerText = (user.name || "م").charAt(0);
-      document.getElementById('userLocationText').innerText = user.location || "";
-
-      const ownCourses = AppState.courses.filter(c => c.isOwnCourse);
-      document.getElementById('dashCoursesCountText').innerText = `${ownCourses.length} درس مسند`;
-
-      const isSupervisorOrManager = user.isSupervisor || user.isAdmin || (user.accessTier && user.accessTier !== 'T1');
-      const tabsEl = document.getElementById('roleWorkspaceTabs');
-
-      if (isSupervisorOrManager) {
-        if (tabsEl) tabsEl.classList.remove('hidden');
-        setupSupervisionPortal();
-      } else {
-        if (tabsEl) tabsEl.classList.add('hidden');
-      }
-
-      checkWeeklyAttendanceNotifications();
-      checkConsecutiveAbsences();
-      openDashboardView(false);
-    }
-
-    function handleLogout() {
-      AppState.currentUser = null;
-      AppState.courses = [];
-      AppState.students = [];
-      AppState.attendance = [];
-      AppState.syllabus = [];
-      document.getElementById('appShell').classList.add('hidden');
-      document.getElementById('loginScreen').classList.remove('hidden');
-    }
-
-    function populateDropdownMenus() {
-      if (!AppState.dropdowns) return;
-      const catSelect = document.getElementById('newCourseCategory');
-      const categories = AppState.dropdowns.courseCategories || ["رجال", "نساء"];
-      if (catSelect) {
-        catSelect.innerHTML = "";
-        categories.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c;
-          opt.innerText = c;
-          catSelect.appendChild(opt);
-        });
-      }
-
-      ['addStudentCategory', 'editStudentCategory'].forEach(id => {
-        const sel = document.getElementById(id);
-        if (sel) {
-          sel.innerHTML = '<option value="رجال">رجال</option><option value="نساء">نساء</option>';
-        }
-      });
-
-      const venuesList = AppState.dropdowns.venues || ["منفلوري", "المرسى", "أريانة"];
-      ['newCourseVenue', 'editCourseVenue', 'editStudentLocation', 'addStudentLocation'].forEach(id => {
-        const sel = document.getElementById(id);
-        if (sel) {
-          sel.innerHTML = "";
-          venuesList.forEach(v => {
-            const opt = document.createElement('option');
-            opt.value = v;
-            opt.innerText = v;
-            sel.appendChild(opt);
-          });
-        }
-      });
-
-      const booksList = getAvailableBooksList();
-      ['newCourseBook', 'editCourseBookInput'].forEach(id => {
-        const sel = document.getElementById(id);
-        if (sel) {
-          sel.innerHTML = '<option value="">-- اختر الكتاب المقرر --</option>';
-          booksList.forEach(b => {
-            const opt = document.createElement('option');
-            opt.value = b;
-            opt.innerText = b;
-            sel.appendChild(opt);
-          });
-        }
-      });
-
-      const sortedLevels = [...(AppState.dropdowns.studentLevels || ["1", "2", "3", "4", "5", "6"])].sort((a,b)=>(parseFloat(a)||0)-(parseFloat(b)||0));
-      ['editStudentLevel', 'addStudentLevel'].forEach(id => {
-        const sel = document.getElementById(id);
-        if (sel) {
-          sel.innerHTML = "";
-          sortedLevels.forEach(lvl => {
-            const opt = document.createElement('option');
-            opt.value = lvl;
-            opt.innerText = `مستوى ${lvl}`;
-            sel.appendChild(opt);
-          });
-        }
-      });
-
-      const ageGroups = AppState.dropdowns.studentAgeGroups || ["15-", "15+"];
-      ['editStudentAgeGroup', 'addStudentAgeGroup'].forEach(id => {
-        const sel = document.getElementById(id);
-        if (sel) {
-          sel.innerHTML = "";
-          ageGroups.forEach(ag => {
-            const opt = document.createElement('option');
-            opt.value = ag;
-            opt.innerText = ag;
-            sel.appendChild(opt);
-          });
-        }
-      });
-    }
-
-    function switchWorkspaceTab(tab) {
-      AppState.activeWorkspaceTab = tab;
-      const btnP = document.getElementById('tabBtnPersonal');
-      const btnS = document.getElementById('tabBtnSupervision');
-      const divP = document.getElementById('workspacePersonal');
-      const divS = document.getElementById('workspaceSupervision');
-
-      if (tab === 'personal') {
-        if (btnP) btnP.className = "py-2.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-sm";
-        if (btnS) btnS.className = "py-2.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900";
-        if (divP) divP.classList.remove('hidden');
-        if (divS) divS.classList.add('hidden');
-      } else {
-        if (btnS) btnS.className = "py-2.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-900 shadow-sm";
-        if (btnP) btnP.className = "py-2.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900";
-        if (divS) divS.classList.remove('hidden');
-        if (divP) divP.classList.add('hidden');
-      }
-    }
-
-    function setupSupervisionPortal() {
-      const container = document.getElementById('supervisedTeachersContainer');
-      const badge = document.getElementById('supervisedTeachersCountBadge');
-      const bell = document.getElementById('notificationBellBtn');
-      if (!container) return;
-
-      container.innerHTML = "";
-      const supervisedCourses = AppState.courses.filter(c => !c.isOwnCourse);
-
-      if (bell) bell.classList.remove('hidden');
-
-      const teachersMap = new Map();
-      supervisedCourses.forEach(c => {
-        const tName = c.teacher || "مدرس غير محدد";
-        if (!teachersMap.has(tName)) teachersMap.set(tName, []);
-        teachersMap.get(tName).push(c);
-      });
-
-      if (badge) badge.innerText = `${teachersMap.size} مدرس`;
-
-      if (teachersMap.size === 0) {
-        container.innerHTML = `<div class="p-6 text-center bg-white rounded-2xl text-slate-400 text-xs">لا يوجد مدرسون تابعون لإشرافك حالياً</div>`;
-        return;
-      }
-
-      teachersMap.forEach((coursesList, teacherName) => {
-        const teacherCard = document.createElement('div');
-        teacherCard.className = "p-4 glass-card rounded-2xl space-y-3";
-
-        const hasUpdatedThisWeek = coursesList.some(c => {
-          return AppState.attendance.some(a => a.courseCode === c.code && isCurrentWeek(a.date));
-        });
-
-        teacherCard.innerHTML = `
-          <div class="flex items-center justify-between border-b pb-2">
-            <div>
-              <h4 class="text-sm font-bold text-slate-900">${escapeHtml(teacherName)}</h4>
-              <span class="text-[11px] text-slate-500">${coursesList.length} دروس مسندة</span>
-            </div>
-            <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${hasUpdatedThisWeek ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-              ${hasUpdatedThisWeek ? '✓ محدث هذا الأسبوع' : '⚠️ لم يحدث هذا الأسبوع'}
-            </span>
-          </div>
-          <div class="space-y-2">
-            ${coursesList.map(c => `
-              <div class="p-2.5 bg-slate-50 rounded-xl flex items-center justify-between text-xs">
-                <div>
-                  <strong class="text-slate-900">${escapeHtml(c.book)}</strong>
-                  <span class="text-slate-500 mr-2">${escapeHtml(c.day || '')} ${escapeHtml(c.timing || '')}</span>
-                </div>
-                <button onclick="openCourseStudents('${escapeHtml(c.code)}')" class="px-2.5 py-1 bg-olive-100 hover:bg-olive-700 hover:text-white text-olive-900 font-bold rounded-lg transition-all cursor-pointer">
-                  عرض الطلاب
-                </button>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        container.appendChild(teacherCard);
-      });
-    }
-
-    function isCurrentWeek(dateStr) {
-      if (!dateStr) return false;
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return false;
-      const now = new Date();
-      const diffTime = Math.abs(now - d);
-      const diffDays = diffTime / (1000 * 60 * 60 * 24);
-      return diffDays <= 7;
-    }
-
-    function checkWeeklyAttendanceNotifications() {
-      const supervisedCourses = AppState.courses.filter(c => !c.isOwnCourse);
-      const unupdatedTeachersMap = new Map();
-
-      supervisedCourses.forEach(c => {
-        const hasUpdated = AppState.attendance.some(a => a.courseCode === c.code && isCurrentWeek(a.date));
-        if (!hasUpdated) {
-          const tName = c.teacher || "مدرس غير محدد";
-          if (!unupdatedTeachersMap.has(tName)) unupdatedTeachersMap.set(tName, []);
-          unupdatedTeachersMap.get(tName).push(c);
-        }
-      });
-
-      const count = unupdatedTeachersMap.size;
-      const badgeCount = document.getElementById('notificationBadgeCount');
-      const banner = document.getElementById('supervisorAlertBanner');
-      const alertText = document.getElementById('supervisorAlertText');
-
-      if (count > 0) {
-        if (badgeCount) {
-          badgeCount.innerText = count;
-          badgeCount.classList.remove('hidden');
-        }
-        if (banner) banner.classList.remove('hidden');
-        if (alertText) alertText.innerText = `يوجد ${count} مدرسين لم يقوموا بتحديث الحضور لهذا الأسبوع`;
-      } else {
-        if (badgeCount) badgeCount.classList.add('hidden');
-        if (banner) banner.classList.add('hidden');
-      }
-
-      const listContainer = document.getElementById('notificationsModalList');
-      if (listContainer) {
-        listContainer.innerHTML = "";
-        if (count === 0) {
-          listContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">جميع المدرسين التابعين لإشرافك قاموا بتحديث الحضور لهذا الأسبوع!</div>`;
-          return;
-        }
-
-        unupdatedTeachersMap.forEach((cList, tName) => {
-          const div = document.createElement('div');
-          div.className = "p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between text-xs";
-          div.innerHTML = `
-            <div>
-              <strong class="text-slate-900 block">${escapeHtml(tName)}</strong>
-              <span class="text-slate-600">${cList.length} دروس بدون تحديث أسبوعي</span>
-            </div>
-            <button onclick="closeNotificationsModal(); switchWorkspaceTab('supervision');" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl cursor-pointer">
-              متابعة
-            </button>
-          `;
-          listContainer.appendChild(div);
-        });
-      }
-    }
-
-    function openNotificationsModal() {
-      document.getElementById('notificationsModal').classList.remove('hidden');
-    }
-
-    function closeNotificationsModal() {
-      document.getElementById('notificationsModal').classList.add('hidden');
-    }
-
-    // ==========================================
-    // ATTENDANCE WORKFLOW
-    // ==========================================
-    function renderAttendanceCoursesGrid() {
-      const container = document.getElementById('attendanceCoursesGrid');
-      if (!container) return;
-      container.innerHTML = "";
-
-      const ownCourses = AppState.courses.filter(c => c.isOwnCourse);
-      if (ownCourses.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center bg-white rounded-2xl text-slate-400 text-xs">لا توجد دروس مسندة إليك</div>`;
-        return;
-      }
-
-      ownCourses.forEach(c => {
-        const count = getStudentCountForCourse(c.code);
-        const card = document.createElement('div');
-        card.className = "p-4 glass-card rounded-2xl hover:border-olive-600 transition-all cursor-pointer flex items-center justify-between";
-        card.onclick = () => selectCourseForAttendance(c.code);
-
-        card.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-olive-100 text-olive-800 flex items-center justify-center font-bold">
-              📚
-            </div>
-            <div>
-              <h4 class="text-sm font-bold text-slate-900">${escapeHtml(c.book || 'درس')}</h4>
-              <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(c.day || '')} • ${escapeHtml(c.timing || '')} • ${escapeHtml(c.location || '')}</p>
-            </div>
-          </div>
-          <span class="px-3 py-1 bg-slate-200 text-slate-800 rounded-xl text-xs font-bold num-font">
-            ${count} طالب
-          </span>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function selectCourseForAttendance(courseCode) {
-      const course = AppState.courses.find(c => c.code === courseCode);
-      if (!course) return;
-
-      AppState.selectedCourseForAtt = course;
-      document.getElementById('attendanceCoursesGrid').classList.add('hidden');
-      document.getElementById('attendanceActiveForm').classList.remove('hidden');
-      document.getElementById('activeSelectedCourseTitle').innerText = `${course.book || 'درس'} (${course.day || ''} ${course.timing || ''})`;
-
-      const pastRecords = AppState.attendance.filter(a => a.courseCode === course.code && a.lastTopic);
-      const lastTaught = pastRecords.length > 0 ? pastRecords[pastRecords.length - 1].lastTopic : "";
-      const hintEl = document.getElementById('lastTaughtHint');
-      if (hintEl) hintEl.innerText = lastTaught ? `(آخر ما شرح: ${lastTaught})` : "";
-
-      const selectEl = document.getElementById('attSyllabusSelect');
-      selectEl.innerHTML = '<option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>';
-      const bookSyllabus = AppState.syllabus.filter(s => s.book && course.book && (s.book.includes(course.book) || course.book.includes(s.book)));
-      
-      bookSyllabus.forEach(item => {
-        if (item.chapter) {
-          const opt = document.createElement('option');
-          opt.value = item.chapter;
-          opt.innerText = item.chapter;
-          if (lastTaught && item.chapter === lastTaught) opt.selected = true;
-          selectEl.appendChild(opt);
-        }
-      });
-
-      const enrolled = AppState.students.filter(st => {
-        const rawCodes = (st.courseCodes || "").split(/[\r\n,;\/\s\u00A0]+/);
-        return rawCodes.map(c => c.trim().toLowerCase()).includes(course.code.trim().toLowerCase());
-      });
-
-      AppState.currentAttendanceRoster = enrolled.map(st => ({
-        studentName: st.name,
-        phone: st.phone,
-        status: 'حاضر',
-        value: 1
-      }));
-
-      isAttendanceDirty = false;
-      renderAttendanceStudentList();
-    }
-
-    function resetActiveCourseSelection() {
-      if (isAttendanceDirty) {
-        if (!confirm("هل تريد بالتأكيد تغيير الدرس دون حفظ الحضور الحالي؟")) return;
-      }
-      AppState.selectedCourseForAtt = null;
-      isAttendanceDirty = false;
-      document.getElementById('attendanceActiveForm').classList.add('hidden');
-      document.getElementById('attendanceCoursesGrid').classList.remove('hidden');
-      renderAttendanceCoursesGrid();
-    }
-
-    function renderAttendanceStudentList() {
-      const container = document.getElementById('attendanceStudentList');
-      container.innerHTML = "";
-      let presentCount = 0;
-      let absentCount = 0;
-
-      if (AppState.currentAttendanceRoster.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center bg-white rounded-2xl text-slate-400 text-xs">لا يوجد طلاب مسجلون في هذا الدرس</div>`;
-        document.getElementById('attendanceStatsPill').classList.add('hidden');
-        return;
-      }
-
-      AppState.currentAttendanceRoster.forEach((item, idx) => {
-        const isPresent = item.value === 1;
-        if (isPresent) presentCount++; else absentCount++;
-
-        const card = document.createElement('div');
-        card.className = `p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none ${isPresent ? 'glass-card border-olive-600' : 'bg-red-50 border-red-300'}`;
-        card.onclick = () => {
-          item.value = item.value === 1 ? 0 : 1;
-          isAttendanceDirty = true;
-          renderAttendanceStudentList();
-        };
-
-        card.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs ${isPresent ? 'bg-olive-100 text-olive-900' : 'bg-red-100 text-red-800'}">${idx + 1}</div>
-            <div>
-              <h4 class="text-xs font-bold text-slate-900">${escapeHtml(item.studentName)}</h4>
-              ${item.phone ? `<span class="text-[11px] text-slate-500 num-font">${escapeHtml(item.phone)}</span>` : ''}
-            </div>
-          </div>
-          <span class="text-xs font-bold px-3 py-1 rounded-xl ${isPresent ? 'bg-olive-700 text-white' : 'bg-red-600 text-white'}">
-            ${isPresent ? '✓ حاضر' : '✕ غائب'}
-          </span>
-        `;
-        container.appendChild(card);
-      });
-
-      document.getElementById('attendanceStatsPill').classList.remove('hidden');
-      document.getElementById('presentSummaryCount').innerText = `${presentCount} حاضر`;
-      document.getElementById('absentSummaryCount').innerText = `${absentCount} غائب`;
-    }
-
-    function setAllAttendanceState(isPresent) {
-      AppState.currentAttendanceRoster.forEach(item => { item.value = isPresent ? 1 : 0; });
-      isAttendanceDirty = true;
-      renderAttendanceStudentList();
-    }
-
-    async function submitAttendanceSession() {
-      if (!AppState.selectedCourseForAtt) return;
-      const dateVal = document.getElementById('attDateInput').value;
-      const syllabusSelect = document.getElementById('attSyllabusSelect');
-      const lastTopic = syllabusSelect ? syllabusSelect.value.trim() : "";
-
-      if (!lastTopic) {
-        showToast("يرجى اختيار الباب المشروح", "error");
-        return;
-      }
-
-      showLoading("جارٍ حفظ الحضور...");
-      try {
-        const compactRecords = AppState.currentAttendanceRoster.map(r => [r.studentName, r.value]);
-        const response = await callBackend({
-          method: 'POST',
-          body: {
-            action: 'saveAttendance',
-            courseCode: AppState.selectedCourseForAtt.code,
-            date: dateVal,
-            lastTopic: lastTopic,
-            teacherName: AppState.currentUser.name,
-            teacherEmail: AppState.currentUser.email,
-            records: compactRecords
-          }
-        });
-
-        if (response && response.success) {
-          showToast("تم حفظ الحضور بنجاح", "success");
-          isAttendanceDirty = false;
-          AppState.attendance.push(...compactRecords.map(r => ({
-            courseCode: AppState.selectedCourseForAtt.code,
-            date: dateVal,
-            lastTopic: lastTopic,
-            studentName: r[0],
-            value: r[1]
-          })));
-          openDashboardView(true);
-        } else {
-          showToast(response.error || "فشل الحفظ", "error");
-        }
-      } catch (err) {
-        showToast("خطأ: " + err.message, "error");
-      } finally {
-        hideLoading();
-      }
-    }
-
-    // ==========================================
-    // COURSES HUB FOR STUDENTS
-    // ==========================================
-    function renderCoursesDirectory() {
-      const container = document.getElementById('coursesDirectoryList');
-      container.innerHTML = "";
-
-      const ownCourses = AppState.courses.filter(c => c.isOwnCourse);
-      if (ownCourses.length === 0) {
-        container.innerHTML = `<div class="p-8 text-center bg-white rounded-3xl text-slate-400 text-xs">لا توجد دروس مسندة إليك</div>`;
-        return;
-      }
-
-      ownCourses.forEach(c => {
-        const studentCount = getStudentCountForCourse(c.code);
-        const card = document.createElement('div');
-        card.className = "p-4 sm:p-5 glass-card rounded-3xl space-y-3";
-
-        card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div>
-              <span class="text-xs font-bold px-2 py-0.5 bg-slate-200 text-slate-800 rounded-lg">${escapeHtml(c.category || 'عام')}</span>
-              <h3 class="text-base font-extrabold text-slate-900 mt-1">${escapeHtml(c.book || 'درس')}</h3>
-              <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(c.day || '')} • ${escapeHtml(c.timing || '')} • ${escapeHtml(c.location || '')} (${escapeHtml(c.venue || '')})</p>
-            </div>
-            <span class="px-3 py-1 bg-olive-100 text-olive-900 rounded-xl text-xs font-bold num-font">
-              ${studentCount} طالب
-            </span>
-          </div>
-
-          <div class="flex items-center gap-2 pt-2 border-t border-slate-200">
-            <button onclick="openCourseStudents('${escapeHtml(c.code)}')" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white text-xs font-bold rounded-xl transition-all cursor-pointer">
-              عرض طلاب الدرس (${studentCount})
-            </button>
-            <button onclick="selectCourseAndOpenAttendance('${escapeHtml(c.code)}')" class="py-2.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl cursor-pointer">
-              تسجيل الحضور
-            </button>
-            <button onclick="openEditCourseModal('${escapeHtml(c.code)}')" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl cursor-pointer">
-              تعديل
-            </button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function selectCourseAndOpenAttendance(courseCode) {
-      openAttendanceView(true);
-      selectCourseForAttendance(courseCode);
-    }
-
-    function openCourseStudents(courseCode) {
-      const course = AppState.courses.find(c => c.code === courseCode);
-      if (!course) return;
-      AppState.currentSelectedCourseForStudents = course;
-      document.getElementById('courseStudentsHeaderTitle').innerText = `${course.book} (${course.category || ''})`;
-      renderCourseStudentsList();
-      switchView('viewCourseStudents', true);
-    }
-
-    function renderCourseStudentsList() {
-      const container = document.getElementById('courseStudentsDirectoryList');
-      container.innerHTML = "";
-      const course = AppState.currentSelectedCourseForStudents;
-      if (!course) return;
-
-      const q = normalizeArabic(document.getElementById('courseStudentSearchInput').value || "");
-      const enrolled = AppState.students.filter(st => {
-        const codes = (st.courseCodes || "").split(/[\r\n,;\/\s\u00A0]+/).map(c => c.trim().toLowerCase());
-        if (!codes.includes(course.code.trim().toLowerCase())) return false;
-        if (q && !normalizeArabic(st.name).includes(q) && !(st.phone && st.phone.includes(q))) return false;
-        return true;
-      });
-
-      if (enrolled.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center bg-white rounded-2xl text-slate-400 text-xs">لا توجد طلاب مسجلون في هذا الدرس</div>`;
-        return;
-      }
-
-      enrolled.forEach(st => {
-        const card = document.createElement('div');
-        card.className = "p-4 glass-card rounded-2xl space-y-2";
-        card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div>
-              <h4 class="text-sm font-bold text-slate-900">${escapeHtml(st.name)}</h4>
-              <p class="text-xs text-slate-500">مستوى ${escapeHtml(st.level || '1')} • ${escapeHtml(st.city || 'غير محدد')}</p>
-            </div>
-            <button onclick="openEditStudentModal('${escapeHtml(st.name)}')" class="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl cursor-pointer">
-              تحيين
-            </button>
-          </div>
-          ${st.phone ? `<a href="tel:${escapeHtml(st.phone)}" class="text-xs font-bold text-olive-700 num-font block pt-1">📞 ${escapeHtml(st.phone)}</a>` : ''}
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function openAddStudentForCurrentCourse() {
-      const course = AppState.currentSelectedCourseForStudents;
-      openAddStudentModal();
-      if (course) {
-        const sel = document.getElementById('addStudentCourse');
-        if (sel) sel.value = course.code;
-      }
-    }
-
-    // ==========================================
-    // BACKEND CALLS & UTILITIES
-    // ==========================================
-    function callBackend(options) {
-      return new Promise((resolve, reject) => {
-        const callbackName = 'gasCallback_' + Math.round(1000000 * Math.random()) + '_' + Date.now();
-        const script = document.createElement('script');
-        let url = WEB_APP_URL + (WEB_APP_URL.includes('?') ? '&' : '?') + 'callback=' + callbackName;
-        
-        if (options.params) {
-          for (const key in options.params) {
-            url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(options.params[key]);
-          }
-        }
-
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error("انتهت مهلة الاتصال بالخادم."));
-        }, 30000);
-
-        function cleanup() {
-          try { delete window[callbackName]; } catch(e){}
-          if (script.parentNode) script.parentNode.removeChild(script);
-        }
-
-        window[callbackName] = function(data) {
-          clearTimeout(timeout);
-          cleanup();
-          resolve(data);
-        };
-
-        script.onerror = () => {
-          clearTimeout(timeout);
-          cleanup();
-          reject(new Error("تعذر الاتصال بقاعدة البيانات."));
-        };
-
-        script.src = url;
-        document.head.appendChild(script);
-      });
-    }
-
-    function showLoading(msg) {
-      document.getElementById('loadingMessage').innerText = msg;
-      document.getElementById('loadingOverlay').classList.remove('hidden');
-    }
-
-    function hideLoading() {
-      document.getElementById('loadingOverlay').classList.add('hidden');
-    }
-
-    function showToast(msg, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = `${type === 'success' ? 'bg-olive-700' : 'bg-slate-900'} text-white px-4 py-3 rounded-2xl shadow-card text-xs font-semibold`;
-      toast.innerText = msg;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3500);
-    }
-
-    function updateDateWidget() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const attDateInput = document.getElementById('attDateInput');
-      if (attDateInput) {
-        attDateInput.value = `${yyyy}-${mm}-${dd}`;
-        syncWeekAndMonthWithDate(attDateInput.value);
-      }
-    }
-
-    function syncWeekAndMonthWithDate(dateStr) {
-      if (!dateStr) return;
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return;
-      const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-      const weekNum = Math.ceil(d.getDate() / 7);
-      document.getElementById('attWeekMonthInput').value = `الأسبوع ${weekNum} - ${months[d.getMonth()]}`;
-    }
-
-    function getStudentCountForCourse(courseCode) {
-      if (!courseCode) return 0;
-      const cleanTarget = courseCode.trim().toLowerCase();
-      return AppState.students.filter(st => {
-        const rawCodes = (st.courseCodes || "").split(/[\r\n,;\/\s\u00A0]+/);
-        return rawCodes.map(c => c.trim().toLowerCase()).includes(cleanTarget);
-      }).length;
-    }
-
-    function escapeHtml(str) {
-      if (!str) return "";
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    let currentActiveView = 'viewDashboard';
-
-    function switchView(targetId, pushHistory = true) {
-      ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('hidden', id !== targetId);
-      });
-      currentActiveView = targetId;
-
-      if (pushHistory) {
-        viewHistoryStack.push(targetId);
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function openDashboardView(push = true) {
-      viewHistoryStack = ['viewDashboard'];
-      switchView('viewDashboard', push);
-    }
-    function openAttendanceView(push = true) { renderAttendanceCoursesGrid(); switchView('viewAttendance', push); }
-    function openCoursesView(push = true) { renderCoursesDirectory(); switchView('viewCourses', push); }
-    function openFollowUpView(push = true) { checkConsecutiveAbsences(); switchView('viewFollowUp', push); }
-
-    function navigateBack() {
-      const openModals = ['addStudentModal', 'editStudentModal', 'createCourseModal', 'editCourseModal', 'notificationsModal'];
-      for (let mId of openModals) {
-        const modal = document.getElementById(mId);
-        if (modal && !modal.classList.contains('hidden')) {
-          modal.classList.add('hidden');
-          return;
-        }
-      }
-
-      if (currentActiveView === 'viewAttendance' && isAttendanceDirty && AppState.selectedCourseForAtt) {
-        document.getElementById('confirmLeaveAttendanceModal').classList.remove('hidden');
-        return;
-      }
-
-      if (viewHistoryStack.length > 1) {
-        viewHistoryStack.pop();
-        const prevView = viewHistoryStack[viewHistoryStack.length - 1];
-        switchView(prevView, false);
-      } else {
-        openDashboardView(false);
-      }
-    }
-
-    function closeConfirmLeaveModal() {
-      document.getElementById('confirmLeaveAttendanceModal').classList.add('hidden');
-    }
-
-    function confirmDiscardAttendance() {
-      isAttendanceDirty = false;
-      closeConfirmLeaveModal();
-      openDashboardView(true);
-    }
-
-    // Android physical/gesture back button handling with exit confirmation
-    window.addEventListener('popstate', (e) => {
-      e.preventDefault();
-      const openModals = ['addStudentModal', 'editStudentModal', 'createCourseModal', 'editCourseModal', 'notificationsModal', 'confirmLeaveAttendanceModal'];
-      let modalClosed = false;
-      for (let mId of openModals) {
-        const modal = document.getElementById(mId);
-        if (modal && !modal.classList.contains('hidden')) {
-          modal.classList.add('hidden');
-          modalClosed = true;
-        }
-      }
-      if (modalClosed) {
-        history.pushState(null, '', window.location.href);
-        return;
-      }
-
-      if (currentActiveView !== 'viewDashboard') {
-        navigateBack();
-        history.pushState(null, '', window.location.href);
-      } else {
-        document.getElementById('exitAppConfirmModal').classList.remove('hidden');
-        history.pushState(null, '', window.location.href);
-      }
-    });
-
-    function closeExitAppModal() {
-      document.getElementById('exitAppConfirmModal').classList.add('hidden');
-    }
-
-    function confirmExitApp() {
-      closeExitAppModal();
-      window.close();
-      try { navigator.app.exitApp(); } catch (err) {}
-    }
-
-    function openAddStudentModal() { document.getElementById('addStudentModal').classList.remove('hidden'); }
-    function closeAddStudentModal() { document.getElementById('addStudentModal').classList.add('hidden'); }
-    function openEditStudentModal() {}
-    function closeEditStudentModal() {}
-    function openCreateCourseModal() { document.getElementById('createCourseModal').classList.remove('hidden'); }
-    function closeCreateCourseModal() { document.getElementById('createCourseModal').classList.add('hidden'); }
-    function openEditCourseModal() {}
-    function closeEditCourseModal() {}
-    function checkConsecutiveAbsences() {}
-
-    window.addEventListener('load', () => {
-      updateDateWidget();
-      history.pushState(null, '', window.location.href);
-      const savedEmail = localStorage.getItem('al_rawad_saved_email');
-      if (savedEmail) document.getElementById('loginEmailInput').value = savedEmail;
-    });
-  </script>
-</body>
-</html>
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
+        <input type="tel" id="addStudentPhone" placeholder="8 أرقام" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 text-left num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
+        <select id="addStudentLevel" onchange="toggleAddStudentCompletedBooks(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
+        <select id="addStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
+        <select id="addStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
+      <input type="text" id="addStudentCity" placeholder="مثال: باردو، المروج..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+    </div>
+
+    <div class="pt-2 flex gap-2">
+      <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
+        حفظ وإضافة الطالب
+      </button>
+      <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+        إلغاء
+      </button>
+    </div>
+  </form>
+</div>
+
+
+  <form id="editStudentForm" onsubmit="event.preventDefault(); submitStudentUpdate();" class="space-y-3">
+    <input type="hidden" id="editStudentOrigName" />
+
+    <div class="grid grid-cols-3 gap-2">
+      <div class="col-span-2">
+        <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
+        <input type="text" id="editStudentName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
+        <select id="editStudentCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+          <option value="رجال">رجال</option>
+          <option value="نساء">نساء</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
+        <input type="tel" id="editStudentPhone" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 text-left num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
+        <select id="editStudentLevel" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+        </select>
+      </div>
+    </div>
+
+    <div class="pt-2 flex gap-2">
+      <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
+        حفظ وتوثيق التحيين
+      </button>
+      <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+        إلغاء
+      </button>
+    </div>
+  </form>
+</div>
+
+
+  <form id="createCourseForm" onsubmit="event.preventDefault(); submitCreateCourse();" class="space-y-3">
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 mb-1">صنف الدرس</label>
+      <select id="newCourseCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+      </select>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
+        <select id="newCourseDay" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+          <option value="السبت">السبت</option>
+          <option value="الأحد">الأحد</option>
+          <option value="الاثنين">الاثنين</option>
+          <option value="الثلاثاء">الثلاثاء</option>
+          <option value="الأربعاء">الأربعاء</option>
+          <option value="الخميس">الخميس</option>
+          <option value="الجمعة">الجمعة</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
+        <input type="time" id="newCourseTiming" value="20:00" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 text-center num-font focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
+        <select id="newCourseLocation" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+          <option value="مقر">مقر</option>
+          <option value="بيت">بيت</option>
+          <option value="عن بعد">عن بعد</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
+        <select id="newCourseVenue" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 mb-1">الكتاب المقرر</label>
+      <select id="newCourseBook" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+      </select>
+    </div>
+
+    <div class="pt-2 flex gap-2">
+      <button type="submit" id="submitCreateCourseBtn" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
+        تأكيد فتح الدرس
+      </button>
+      <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+        إلغاء
+      </button>
+    </div>
+  </form>
+</div>
