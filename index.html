@@ -1,481 +1,2878 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق المتابعة - الأصالة</title>
-  <!-- Tailwind CSS CDN garanti et sécurisé -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>نظام إدارة ومتابعة الدروس</title>
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="المتابعة">
+  <meta name="application-name" content="المتابعة">
+  <meta name="theme-color" content="#153828">
+
+  <!-- Link to Web App Manifest -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Apple Touch Icon (iOS Safari Home Screen Icon) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%23153828'/%3E%3Ccircle cx='256' cy='256' r='140' fill='%231b4532' stroke='%2334d399' stroke-width='12'/%3E%3Cpath d='M190 256l45 45 90-90' stroke='%2334d399' stroke-width='32' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23153828'/%3E%3Cpath d='M30 50l14 14 26-26' stroke='%2334d399' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="manifest0" href="./manifest.json">
-  <meta name="theme-color" content="#1e382b">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,700;1,700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Marhey:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Reem+Kufi+Ink&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Tajawal', 'Plus Jakarta Sans', 'sans-serif'],
+            num: ['Plus Jakarta Sans', 'Tajawal', 'sans-serif'],
+            naskh: ['"Noto Naskh Arabic"', 'Amiri', 'serif'],
+            handwritten: ['"Marhey"', '"Aref Ruqaa"', 'cursive', 'sans-serif'],
+            calligraphy: ['"Aref Ruqaa Ink"', '"Amiri Quran"', '"Noto Naskh Arabic"', 'serif']
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(16, 24, 40, 0.05)',
+            'card': '0 10px 25px -4px rgba(15, 23, 42, 0.08)',
+            'float': '0 20px 40px -8px rgba(15, 23, 42, 0.12)'
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-    .fade-in { animation: fadeIn 0.3s ease-in-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+    }
+    .safe-top {
+      padding-top: max(0.75rem, env(safe-area-inset-top));
+    }
+    .safe-bottom {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+    .handwritten-chalk {
+      font-family: 'Aref Ruqaa', serif;
+      color: #FFFFFF;
+      text-shadow: 
+        0 0 1px rgba(255, 255, 255, 0.95),
+        0 0 3px rgba(255, 255, 255, 0.5),
+        1px 2px 2px rgba(0, 0, 0, 0.4);
+      letter-spacing: 0.01em;
+    }
+    .chalkboard-bg {
+      background: radial-gradient(circle at 50% 50%, #1c4533 0%, #153828 65%, #0e271c 100%);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45), 0 6px 16px -3px rgba(15, 23, 42, 0.08);
+    }
+    body {
+      background-color: #F1F5F9;
+      font-family: 'Tajawal', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    input, textarea, select {
+      user-select: text;
+      font-size: 16px;
+    }
+    @media (min-width: 640px) {
+      input, textarea, select {
+        font-size: 0.875rem;
+      }
+    }
+    .num-font {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .glass-card:active {
+      transform: scale(0.985);
+    }
+    @keyframes floatingCard {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+    .animate-float {
+      animation: floatingCard 6s ease-in-out infinite;
+    }
+    .login-bg-cover {
+      background-image: url('./Cover.webp'), url('Cover.webp');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="h-full bg-slate-100 text-slate-900 antialiased flex flex-col justify-between overflow-x-hidden">
 
-  <!-- En-tête de l'application -->
-  <header class="bg-emerald-800 text-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-3 space-x-reverse">
-        <span class="text-2xl font-bold">تطبيق المتابعة</span>
-        <span id="userRoleBadge" class="hidden text-xs bg-emerald-700 px-2.5 py-1 rounded-full font-medium"></span>
-      </div>
-      <div id="headerActions" class="hidden flex items-center space-x-3 space-x-reverse">
-        <span id="userNameDisplay" class="text-sm font-medium"></span>
-        <button onclick="handleLogout()" class="bg-emerald-900 hover:bg-emerald-950 text-white text-xs px-3 py-1.5 rounded transition">تسجيل الخروج</button>
-      </div>
+  <!-- CONFIGURATION & PWA SERVICE WORKER REGISTRATION -->
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxoVf_eJi8auuiG8u8hY4tI-4gyfXu8zZ2StOcmb2FZZszyXWY7FOgX72dcjcif6BBgXA/exec";
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then((reg) => {
+            console.log('PWA Service Worker registered successfully:', reg.scope);
+          })
+          .catch((err) => {
+            console.warn('Service Worker registration skipped or failed:', err);
+          });
+      });
+    }
+  </script>
+
+  <!-- Notifications & Loader -->
+  <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-11/12 max-w-sm pointer-events-none transition-all duration-300"></div>
+
+  <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex flex-col items-center justify-center hidden">
+    <div class="bg-white p-5 rounded-3xl shadow-float flex flex-col items-center gap-3 max-w-xs text-center border border-slate-100">
+      <div class="w-10 h-10 rounded-full border-3 border-slate-100 border-t-emerald-600 animate-spin"></div>
+      <p id="loadingMessage" class="text-slate-800 font-bold text-sm">جارٍ المعالجة...</p>
     </div>
-  </header>
+  </div>
 
-  <!-- Conteneur principal -->
-  <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
+  <!-- ========================================== -->
+  <!-- 1. LOGIN SCREEN                           -->
+  <!-- ========================================== -->
+  <div id="loginScreen" class="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 login-bg-cover selection:bg-amber-500 selection:text-white safe-top safe-bottom overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/55 pointer-events-none"></div>
 
-    <!-- Section Connexion / Login -->
-    <section id="loginSection" class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8 mt-10 fade-in border border-slate-100">
-      <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-emerald-900">بوابة تسجيل دخول المدرسين</h2>
-        <p class="text-sm text-slate-500 mt-1">يرجى إدخال البريد الإلكتروني والرمز السري للمتابعة</p>
+    <div class="w-full max-w-sm z-10 flex flex-col items-center animate-float">
+      <div class="text-center mb-5">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+          تطبيق المتابعة
+        </h1>
+        <p class="text-xs sm:text-sm text-amber-200/90 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">
+          بوابة تسجيل دخول المدرسين
+        </p>
       </div>
 
-      <form id="loginForm" onsubmit="submitEmailPinLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">البريد الإلكتروني</label>
-          <input type="email" id="loginEmail" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 outline-none transition text-left" dir="ltr" placeholder="name@example.com">
-        </div>
+      <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_30px_rgba(251,191,36,0.08)] space-y-4">
+        <form onsubmit="event.preventDefault(); submitEmailPinLogin();" class="space-y-4">
+          <div>
+            <label for="loginEmailInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right drop-shadow-sm">
+              البريد الإلكتروني
+            </label>
+            <div class="relative shadow-inner">
+              <input 
+                type="email" 
+                id="loginEmailInput" 
+                required 
+                placeholder="teacher@example.com"
+                dir="ltr"
+                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all text-left shadow-sm"
+              />
+              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                </svg>
+              </div>
+            </div>
+          </div>
 
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">الرمز السري (PIN)</label>
-          <input type="password" id="loginPin" required maxlength="6" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 outline-none transition text-center tracking-widest text-lg" placeholder="••••••">
-        </div>
+          <div>
+            <label for="loginPinInput" class="block text-xs font-bold text-amber-100/90 mb-1.5 text-right drop-shadow-sm">
+              الرمز السري (PIN)
+            </label>
+            <div class="relative shadow-inner">
+              <input 
+                type="password" 
+                id="loginPinInput" 
+                required 
+                maxlength="6"
+                placeholder="••••••"
+                dir="ltr"
+                class="w-full px-4 py-3.5 bg-black/35 hover:bg-black/45 border border-white/20 focus:border-amber-400/90 rounded-2xl text-white placeholder-amber-100/40 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all text-left num-font tracking-widest shadow-sm"
+              />
+              <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-amber-200/60 pointer-events-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
 
-        <button type="submit" id="loginBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-lg transition shadow-sm">
-          دخول
+          <button 
+            type="submit" 
+            id="loginSubmitBtn"
+            class="w-full min-h-[50px] py-3.5 px-5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 active:scale-[0.98] text-white font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2.5 transition-all shadow-[0_12px_28px_-6px_rgba(5,150,105,0.45)] select-none mt-4 cursor-pointer border border-emerald-400/30 backdrop-blur-sm"
+          >
+            <span>تسجيل الدخول</span>
+            <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </button>
+        </form>
+
+        <div id="loginErrorMsg" class="hidden text-xs text-red-200 bg-red-950/80 border border-red-500/50 p-3 rounded-2xl text-center leading-relaxed backdrop-blur-sm shadow-md"></div>
+        <div id="loginSuccessNotice" class="hidden text-xs text-amber-200 bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-center backdrop-blur-sm shadow-md"></div>
+      </div>
+
+      <div id="loginInstallWrapper" class="mt-4 w-full">
+        <button 
+          type="button" 
+          onclick="triggerPWAInstall()" 
+          id="loginInstallBtn"
+          class="w-full min-h-[46px] py-2.5 px-4 bg-black/40 hover:bg-black/55 backdrop-blur-xl border border-white/20 rounded-2xl text-amber-200 hover:text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg select-none cursor-pointer"
+        >
+          <svg class="w-4 h-4 shrink-0 text-amber-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          <span id="installBtnText">تثبيت التطبيق مباشرة على الهاتف</span>
         </button>
-      </form>
-      <div id="loginError" class="mt-4 hidden text-center text-sm text-rose-600 bg-rose-50 p-2.5 rounded-lg border border-rose-100"></div>
-    </section>
-
-    <!-- Section Tableau de Bord / Application (Masquée par défaut) -->
-    <section id="appSection" class="hidden space-y-6 fade-in">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium">الدروس المتاحة</p>
-            <h3 id="statCoursesCount" class="text-xl font-bold text-slate-800 mt-1">0</h3>
-          </div>
-          <div class="p-3 bg-emerald-50 text-emerald-700 rounded-lg">📚</div>
-        </div>
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium">الطلاب المسجلون</p>
-            <h3 id="statStudentsCount" class="text-xl font-bold text-slate-800 mt-1">0</h3>
-          </div>
-          <div class="p-3 bg-blue-50 text-blue-700 rounded-lg">👥</div>
-        </div>
-      </div>
-
-      <!-- Navigation par onglets -->
-      <div class="flex border-b border-slate-200 space-x-4 space-x-reverse">
-        <button onclick="switchTab('courses')" id="tabBtnCourses" class="pb-3 px-4 font-medium text-emerald-700 border-b-2 border-emerald-700 transition">إدارة الدروس والحضور</button>
-        <button onclick="switchTab('students')" id="tabBtnStudents" class="pb-3 px-4 font-medium text-slate-500 hover:text-slate-800 transition">قائمة الطلاب</button>
-        <button onclick="switchTab('followup')" id="tabBtnFollowup" class="pb-3 px-4 font-medium text-slate-500 hover:text-slate-800 transition">متابعة الغياب المتكرر</button>
-      </div>
-
-      <!-- Contenu Onglet: Cours -->
-      <div id="tabContentCourses" class="space-y-4">
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-bold text-slate-800">الدروس الخاصة بك</h3>
-          <button onclick="openCreateCourseModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-sm px-4 py-2 rounded-lg transition">+ فتح درس جديد</button>
-        </div>
-        <div id="coursesListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Injecté dynamiquement -->
-        </div>
-      </div>
-
-      <!-- Contenu Onglet: Étudiants -->
-      <div id="tabContentStudents" class="hidden space-y-4">
-        <div class="flex flex-col md:flex-row justify-between gap-3 items-center">
-          <input type="text" id="studentSearchInput" oninput="filterStudentsList()" placeholder="بحث عن طالب بالاسم أو الرقم..." class="w-full md:w-80 px-3.5 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-600 outline-none">
-          <button onclick="openAddStudentModal()" class="w-full md:w-auto bg-emerald-700 hover:bg-emerald-800 text-white text-sm px-4 py-2 rounded-lg transition">+ إضافة طالب جديد</button>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <table class="w-full text-right border-collapse">
-            <thead class="bg-slate-100 text-slate-700 text-xs font-semibold">
-              <tr>
-                <th class="p-3">اسم الطالب</th>
-                <th class="p-3">المستوى</th>
-                <th class="p-3">رمز الدرس</th>
-                <th class="p-3">رقم الهاتف</th>
-                <th class="p-3 text-center">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody id="studentsTableBody" class="divide-y divide-slate-100 text-sm">
-              <!-- Injecté dynamiquement -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Contenu Onglet: Suivi des absences -->
-      <div id="tabContentFollowup" class="hidden space-y-4">
-        <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm">
-          تنبيه: يتم رصد الطلاب الذين تغيبوا لثلاث مرات متتالية أو أكثر لتسهيل عملية التواصل معهم عبر الهاتف.
-        </div>
-        <div id="followupListContainer" class="space-y-3">
-          <!-- Injecté dynamiquement -->
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Modale d'enregistrement des présences -->
-  <div id="attendanceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl max-h-[90vh] flex flex-col">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 id="attendanceModalTitle" class="text-lg font-bold text-slate-800">تسجيل حضور الدرس</h3>
-        <button onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-      </div>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-medium text-slate-600 mb-1">تاريخ الحصة</label>
-          <input type="date" id="attendanceDate" class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-600">
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-600 mb-1">آخر ما تم شرحه (الدرس / الكتاب)</label>
-          <input type="text" id="attendanceLastTopic" placeholder="مثال: باب الصلاة، صفحة 45..." class="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-600">
-        </div>
-      </div>
-      <div class="overflow-y-auto flex-grow border rounded-lg p-2">
-        <table class="w-full text-right text-sm">
-          <thead class="bg-slate-50 text-xs text-slate-600">
-            <tr>
-              <th class="p-2">اسم الطالب</th>
-              <th class="p-2 text-center">الحالة (حاضر / غائب)</th>
-            </tr>
-          </thead>
-          <tbody id="attendanceStudentsBody" class="divide-y">
-            <!-- Injecté dynamiquement -->
-          </tbody>
-        </table>
-      </div>
-      <div class="flex justify-end space-x-2 space-x-reverse pt-3 border-t">
-        <button onclick="closeAttendanceModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm rounded-lg transition">إلغاء</button>
-        <button onclick="submitAttendance()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-sm rounded-lg transition">حفظ الحضور</button>
       </div>
     </div>
   </div>
 
-  <!-- Script JavaScript et Logique Front-End -->
-  <script>
-    // Configuration de l'URL du Web App Google Apps Script
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzT690RzV4vS770tNThxHjV6-N6UkvC0H2V7P7y3bXW.../exec"; // Remplacez par votre URL de déploiement Apps Script
+  <!-- iOS / Manual PWA Installation Guide Modal -->
+  <div id="pwaGuideModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 text-slate-800 space-y-4">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="text-sm font-bold text-slate-900">تثبيت التطبيق على الهاتف</h3>
+        <button onclick="closePwaGuideModal()" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs leading-relaxed">
+        <p class="font-bold text-emerald-800">لتثبيت التطبيق كأيقونة مستقلة على شاشتك:</p>
+        <div class="p-3 bg-slate-50 rounded-2xl space-y-2 border border-slate-200">
+          <p><strong>1.</strong> اضغط على زر المشاركة <strong>(⎋)</strong> في أسفل متصفح Safari، أو زر القائمة <strong>(⋮)</strong> في Chrome.</p>
+          <p><strong>2.</strong> اختر <strong>"إضافة إلى الصفحة الرئيسية"</strong> (<em>Add to Home Screen</em>).</p>
+          <p><strong>3.</strong> اضغط على <strong>"إضافة"</strong> (<em>Add</em>) في الأعلى.</p>
+        </div>
+      </div>
+      <button type="button" onclick="closePwaGuideModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all cursor-pointer">
+        حسناً، فهمت
+      </button>
+    </div>
+  </div>
 
+  <!-- ========================================== -->
+  <!-- 2. MAIN APPLICATION SHELL                  -->
+  <!-- ========================================== -->
+  <div id="appShell" class="hidden flex-1 flex flex-col min-h-screen">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 safe-top">
+      <div class="max-w-2xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-base" id="userAvatar">
+            م
+          </div>
+          <div>
+            <h2 id="userName" class="text-sm font-bold text-slate-900 leading-tight">المدرس</h2>
+            <div class="flex items-center gap-2 mt-0.5">
+              <p id="userLocationText" class="text-xs text-slate-500 font-medium"></p>
+              <span id="userRoleBadge" class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button onclick="refreshLiveBackend()" title="تحديث" class="p-2.5 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-200/60 transition-all cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </button>
+          <button onclick="handleLogout()" title="خروج" class="p-2.5 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 max-w-2xl w-full mx-auto p-4 pb-12 safe-bottom">
+      
+      <!-- VIEW 1: HOME DASHBOARD -->
+      <section id="viewDashboard" class="space-y-4">
+        <div class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden border border-[#2b5945]/70 shadow-sm">
+          <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 0.6px, transparent 0.6px); background-size: 16px 16px;"></div>
+          <div class="relative z-10 flex flex-col items-center justify-center gap-1">
+            <h2 class="handwritten-chalk text-xl sm:text-2xl font-bold py-0.5 select-none leading-normal">
+              المتابعة نصف العمل
+            </h2>
+            <div class="w-16 h-[1px] bg-white/30 rounded-full"></div>
+          </div>
+          <span id="widgetDayName" class="hidden"></span>
+          <span id="widgetFullDate" class="hidden"></span>
+          <span id="widgetAutoWeek" class="hidden"></span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3.5 pt-1">
+          <!-- 1. تسجيل الحضور -->
+          <button onclick="openAttendanceView()" class="p-5 glass-card rounded-3xl hover:border-emerald-500 active:scale-[0.98] transition-all flex flex-col items-center justify-between text-center group relative cursor-pointer min-h-[190px]">
+            <div class="flex flex-col items-center justify-center w-full">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-100/90 text-emerald-800 border border-emerald-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-emerald-800 transition-colors">تسجيل الحضور</h3>
+              <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">رصد الحضور والغياب</p>
+            </div>
+            <div class="w-full flex justify-start pt-3">
+              <span class="w-8 h-8 inline-flex items-center justify-center text-emerald-800 bg-emerald-100/80 group-hover:bg-emerald-600 group-hover:text-white border border-emerald-300/80 group-hover:border-emerald-600 rounded-xl transition-all shadow-xs">
+                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+                </svg>
+              </span>
+            </div>
+          </button>
+
+          <!-- 2. الطلبة -->
+          <div onclick="openStudentsView()" class="p-5 glass-card rounded-3xl hover:border-indigo-500 transition-all flex flex-col items-center justify-between text-center group cursor-pointer relative min-h-[190px]">
+            <div class="flex flex-col items-center justify-center w-full">
+              <div class="w-14 h-14 rounded-2xl bg-indigo-100/90 text-indigo-800 border border-indigo-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-indigo-800 transition-colors">الطلبة</h3>
+              <p id="dashStudentsCountText" class="text-xs sm:text-sm text-slate-500 font-semibold mt-1 num-font">0 طالب مسجل</p>
+            </div>
+            <div class="w-full flex items-center justify-between pt-3 gap-1">
+              <span class="w-8 h-8 inline-flex items-center justify-center text-indigo-800 bg-indigo-100/80 group-hover:bg-indigo-600 group-hover:text-white border border-indigo-300/80 group-hover:border-indigo-600 rounded-xl transition-all shadow-xs" title="عرض القائمة">
+                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+                </svg>
+              </span>
+              <button 
+                type="button" 
+                onclick="event.stopPropagation(); openAddStudentModal();" 
+                class="py-1.5 px-3 bg-indigo-100/90 hover:bg-indigo-600 text-indigo-900 hover:text-white border border-indigo-300/80 hover:border-indigo-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>إضافة طالب</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. قائمة الدروس -->
+          <div onclick="openCoursesView()" class="p-5 glass-card rounded-3xl hover:border-teal-500 transition-all flex flex-col items-center justify-between text-center group cursor-pointer relative min-h-[190px]">
+            <div class="flex flex-col items-center justify-center w-full">
+              <div class="w-14 h-14 rounded-2xl bg-teal-100/90 text-teal-800 border border-teal-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-sm">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-teal-800 transition-colors">قائمة الدروس</h3>
+              <p id="dashCoursesCountText" class="text-xs sm:text-sm text-slate-500 font-semibold mt-1 num-font">0 درس مسند</p>
+            </div>
+            <div class="w-full flex items-center justify-between pt-3 gap-1">
+              <span class="w-8 h-8 inline-flex items-center justify-center text-teal-800 bg-teal-100/80 group-hover:bg-teal-600 group-hover:text-white border border-teal-300/80 group-hover:border-teal-600 rounded-xl transition-all shadow-xs" title="عرض القائمة">
+                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+                </svg>
+              </span>
+              <button 
+                type="button" 
+                onclick="event.stopPropagation(); openCreateCourseModal();" 
+                class="py-1.5 px-3 bg-teal-100/90 hover:bg-teal-600 text-teal-900 hover:text-white border border-teal-300/80 hover:border-teal-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>فتح درس</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. متابعة الغائبين -->
+          <button onclick="openFollowUpView()" class="p-5 glass-card rounded-3xl hover:border-amber-500 active:scale-[0.98] transition-all flex flex-col items-center justify-between text-center relative group cursor-pointer min-h-[190px]">
+            <div id="dashAbsentAlertPing" class="absolute top-4 left-4 w-3.5 h-3.5 bg-red-500 rounded-full animate-ping hidden"></div>
+            <div id="dashAbsentAlertDot" class="absolute top-4 left-4 w-3.5 h-3.5 bg-red-500 rounded-full hidden"></div>
+            <div class="flex flex-col items-center justify-center w-full">
+              <div class="w-14 h-14 rounded-2xl bg-amber-100/90 text-amber-800 border border-amber-200/80 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-sm">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-amber-800 transition-colors">متابعة الغائبين</h3>
+              <p id="dashAbsentCountText" class="text-xs sm:text-sm text-slate-500 font-semibold mt-1 num-font">غياب متكرر</p>
+            </div>
+            <div class="w-full flex justify-start pt-3">
+              <span class="w-8 h-8 inline-flex items-center justify-center text-amber-800 bg-amber-100/80 group-hover:bg-amber-600 group-hover:text-white border border-amber-300/80 group-hover:border-amber-600 rounded-xl transition-all shadow-xs" title="عرض القائمة">
+                <svg class="w-4 h-4 rtl:rotate-180 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/>
+                </svg>
+              </span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 2: تسجيل الحضور -->
+      <section id="viewAttendance" class="hidden space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <button onclick="handleAttendanceBackNav()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 transition-all cursor-pointer">
+              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+            </button>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">تسجيل الحضور</h2>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              onclick="submitAttendanceSession()" 
+              id="topSaveAttendanceBtn"
+              class="hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span>حفظ ورجوع</span>
+            </button>
+            <div id="attendanceStatsPill" class="hidden text-xs sm:text-sm font-bold px-3.5 py-1.5 rounded-full bg-slate-200/80 text-slate-800 num-font border border-slate-300">
+              <span id="presentSummaryCount" class="text-emerald-700">0 حاضر</span> • <span id="absentSummaryCount" class="text-red-600">0 غائب</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-xs sm:text-sm font-bold text-slate-700">اختر الدرس أولاً:</label>
+          <div class="relative">
+            <button 
+              type="button"
+              id="attCourseDropdownBtn"
+              onclick="toggleAttendanceCourseDropdown()"
+              class="w-full p-3.5 glass-card hover:border-emerald-500 rounded-2xl flex items-center justify-between text-right transition-all group cursor-pointer"
+            >
+              <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center font-bold text-sm shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                  </svg>
+                </div>
+                <div class="truncate">
+                  <div class="flex items-center gap-2 truncate">
+                    <span id="attDropdownSelectedTitle" class="text-sm font-bold text-slate-900 truncate">-- اضغط لاختيار الدرس من القائمة --</span>
+                    <span id="attDropdownSelectedCategory" class="text-xs text-slate-600 bg-slate-200/90 px-2 py-0.5 rounded-lg font-semibold hidden"></span>
+                  </div>
+                  <p id="attDropdownSelectedMeta" class="text-xs text-slate-500 truncate mt-0.5 font-medium"></p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span id="attDropdownSelectedCount" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-200/80 text-slate-700 num-font hidden">0 طالب</span>
+                <svg id="attDropdownArrow" class="w-4 h-4 text-slate-500 group-hover:text-emerald-700 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+            </button>
+            <div id="attendanceCoursesList" class="hidden absolute z-30 top-full left-0 right-0 mt-1.5 max-h-60 overflow-y-auto glass-card rounded-2xl shadow-float p-1.5 space-y-1.5"></div>
+          </div>
+        </div>
+
+        <div id="attendanceActiveForm" class="hidden space-y-4 pt-2">
+          <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1">تاريخ الدرس</label>
+                <input 
+                  type="date" 
+                  id="attDateInput" 
+                  onchange="syncWeekAndMonthWithDate(this.value)"
+                  class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-900 num-font focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1">الأسبوع والشهر</label>
+                <input 
+                  type="text" 
+                  id="attWeekMonthInput" 
+                  readonly
+                  class="w-full px-3 py-2.5 bg-slate-200/70 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-700 focus:outline-none cursor-default"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs sm:text-sm font-bold text-slate-700">ما تم شرحه (الباب المقرر / الموضع)</label>
+                <span id="lastTaughtHint" class="text-xs text-emerald-800 font-bold bg-emerald-100/80 px-2 py-0.5 rounded-md border border-emerald-200"></span>
+              </div>
+              <select 
+                id="attSyllabusSelect" 
+                required
+                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="relative">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <h3 class="text-sm font-extrabold text-slate-800">قائمة حضور الطلاب</h3>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="setAllAttendanceState(true)" class="text-xs sm:text-sm font-bold text-emerald-900 bg-emerald-100 border border-emerald-300/70 px-3 py-1.5 rounded-xl hover:bg-emerald-200 transition-all shadow-xs cursor-pointer">
+                  الكل حاضر
+                </button>
+                <button type="button" onclick="setAllAttendanceState(false)" class="text-xs sm:text-sm font-bold text-red-900 bg-red-100 border border-red-300/70 px-3 py-1.5 rounded-xl hover:bg-red-200 transition-all shadow-xs cursor-pointer">
+                  الكل غائب
+                </button>
+              </div>
+            </div>
+
+            <div id="attendanceAlphaRail" class="hidden fixed left-2 top-1/2 -translate-y-1/2 z-40 bg-white/95 backdrop-blur-md border border-slate-300 rounded-2xl shadow-float p-1 flex flex-col items-center gap-0.5 max-h-[70vh] overflow-y-auto no-scrollbar select-none"></div>
+            <div id="attendanceStudentList" class="space-y-2.5"></div>
+          </div>
+
+          <div class="pt-2">
+            <button 
+              type="button" 
+              onclick="submitAttendanceSession()" 
+              id="saveAttendanceBtn"
+              class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-card transition-all flex items-center justify-center gap-2 active:scale-[0.98] text-base cursor-pointer"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span>حفظ الحضور والغياب</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: الطلبة -->
+      <section id="viewStudents" class="hidden space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
+              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+            </button>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">الطلبة</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openAddStudentModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>إضافة طالب</span>
+            </button>
+            <span id="studentsTotalBadge" class="text-xs sm:text-sm font-bold px-3 py-1 bg-slate-200/80 rounded-full text-slate-800 num-font border border-slate-300">0</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs sm:text-sm font-bold text-slate-600 mb-1.5">تصفية حسب الدرس:</label>
+          <div id="studentCourseFilterBar" class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar"></div>
+        </div>
+
+        <div class="relative">
+          <input 
+            type="text" 
+            id="studentSearchInput" 
+            oninput="renderStudentsDirectory()"
+            placeholder="بحث بالاسم أو رقم الهاتف أو الحي..."
+            class="w-full pr-10 pl-3 py-3 glass-card rounded-2xl text-slate-900 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div id="studentsDirectoryList" class="space-y-3"></div>
+      </section>
+
+      <!-- VIEW 4: قائمة الدروس -->
+      <section id="viewCourses" class="hidden space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
+              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+            </button>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">قائمة الدروس</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openCreateCourseModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1 shadow-sm cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>فتح درس جديد</span>
+            </button>
+            <span id="coursesTotalBadge" class="text-xs sm:text-sm font-bold px-3 py-1 bg-slate-200/80 rounded-full text-slate-800 num-font border border-slate-300">0</span>
+          </div>
+        </div>
+
+        <div id="coursesDirectoryList" class="space-y-3.5"></div>
+      </section>
+
+      <!-- VIEW 5: متابعة الغائبين -->
+      <section id="viewFollowUp" class="hidden space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <button onclick="openDashboardView()" class="p-2.5 rounded-2xl glass-card text-slate-700 hover:bg-slate-200/80 cursor-pointer">
+              <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+            </button>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">متابعة الغائبين</h2>
+          </div>
+          <span class="text-xs sm:text-sm font-bold text-slate-600">غياب حصتين متتاليتين</span>
+        </div>
+
+        <div id="followUpList" class="space-y-3.5"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: ADD STUDENT -->
+  <div id="addStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
+        <h3 class="text-sm font-bold text-slate-900">إضافة طالب جديد</h3>
+        <button onclick="closeAddStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="addStudentForm" onsubmit="event.preventDefault(); submitAddStudent();" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
+          <input type="text" id="addStudentName" required placeholder="الاسم واللقب..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">الدرس المسند إليه</label>
+            <select id="addStudentCourse" onchange="handleCourseSelectionChange(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
+            <select id="addStudentCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="رجال">رجال</option>
+              <option value="نساء">نساء</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
+            <input type="tel" id="addStudentPhone" placeholder="8 أرقام" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-left num-font"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
+            <select id="addStudentLevel" onchange="toggleAddStudentCompletedBooks(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
+            <select id="addStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
+            <select id="addStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
+          <input type="text" id="addStudentCity" placeholder="مثال: باردو، المروج (أو البلد إن كان خارج تونس)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+        </div>
+
+        <div id="addStudentCompletedBooksWrapper" class="hidden">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
+          <div class="space-y-2">
+            <select id="addStudentBooksDropdown" onchange="handleAddCompletedBook(this)" class="w-full px-3 py-2 bg-slate-50 border border-indigo-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="">+ اختر كتاباً لإضافته للمنجزات...</option>
+            </select>
+            <div id="addStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-200 min-h-[38px]"></div>
+          </div>
+          <input type="hidden" id="addStudentCompletedBooks" />
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm cursor-pointer">
+            حفظ وإضافة الطالب
+          </button>
+          <button type="button" onclick="closeAddStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM LEAVE WITHOUT SAVING -->
+  <div id="confirmLeaveAttendanceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-slate-900 mb-1">مغادرة تسجيل الحضور؟</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          لم يتم حفظ بيانات حضور هذا الدرس بعد. هل ترغب في الخروج دون حفظ؟
+        </p>
+      </div>
+      <div class="flex gap-2 pt-1">
+        <button 
+          type="button" 
+          onclick="confirmDiscardAttendance()" 
+          class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition-all shadow-sm cursor-pointer"
+        >
+          خروج دون حفظ
+        </button>
+        <button 
+          type="button" 
+          onclick="closeConfirmLeaveModal()" 
+          class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all cursor-pointer"
+        >
+          البقاء في الصفحة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT STUDENT -->
+  <div id="editStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
+        <h3 class="text-sm font-bold text-slate-900">تحيين بيانات الطالب</h3>
+        <button onclick="closeEditStudentModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editStudentForm" onsubmit="event.preventDefault(); submitStudentUpdate();" class="space-y-3">
+        <input type="hidden" id="editStudentOrigName" />
+        <div class="grid grid-cols-3 gap-2">
+          <div class="col-span-2">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
+            <input type="text" id="editStudentName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
+            <select id="editStudentCategory" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="رجال">رجال</option>
+              <option value="نساء">نساء</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">رقم الهاتف</label>
+            <input type="tel" id="editStudentPhone" dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-left num-font"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المستوى</label>
+            <select id="editStudentLevel" onchange="toggleCompletedBooksField(this.value)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">الفئة العمرية</label>
+            <select id="editStudentAgeGroup" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
+            <select id="editStudentLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">الحي / المدينة</label>
+          <input type="text" id="editStudentCity" placeholder="مثال: باردو، المروج (أو البلد إن كان خارج تونس)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"/>
+        </div>
+
+        <div id="completedBooksWrapper" class="hidden">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتب المنجزة (مستوى 3 فما فوق)</label>
+          <div class="space-y-2">
+            <select id="editStudentBooksDropdown" onchange="handleEditCompletedBook(this)" class="w-full px-3 py-2 bg-slate-50 border border-emerald-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="">+ اختر كتاباً لإضافته للمنجزات...</option>
+            </select>
+            <div id="editStudentBooksChips" class="flex flex-wrap gap-1.5 p-2 bg-slate-50 rounded-xl border border-slate-200 min-h-[38px]"></div>
+          </div>
+          <input type="hidden" id="editStudentCompletedBooks" />
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
+            حفظ وتوثيق التحيين
+          </button>
+          <button type="button" onclick="closeEditStudentModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE NEW COURSE -->
+  <div id="createCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
+        <h3 class="text-sm font-bold text-slate-900">فتح درس جديد</h3>
+        <button onclick="closeCreateCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="createCourseForm" onsubmit="event.preventDefault(); submitCreateCourse();" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">صنف الدرس</label>
+          <select id="newCourseCategory" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
+            <select id="newCourseDay" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="السبت">السبت</option>
+              <option value="الأحد">الأحد</option>
+              <option value="الاثنين">الاثنين</option>
+              <option value="الثلاثاء">الثلاثاء</option>
+              <option value="الأربعاء">الأربعاء</option>
+              <option value="الخميس">الخميس</option>
+              <option value="الجمعة">الجمعة</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
+            <input type="time" id="newCourseTiming" value="20:00" oninput="trackFieldChange(this)" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center num-font"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
+            <select id="newCourseLocation" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="مقر">مقر</option>
+              <option value="بيت">بيت</option>
+              <option value="عن بعد">عن بعد</option>
+            </select>
+          </div>
+          <div id="newCourseVenueWrapper">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
+            <select id="newCourseVenue" onchange="trackFieldChange(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">الكتاب المقرر</label>
+          <select id="newCourseBook" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </select>
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button 
+            type="submit" 
+            id="submitCreateCourseBtn"
+            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer"
+          >
+            تأكيد فتح الدرس
+          </button>
+          <button type="button" onclick="closeCreateCourseModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer">
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT COURSE -->
+  <div id="editCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
+        <h3 class="text-sm font-bold text-slate-900">تعديل بيانات الدرس</h3>
+        <button onclick="closeEditCourseModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editCourseForm" onsubmit="event.preventDefault(); submitCourseUpdate();" class="space-y-3">
+        <input type="hidden" id="editCourseCode" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">الكتاب المقرر</label>
+          <select 
+            id="editCourseBookInput" 
+            onchange="trackFieldChange(this)"
+            required
+            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">اليوم</label>
+            <select id="editCourseDay" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="السبت">السبت</option>
+              <option value="الأحد">الأحد</option>
+              <option value="الاثنين">الاثنين</option>
+              <option value="الثلاثاء">الثلاثاء</option>
+              <option value="الأربعاء">الأربعاء</option>
+              <option value="الخميس">الخميس</option>
+              <option value="الجمعة">الجمعة</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">التوقيت</label>
+            <input type="time" id="editCourseTiming" oninput="trackFieldChange(this)" required dir="ltr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center num-font"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المكان</label>
+            <select id="editCourseLocation" onchange="trackFieldChange(this)" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <option value="مقر">مقر</option>
+              <option value="بيت">بيت</option>
+              <option value="عن بعد">عن بعد</option>
+            </select>
+          </div>
+          <div id="editCourseVenueWrapper">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">المقر</label>
+            <select id="editCourseVenue" onchange="trackFieldChange(this)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button 
+            type="submit" 
+            class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer"
+          >
+            حفظ التعديلات
+          </button>
+          <button 
+            type="button" 
+            onclick="closeEditCourseModal()" 
+            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all cursor-pointer"
+          >
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT LOGIC                           -->
+  <!-- ========================================== -->
+  <script>
     let sessionToken = null;
-    let AppState = {
+    let isAttendanceDirty = false;
+    let isCreatingCourse = false;
+    let deferredInstallPrompt = null;
+    const initialFieldValues = {};
+
+    function recordInitialFormValues(fieldIds) {
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          initialFieldValues[id] = el.value !== undefined ? String(el.value) : "";
+          el.classList.remove('border-emerald-500', 'bg-emerald-50/30', 'ring-1', 'ring-emerald-500');
+          el.classList.add('border-slate-200', 'bg-slate-50');
+        }
+      });
+    }
+
+    function trackFieldChange(el) {
+      if (!el || !el.id) return;
+      const initialVal = initialFieldValues[el.id];
+      const currentVal = el.value !== undefined ? String(el.value) : "";
+
+      const isChanged = (initialVal !== undefined && initialVal !== "" && initialVal !== currentVal) || 
+                        (initialVal === "" && currentVal !== "");
+
+      if (isChanged) {
+        el.classList.add('border-emerald-500', 'bg-emerald-50/30', 'ring-1', 'ring-emerald-500');
+        el.classList.remove('border-slate-200', 'bg-slate-50');
+      } else {
+        el.classList.remove('border-emerald-500', 'bg-emerald-50/30', 'ring-1', 'ring-emerald-500');
+        el.classList.add('border-slate-200', 'bg-slate-50');
+      }
+    }
+
+    const AppState = {
       currentUser: null,
       courses: [],
       students: [],
-      selectedCourseForAttendance: null
+      syllabus: [],
+      books: [],
+      attendance: [],
+      dropdowns: {
+        courseCategories: ["رجال", "نساء"],
+        locations: ["مقر", "بيت", "عن بعد"],
+        venues: ["منفلوري", "المرسى", "أريانة"],
+        studentLevels: ["1", "2", "3", "4", "5", "6"],
+        studentAgeGroups: ["15-", "15+"]
+      },
+      selectedCourseForAtt: null,
+      currentAttendanceRoster: [],
+      selectedStudentCourseFilter: 'ALL',
+      acknowledgedFollowUps: new Set(),
+      selectedEditBooks: new Set(),
+      selectedAddBooks: new Set()
     };
 
-    // Gestion du transport sécurisé fetch (POST text/plain pour éviter CORS preflight)
+    /**
+     * UNIFIED SAFE BACKEND CALL (FETCH + FALLBACK JSONP)
+     */
     async function callBackend(options) {
-      let payload = options.body || {};
+      const isPost = (options.method || 'GET').toUpperCase() === 'POST' && !options.useJsonp;
+      let payload = options.body || options.params || {};
+
       if (sessionToken && typeof payload === 'object') {
         payload.token = sessionToken;
       }
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      if (isPost) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+          const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+          const res = await response.json();
+
+          if (res && res.error && (res.error.includes("انتهت صلاحية الجلسة") || res.error.includes("SESSION_EXPIRED"))) {
+            handleLogout();
+            throw new Error("انتهت صلاحية جلسة العمل، يرجى إعادة تسجيل الدخول.");
+          }
+          return res;
+        } catch (fetchErr) {
+          console.warn("Fetch failed, falling back to JSONP/Form...", fetchErr);
+          // Fallback to JSONP or Hidden Form
+          return callBackendJSONP({
+            params: Object.assign({}, payload, { 
+              action: payload.action || 'default',
+              data: JSON.stringify(payload) 
+            })
+          });
+        }
+      } else {
+        return callBackendJSONP(options);
+      }
+    }
+
+    function callBackendJSONP(options) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'gasCallback_' + Math.round(1000000 * Math.random()) + '_' + Date.now();
+        const script = document.createElement('script');
+        let url = WEB_APP_URL + (WEB_APP_URL.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+
+        const params = options.params || {};
+        if (sessionToken && !params.token) {
+          params.token = sessionToken;
+        }
+
+        for (const key in params) {
+          if (params.hasOwnProperty(key)) {
+            const val = typeof params[key] === 'object' ? JSON.stringify(params[key]) : params[key];
+            url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
+          }
+        }
+
+        const timeoutHandle = setTimeout(() => {
+          cleanup();
+          reject(new Error("انتهت مهلة الانتظار، يرجى التحقق من الاتصال."));
+        }, 35000);
+
+        function cleanup() {
+          try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callbackName] = function(data) {
+          clearTimeout(timeoutHandle);
+          cleanup();
+          if (data && data.success === false) {
+            if (data.error && data.error.includes("انتهت صلاحية الجلسة")) handleLogout();
+            reject(new Error(data.error || "خطأ غير متوقع"));
+          } else {
+            resolve(data);
+          }
+        };
+
+        script.onerror = function() {
+          clearTimeout(timeoutHandle);
+          cleanup();
+          reject(new Error("تعذر الاتصال بالخادم، يرجى التأكد من نشر الـ Web App بصلاحية 'Anyone'."));
+        };
+
+        document.head.appendChild(script);
+      });
+    }
+
+    async function submitEmailPinLogin() {
+      const emailInput = document.getElementById('loginEmailInput');
+      const pinInput = document.getElementById('loginPinInput');
+      const errorBox = document.getElementById('loginErrorMsg');
+      const successNotice = document.getElementById('loginSuccessNotice');
+
+      if (errorBox) errorBox.classList.add('hidden');
+
+      const email = (emailInput ? emailInput.value : "").trim().toLowerCase();
+      const pin = (pinInput ? pinInput.value : "").trim();
+
+      if (!email || !email.includes('@')) {
+        showLoginError("يرجى كتابة عنوان بريد إلكتروني صحيح.");
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      if (!pin) {
+        showLoginError("يرجى إدخال الرمز السري (PIN).");
+        if (pinInput) pinInput.focus();
+        return;
+      }
+
+      if (successNotice) {
+        successNotice.innerText = `جارٍ التحقق من الحساب والرمز السري...`;
+        successNotice.classList.remove('hidden');
+      }
+
+      showLoading("التحقق من صحة البيانات...");
 
       try {
-        const response = await fetch(WEB_APP_URL, {
+        const response = await callBackend({
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-
-        if (!response.ok) throw new Error(`خطأ في الاتصال بالخادم (${response.status})`);
-        const data = await response.json();
-
-        if (data && data.error && (data.error.includes("انتهت صلاحية الجلسة") || data.error.includes("SESSION_EXPIRED"))) {
-          handleLogout();
-          throw new Error("انتهت صلاحية جلسة العمل، يرجى إعادة تسجيل الدخول.");
-        }
-        return data;
-      } catch (err) {
-        clearTimeout(timeoutId);
-        throw err;
-      }
-    }
-
-    // Connexion par Email & PIN
-    async function submitEmailPinLogin(event) {
-      event.preventDefault();
-      const email = document.getElementById("loginEmail").value.trim();
-      const pin = document.getElementById("loginPin").value.trim();
-      const errBox = document.getElementById("loginError");
-      errBox.classList.add("hidden");
-
-      const loginBtn = document.getElementById("loginBtn");
-      loginBtn.disabled = true;
-      loginBtn.textContent = "جاري التحقق...";
-
-      try {
-        const res = await callBackend({
-          body: { action: "login", email: email, pin: pin }
+          body: { 
+            action: 'init', 
+            email: email,
+            pin: pin
+          }
         });
 
-        if (res && res.success) {
-          sessionToken = res.token;
-          AppState.currentUser = res.user;
-          localStorage.setItem("saved_email", email);
-          
-          // Initialisation des données principales
-          await loadInitData();
-          document.getElementById("loginSection").classList.add("hidden");
-          document.getElementById("appSection").classList.remove("hidden");
-          document.getElementById("headerActions").classList.remove("hidden");
-          
-          const roleBadge = document.getElementById("userRoleBadge");
-          roleBadge.textContent = `المستوى: ${res.user.accessTier || 'T1'}`;
-          roleBadge.classList.remove("hidden");
-          
-          document.getElementById("userNameDisplay").textContent = res.user.name;
+        if (response && response.success) {
+          sessionToken = response.token || null;
+          AppState.currentUser = response.user;
+          AppState.courses = response.courses || [];
+          AppState.students = response.students || [];
+          AppState.syllabus = response.syllabus || [];
+          AppState.books = response.books || [];
+          AppState.attendance = response.attendance || [];
+          if (response.dropdowns) {
+            AppState.dropdowns = response.dropdowns;
+          }
+
+          populateDropdownMenus();
+          localStorage.setItem('al_rawad_saved_email', email);
+          if (successNotice) successNotice.classList.add('hidden');
+          setupDashboardAfterLogin();
         } else {
-          errBox.textContent = res.error || "بيانات الدخول غير صحيحة.";
-          errBox.classList.remove("hidden");
+          showLoginError(response.error || "البريد أو الرمز السري غير صحيح.");
         }
-      } catch (e) {
-        errBox.textContent = e.message || "حدث خطأ أثناء الاتصال بالخادم.";
-        errBox.classList.remove("hidden");
+      } catch (err) {
+        showLoginError(err.message || "تعذر إتمام الدخول، يرجى التأكد من نشر السكربت كـ Web App بصلاحية 'Anyone'.");
       } finally {
-        loginBtn.disabled = false;
-        loginBtn.textContent = "دخول";
+        hideLoading();
+        if (successNotice) successNotice.classList.add('hidden');
       }
     }
 
-    async function loadInitData() {
-      try {
-        const res = await callBackend({
-          body: { action: "init" }
+    function showLoginError(msg) {
+      const errorBox = document.getElementById('loginErrorMsg');
+      if (errorBox) {
+        errorBox.innerText = msg;
+        errorBox.classList.remove('hidden');
+      }
+    }
+
+    function setupDashboardAfterLogin() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+
+      const user = AppState.currentUser;
+      document.getElementById('userName').innerText = user.name || "المدرس";
+      document.getElementById('userAvatar').innerText = (user.name || "م").charAt(0);
+      document.getElementById('userLocationText').innerText = user.location || "";
+
+      const roleBadge = document.getElementById('userRoleBadge');
+      if (roleBadge) {
+        roleBadge.innerText = user.accessTier ? `رتبة ${user.accessTier}` : 'مدرس';
+      }
+
+      document.getElementById('dashStudentsCountText').innerText = `${AppState.students.length} طالب مسجل`;
+      document.getElementById('dashCoursesCountText').innerText = `${AppState.courses.length} درس مسند`;
+      document.getElementById('studentsTotalBadge').innerText = `${AppState.students.length}`;
+      document.getElementById('coursesTotalBadge').innerText = `${AppState.courses.length}`;
+
+      checkConsecutiveAbsences();
+      renderAttendanceCoursesList();
+      buildStudentCourseFilterBar();
+      openDashboardView();
+    }
+
+    function handleLogout() {
+      sessionToken = null;
+      AppState.currentUser = null;
+      AppState.courses = [];
+      AppState.students = [];
+      AppState.attendance = [];
+      AppState.syllabus = [];
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      const pinInput = document.getElementById('loginPinInput');
+      if (pinInput) pinInput.value = "";
+    }
+
+    function getAvailableBooksList() {
+      const booksSet = new Set();
+
+      if (Array.isArray(AppState.books) && AppState.books.length > 0) {
+        AppState.books.forEach(b => {
+          if (b && b.trim()) booksSet.add(b.trim());
         });
-        if (res && res.success) {
-          AppState.courses = res.courses || [];
-          AppState.students = res.students || [];
-          renderDashboardStats();
-          renderCourses();
-          renderStudents();
-          checkConsecutiveAbsences();
+      }
+
+      if (AppState.syllabus && AppState.syllabus.length > 0) {
+        AppState.syllabus.forEach(s => {
+          if (s.book && s.book.trim()) booksSet.add(s.book.trim());
+        });
+      }
+      if (AppState.courses && AppState.courses.length > 0) {
+        AppState.courses.forEach(c => {
+          if (c.book && c.book.trim()) booksSet.add(c.book.trim());
+        });
+      }
+
+      const excluded = ["المختصر س1", "القول الجلي"];
+      excluded.forEach(ex => booksSet.delete(ex));
+
+      const rawList = Array.from(booksSet).filter(b => b && !excluded.includes(b));
+      const priorityOrder = ["أوجز س1", "أوجز س2", "إظهار س1"];
+      const prioritized = priorityOrder.filter(p => rawList.includes(p));
+      const remaining = rawList.filter(b => !priorityOrder.includes(b)).sort((a, b) => a.localeCompare(b, 'ar'));
+
+      return Array.from(new Set([...prioritized, ...remaining]));
+    }
+
+    function populateBooksDropdown(selectId) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      sel.innerHTML = '<option value="">+ اختر كتاباً لإضافته للمنجزات...</option>';
+      const books = getAvailableBooksList();
+      books.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b;
+        opt.innerText = b;
+        sel.appendChild(opt);
+      });
+    }
+
+    function handleEditCompletedBook(selectEl) {
+      const book = selectEl.value;
+      if (!book) return;
+      AppState.selectedEditBooks.add(book);
+      selectEl.value = "";
+      renderEditBookChips();
+    }
+
+    function removeEditCompletedBook(book) {
+      AppState.selectedEditBooks.delete(book);
+      renderEditBookChips();
+    }
+
+    function renderEditBookChips() {
+      const container = document.getElementById('editStudentBooksChips');
+      const hiddenInput = document.getElementById('editStudentCompletedBooks');
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (AppState.selectedEditBooks.size === 0) {
+        container.innerHTML = `<span class="text-[11px] text-slate-400 py-1 px-1">لم يتم اختيار أي كتاب بعد</span>`;
+        if (hiddenInput) hiddenInput.value = "";
+        return;
+      }
+
+      const arr = Array.from(AppState.selectedEditBooks);
+      if (hiddenInput) hiddenInput.value = arr.join('، ');
+
+      arr.forEach(book => {
+        const chip = document.createElement('span');
+        chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-semibold";
+        chip.innerHTML = `
+          <span>${escapeHtml(book)}</span>
+          <button type="button" onclick="removeEditCompletedBook('${escapeHtml(book)}')" class="text-emerald-500 hover:text-red-600 transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        `;
+        container.appendChild(chip);
+      });
+    }
+
+    function handleAddCompletedBook(selectEl) {
+      const book = selectEl.value;
+      if (!book) return;
+      AppState.selectedAddBooks.add(book);
+      selectEl.value = "";
+      renderAddBookChips();
+    }
+
+    function removeAddCompletedBook(book) {
+      AppState.selectedAddBooks.delete(book);
+      renderAddBookChips();
+    }
+
+    function renderAddBookChips() {
+      const container = document.getElementById('addStudentBooksChips');
+      const hiddenInput = document.getElementById('addStudentCompletedBooks');
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (AppState.selectedAddBooks.size === 0) {
+        container.innerHTML = `<span class="text-[11px] text-slate-400 py-1 px-1">لم يتم اختيار أي كتاب بعد</span>`;
+        if (hiddenInput) hiddenInput.value = "";
+        return;
+      }
+
+      const arr = Array.from(AppState.selectedAddBooks);
+      if (hiddenInput) hiddenInput.value = arr.join('، ');
+
+      arr.forEach(book => {
+        const chip = document.createElement('span');
+        chip.className = "inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 text-indigo-800 border border-indigo-200 rounded-xl text-xs font-semibold";
+        chip.innerHTML = `
+          <span>${escapeHtml(book)}</span>
+          <button type="button" onclick="removeAddCompletedBook('${escapeHtml(book)}')" class="text-indigo-500 hover:text-red-600 transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        `;
+        container.appendChild(chip);
+      });
+    }
+
+    function handleAttendanceBackNav() {
+      if (isAttendanceDirty && AppState.selectedCourseForAtt && AppState.currentAttendanceRoster.length > 0) {
+        const modal = document.getElementById('confirmLeaveAttendanceModal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          return;
+        }
+      }
+      openDashboardView();
+    }
+
+    function closeConfirmLeaveModal() {
+      const modal = document.getElementById('confirmLeaveAttendanceModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmDiscardAttendance() {
+      isAttendanceDirty = false;
+      closeConfirmLeaveModal();
+      openDashboardView();
+    }
+
+    function populateDropdownMenus() {
+      if (!AppState.dropdowns) return;
+
+      const catSelect = document.getElementById('newCourseCategory');
+      const courseCategories = (AppState.dropdowns.courseCategories && AppState.dropdowns.courseCategories.length > 0)
+        ? AppState.dropdowns.courseCategories
+        : ["رجال", "نساء"];
+
+      if (catSelect) {
+        catSelect.innerHTML = "";
+        courseCategories.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.innerText = c;
+          catSelect.appendChild(opt);
+        });
+      }
+
+      const studentGenders = ["رجال", "نساء"];
+      ['addStudentCategory', 'editStudentCategory'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel) {
+          sel.innerHTML = "";
+          studentGenders.forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g;
+            opt.innerText = g;
+            sel.appendChild(opt);
+          });
+        }
+      });
+
+      const placeTypes = (AppState.dropdowns.locations && AppState.dropdowns.locations.length > 0)
+        ? AppState.dropdowns.locations
+        : ["مقر", "بيت", "عن بعد"];
+
+      ['newCourseLocation', 'editCourseLocation'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel) {
+          sel.innerHTML = "";
+          placeTypes.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.innerText = p;
+            sel.appendChild(opt);
+          });
+        }
+      });
+
+      const venuesList = (AppState.dropdowns.venues && AppState.dropdowns.venues.length > 0)
+        ? AppState.dropdowns.venues
+        : ["منفلوري", "المرسى", "أريانة"];
+
+      ['newCourseVenue', 'editCourseVenue', 'editStudentLocation', 'addStudentLocation'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel) {
+          sel.innerHTML = "";
+          venuesList.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v;
+            opt.innerText = v;
+            sel.appendChild(opt);
+          });
+        }
+      });
+
+      const booksList = getAvailableBooksList();
+      ['newCourseBook', 'editCourseBookInput'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel) {
+          sel.innerHTML = '<option value="">-- اختر الكتاب المقرر --</option>';
+          booksList.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b;
+            opt.innerText = b;
+            sel.appendChild(opt);
+          });
+        }
+      });
+
+      const levelSelect = document.getElementById('editStudentLevel');
+      const addLevelSelect = document.getElementById('addStudentLevel');
+      if (AppState.dropdowns.studentLevels) {
+        const sortedLevels = [...AppState.dropdowns.studentLevels].sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0));
+        [levelSelect, addLevelSelect].forEach(sel => {
+          if (sel) {
+            sel.innerHTML = "";
+            sortedLevels.forEach(lvl => {
+              const opt = document.createElement('option');
+              opt.value = lvl;
+              opt.innerText = `مستوى ${lvl}`;
+              sel.appendChild(opt);
+            });
+          }
+        });
+      }
+
+      const ageSelect = document.getElementById('editStudentAgeGroup');
+      const addAgeSelect = document.getElementById('addStudentAgeGroup');
+      if (AppState.dropdowns.studentAgeGroups) {
+        [ageSelect, addAgeSelect].forEach(sel => {
+          if (sel) {
+            sel.innerHTML = "";
+            AppState.dropdowns.studentAgeGroups.forEach(ag => {
+              const opt = document.createElement('option');
+              opt.value = ag;
+              opt.innerText = ag;
+              sel.appendChild(opt);
+            });
+          }
+        });
+      }
+    }
+
+    function showLoading(msg = "جارٍ المعالجة...") {
+      document.getElementById('loadingMessage').innerText = msg;
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      let bg = "bg-slate-900 text-white";
+      if (type === 'success') bg = "bg-emerald-700 text-white";
+      else if (type === 'error') bg = "bg-red-600 text-white";
+
+      toast.className = `${bg} px-4 py-3 rounded-2xl shadow-card flex items-center gap-2 text-xs font-semibold transition-all duration-300 pointer-events-auto`;
+      toast.innerText = message;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function updateDateWidget() {
+      const now = new Date();
+      const arabicDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      const arabicMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      
+      const dayName = arabicDays[now.getDay()];
+      const dayNum = now.getDate();
+      const monthName = arabicMonths[now.getMonth()];
+      const year = now.getFullYear();
+
+      document.getElementById('widgetDayName').innerText = dayName;
+      document.getElementById('widgetFullDate').innerText = `${dayNum} ${monthName} ${year}`;
+
+      const weekNum = Math.ceil(dayNum / 7);
+      document.getElementById('widgetAutoWeek').innerText = `الأسبوع ${weekNum} - ${monthName}`;
+
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const attDateInput = document.getElementById('attDateInput');
+      if (attDateInput) {
+        attDateInput.value = `${yyyy}-${mm}-${dd}`;
+        syncWeekAndMonthWithDate(attDateInput.value);
+      }
+    }
+
+    function syncWeekAndMonthWithDate(dateStr) {
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return;
+
+      const arabicMonths = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      const dayNum = d.getDate();
+      const monthName = arabicMonths[d.getMonth()];
+      const weekNum = Math.ceil(dayNum / 7);
+      
+      document.getElementById('attWeekMonthInput').value = `الأسبوع ${weekNum} - ${monthName}`;
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const installWrapper = document.getElementById('loginInstallWrapper');
+      if (installWrapper) installWrapper.classList.remove('hidden');
+      const btnText = document.getElementById('installBtnText');
+      if (btnText) btnText.innerText = "تثبيت التطبيق الآن على هاتفك";
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      const installWrapper = document.getElementById('loginInstallWrapper');
+      if (installWrapper) installWrapper.classList.add('hidden');
+      showToast("تم تثبيت التطبيق بنجاح على هاتفك", "success");
+    });
+
+    function triggerPWAInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            const installWrapper = document.getElementById('loginInstallWrapper');
+            if (installWrapper) installWrapper.classList.add('hidden');
+            showToast("جارٍ تثبيت التطبيق على الشاشة الرئيسية...", "success");
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        const guideModal = document.getElementById('pwaGuideModal');
+        if (guideModal) guideModal.classList.remove('hidden');
+      }
+    }
+
+    function closePwaGuideModal() {
+      const guideModal = document.getElementById('pwaGuideModal');
+      if (guideModal) guideModal.classList.add('hidden');
+    }
+
+    async function refreshLiveBackend() {
+      if (!AppState.currentUser) return;
+      showLoading("تحديث البيانات...");
+      try {
+        const response = await callBackend({
+          method: 'POST',
+          body: { action: 'init', email: AppState.currentUser.email }
+        });
+
+        if (response && response.success) {
+          AppState.currentUser = response.user;
+          AppState.courses = response.courses || [];
+          AppState.students = response.students || [];
+          AppState.syllabus = response.syllabus || [];
+          AppState.books = response.books || [];
+          AppState.attendance = response.attendance || [];
+          if (response.dropdowns) {
+            AppState.dropdowns = response.dropdowns;
+          }
+
+          populateDropdownMenus();
+          setupDashboardAfterLogin();
+          showToast("تم تحديث البيانات بنجاح", "success");
+        } else {
+          showToast(response.error || "تعذر التحديث", "error");
+        }
+      } catch (err) {
+        showToast("تعذر إتمام التحديث: " + err.message, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // ==========================================
+    // 1. تسجيل الحضور (Attendance Workflow)
+    // ==========================================
+    function toggleAttendanceCourseDropdown() {
+      const menu = document.getElementById('attendanceCoursesList');
+      const arrow = document.getElementById('attDropdownArrow');
+      if (!menu) return;
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+      } else {
+        menu.classList.add('hidden');
+        if (arrow) arrow.classList.remove('rotate-180');
+      }
+    }
+
+    function renderAttendanceCoursesList() {
+      const container = document.getElementById('attendanceCoursesList');
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (AppState.courses.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 text-center text-slate-400 text-xs">
+            لا توجد دروس مسندة إليك
+          </div>
+        `;
+        return;
+      }
+
+      if (AppState.selectedCourseForAtt) {
+        updateAttendanceDropdownHeader(AppState.selectedCourseForAtt);
+      }
+
+      AppState.courses.forEach(c => {
+        const count = getStudentCountForCourse(c.code);
+        const isSelected = AppState.selectedCourseForAtt && AppState.selectedCourseForAtt.code === c.code;
+
+        const item = document.createElement('div');
+        item.className = `p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between text-right ${
+          isSelected 
+            ? 'bg-emerald-50 text-emerald-900 font-bold border border-emerald-200' 
+            : 'hover:bg-slate-50 text-slate-700'
+        }`;
+
+        item.onclick = (e) => {
+          e.stopPropagation();
+          selectCourseForAttendance(c.code);
+          toggleAttendanceCourseDropdown();
+        };
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2 truncate">
+            <span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-600' : 'bg-slate-300'}"></span>
+            <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(c.book || 'درس')}</span>
+            ${c.category ? `<span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(c.category)}</span>` : ''}
+            <span class="text-[10px] text-slate-400">${escapeHtml(c.day || '')} ${c.timing ? '• ' + escapeHtml(c.timing) : ''}</span>
+          </div>
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600 num-font shrink-0">
+            ${count} طالب
+          </span>
+        `;
+
+        container.appendChild(item);
+      });
+    }
+
+    function updateAttendanceDropdownHeader(course) {
+      if (!course) return;
+      const count = getStudentCountForCourse(course.code);
+
+      const titleEl = document.getElementById('attDropdownSelectedTitle');
+      const catEl = document.getElementById('attDropdownSelectedCategory');
+      const metaEl = document.getElementById('attDropdownSelectedMeta');
+      const countEl = document.getElementById('attDropdownSelectedCount');
+
+      if (titleEl) titleEl.innerText = course.book || 'درس';
+      if (catEl) {
+        catEl.innerText = course.category || '';
+        catEl.classList.toggle('hidden', !course.category);
+      }
+      if (metaEl) {
+        metaEl.innerText = `${course.day || ''} ${course.timing ? '• ' + course.timing : ''} ${course.location ? '• ' + course.location : ''}`;
+      }
+      if (countEl) {
+        countEl.innerText = `${count} طالب`;
+        countEl.classList.remove('hidden');
+      }
+    }
+
+    function selectCourseForAttendance(courseCode) {
+      const course = AppState.courses.find(c => c.code === courseCode);
+      if (!course) return;
+
+      AppState.selectedCourseForAtt = course;
+      updateAttendanceDropdownHeader(course);
+      renderAttendanceCoursesList();
+
+      const formSection = document.getElementById('attendanceActiveForm');
+      formSection.classList.remove('hidden');
+
+      const topSaveBtn = document.getElementById('topSaveAttendanceBtn');
+      if (topSaveBtn) topSaveBtn.classList.remove('hidden');
+
+      const pastRecords = AppState.attendance.filter(a => a.courseCode === course.code && a.lastTopic);
+      const lastTaught = pastRecords.length > 0 ? pastRecords[pastRecords.length - 1].lastTopic : "";
+      const hintEl = document.getElementById('lastTaughtHint');
+      if (hintEl) {
+        hintEl.innerText = lastTaught ? `(آخر ما شرح: ${lastTaught})` : "";
+      }
+
+      const selectEl = document.getElementById('attSyllabusSelect');
+      selectEl.innerHTML = '<option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>';
+      const bookSyllabus = AppState.syllabus.filter(s => s.book && course.book && (s.book.includes(course.book) || course.book.includes(s.book)));
+      
+      let matchedInitial = false;
+      bookSyllabus.forEach(item => {
+        if (item.chapter) {
+          const opt = document.createElement('option');
+          opt.value = item.chapter;
+          opt.innerText = item.chapter;
+          if (lastTaught && (item.chapter === lastTaught || item.chapter.trim() === lastTaught.trim())) {
+            opt.selected = true;
+            matchedInitial = true;
+          }
+          selectEl.appendChild(opt);
+        }
+      });
+
+      if (lastTaught && !matchedInitial) {
+        const customOpt = document.createElement('option');
+        customOpt.value = lastTaught;
+        customOpt.innerText = `${lastTaught} (آخر ما شرح)`;
+        customOpt.selected = true;
+        selectEl.insertBefore(customOpt, selectEl.children[1] || null);
+      }
+
+      const cleanTarget = course.code.trim().toLowerCase().replace(/[\s\-_ـ–—]+/g, "-");
+      const enrolled = AppState.students.filter(st => {
+        const rawCodes = (st.courseCodes || "").split(/[\r\n,;\/\s\u00A0]+/);
+        const normalizedCodes = rawCodes.map(c => c.trim().toLowerCase().replace(/[\s\-_ـ–—]+/g, "-"));
+        return normalizedCodes.includes(cleanTarget);
+      });
+
+      AppState.currentAttendanceRoster = enrolled.map(st => ({
+        studentName: st.name,
+        phone: st.phone,
+        status: 'حاضر',
+        value: 1
+      }));
+
+      AppState.currentAttendanceRoster.sort((a, b) => {
+        const cleanA = (a.studentName || '').replace(/^ال/, '').trim();
+        const cleanB = (b.studentName || '').replace(/^ال/, '').trim();
+        return cleanA.localeCompare(cleanB, 'ar');
+      });
+
+      isAttendanceDirty = false;
+      renderAttendanceStudentList();
+    }
+
+    function getNormalizedFirstLetter(name) {
+      if (!name) return '#';
+      let clean = name.trim().replace(/^ال/, '');
+      if (!clean) clean = name.trim();
+      let char = clean.charAt(0);
+      if (/[إأآا]/.test(char)) return 'أ';
+      if (/[ةه]/.test(char)) return 'هـ';
+      if (/[يى]/.test(char)) return 'ي';
+      return char;
+    }
+
+    function scrollToAlphaSection(letter) {
+      const target = document.getElementById(`alpha-anchor-${letter}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50');
+        setTimeout(() => {
+          target.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-50');
+        }, 1200);
+      }
+    }
+
+    function renderAttendanceStudentList() {
+      const container = document.getElementById('attendanceStudentList');
+      const alphaRail = document.getElementById('attendanceAlphaRail');
+      container.innerHTML = "";
+      if (alphaRail) alphaRail.innerHTML = "";
+
+      let presentCount = 0;
+      let absentCount = 0;
+
+      if (AppState.currentAttendanceRoster.length === 0) {
+        if (alphaRail) alphaRail.classList.add('hidden');
+        container.innerHTML = `
+          <div class="p-6 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+            لا يوجد طلاب مسجلون في هذا الدرس
+          </div>
+        `;
+        document.getElementById('attendanceStatsPill').classList.add('hidden');
+        return;
+      }
+
+      const showAlphaIndex = AppState.currentAttendanceRoster.length > 15;
+
+      const lettersMap = new Map();
+      if (showAlphaIndex) {
+        AppState.currentAttendanceRoster.forEach((item, idx) => {
+          const letter = getNormalizedFirstLetter(item.studentName);
+          if (!lettersMap.has(letter)) {
+            lettersMap.set(letter, idx);
+          }
+        });
+      }
+
+      if (showAlphaIndex && alphaRail && lettersMap.size > 1) {
+        alphaRail.classList.remove('hidden');
+        lettersMap.forEach((firstIdx, letter) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = "w-6 h-6 flex items-center justify-center text-[11px] font-bold text-slate-700 hover:text-white hover:bg-emerald-600 active:scale-95 rounded-lg transition-all cursor-pointer";
+          btn.innerText = letter;
+          btn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            scrollToAlphaSection(letter);
+          };
+          alphaRail.appendChild(btn);
+        });
+      } else if (alphaRail) {
+        alphaRail.classList.add('hidden');
+      }
+
+      let currentLetterHeader = null;
+
+      AppState.currentAttendanceRoster.forEach((item, idx) => {
+        const isPresent = item.value === 1;
+        if (isPresent) presentCount++;
+        else absentCount++;
+
+        if (showAlphaIndex) {
+          const studentLetter = getNormalizedFirstLetter(item.studentName);
+
+          if (studentLetter !== currentLetterHeader) {
+            currentLetterHeader = studentLetter;
+            const sectionHeader = document.createElement('div');
+            sectionHeader.id = `alpha-anchor-${studentLetter}`;
+            sectionHeader.className = "pt-2 pb-1 transition-all rounded-xl";
+            sectionHeader.innerHTML = `
+              <div class="flex items-center gap-2 px-1">
+                <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shadow-xs">
+                  ${studentLetter}
+                </span>
+                <div class="h-[1px] flex-1 bg-slate-200"></div>
+              </div>
+            `;
+            container.appendChild(sectionHeader);
+          }
+        }
+
+        const card = document.createElement('div');
+        card.className = `p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none ${
+          isPresent 
+            ? 'glass-card border-emerald-400 hover:border-emerald-500' 
+            : 'bg-red-50/90 border-red-300 hover:border-red-400'
+        }`;
+
+        card.onclick = () => toggleAttendanceStatus(idx);
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-sm ${
+              isPresent ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
+            }">
+              ${idx + 1}
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-900">${escapeHtml(item.studentName)}</h4>
+              ${item.phone ? `<span class="text-xs text-slate-500 font-semibold num-font">${escapeHtml(item.phone)}</span>` : ''}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-xs sm:text-sm font-bold px-3.5 py-1.5 rounded-xl transition-all ${
+              isPresent 
+                ? 'bg-emerald-600 text-white shadow-sm' 
+                : 'bg-red-600 text-white shadow-sm'
+            }">
+              ${isPresent ? '✓ حاضر' : '✕ غائب'}
+            </span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      document.getElementById('attendanceStatsPill').classList.remove('hidden');
+      document.getElementById('presentSummaryCount').innerText = `${presentCount} حاضر`;
+      document.getElementById('absentSummaryCount').innerText = `${absentCount} غائب`;
+    }
+
+    function toggleAttendanceStatus(idx) {
+      if (!AppState.currentAttendanceRoster[idx]) return;
+      const current = AppState.currentAttendanceRoster[idx];
+      if (current.value === 1) {
+        current.value = 0;
+        current.status = 'غائب';
+      } else {
+        current.value = 1;
+        current.status = 'حاضر';
+      }
+      isAttendanceDirty = true;
+      renderAttendanceStudentList();
+    }
+
+    function setAllAttendanceState(isPresent) {
+      AppState.currentAttendanceRoster.forEach(item => {
+        item.value = isPresent ? 1 : 0;
+        item.status = isPresent ? 'حاضر' : 'غائب';
+      });
+      isAttendanceDirty = true;
+      renderAttendanceStudentList();
+    }
+
+    async function submitAttendanceSession() {
+      if (!AppState.selectedCourseForAtt) {
+        showToast("يرجى اختيار الدرس أولاً", "error");
+        return;
+      }
+
+      if (AppState.currentAttendanceRoster.length === 0) {
+        showToast("لا يوجد طلاب لتسجيل حضورهم", "error");
+        return;
+      }
+
+      const dateVal = document.getElementById('attDateInput').value;
+      const syllabusSelect = document.getElementById('attSyllabusSelect');
+      const lastTopic = syllabusSelect ? syllabusSelect.value.trim() : "";
+
+      if (!lastTopic) {
+        showToast("يرجى اختيار الباب المشروح من القائمة المنسدلة", "error");
+        if (syllabusSelect) syllabusSelect.focus();
+        return;
+      }
+
+      const d = new Date(dateVal);
+      const monthNum = !isNaN(d.getTime()) ? (d.getMonth() + 1) : "";
+      
+      let weekNum = "";
+      if (!isNaN(d.getTime())) {
+        const target = new Date(d.valueOf());
+        const dayNr = (d.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        const firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() !== 4) {
+          target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        weekNum = 1 + Math.ceil((firstThursday - target) / 604800000);
+      }
+
+      const btn = document.getElementById('saveAttendanceBtn');
+      const topBtn = document.getElementById('topSaveAttendanceBtn');
+      if (btn) btn.disabled = true;
+      if (topBtn) topBtn.disabled = true;
+      showLoading("جارٍ حفظ الحضور...");
+
+      try {
+        const compactRecords = AppState.currentAttendanceRoster.map(r => [r.studentName, r.value]);
+
+        const payload = {
+          action: 'saveAttendance',
+          courseCode: AppState.selectedCourseForAtt.code,
+          date: dateVal,
+          week: weekNum,
+          month: monthNum,
+          lastTopic: lastTopic,
+          records: compactRecords
+        };
+
+        const response = await callBackend({
+          method: 'POST',
+          body: payload
+        });
+
+        if (response && response.success) {
+          showToast("تم حفظ الحضور بنجاح", "success");
+          isAttendanceDirty = false;
+          openDashboardView();
+        } else {
+          showToast(response.error || "فشل تسجيل الحضور", "error");
+        }
+      } catch (err) {
+        showToast("تعذر إتمام التسجيل: " + err.message, "error");
+      } finally {
+        if (btn) btn.disabled = false;
+        if (topBtn) topBtn.disabled = false;
+        hideLoading();
+      }
+    }
+
+    // ==========================================
+    // 2. الطلبة (Students Directory & Filters)
+    // ==========================================
+    function buildStudentCourseFilterBar() {
+      const bar = document.getElementById('studentCourseFilterBar');
+      bar.innerHTML = "";
+
+      const allBtn = document.createElement('button');
+      allBtn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+        AppState.selectedStudentCourseFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
+      }`;
+      allBtn.innerText = `الكل (${AppState.students.length})`;
+      allBtn.onclick = () => {
+        AppState.selectedStudentCourseFilter = 'ALL';
+        buildStudentCourseFilterBar();
+        renderStudentsDirectory();
+      };
+      bar.appendChild(allBtn);
+
+      AppState.courses.forEach(c => {
+        const count = getStudentCountForCourse(c.code);
+        const btn = document.createElement('button');
+        const active = AppState.selectedStudentCourseFilter === c.code;
+
+        btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+          active ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
+        }`;
+        btn.innerHTML = `${escapeHtml(c.book || 'درس')} <span class="num-font text-[10px] opacity-80">(${count})</span>`;
+        btn.onclick = () => {
+          AppState.selectedStudentCourseFilter = c.code;
+          buildStudentCourseFilterBar();
+          renderStudentsDirectory();
+        };
+        bar.appendChild(btn);
+      });
+    }
+
+    function renderStudentsDirectory() {
+      const container = document.getElementById('studentsDirectoryList');
+      container.innerHTML = "";
+
+      const q = (document.getElementById('studentSearchInput').value || "").trim().toLowerCase();
+      const courseFilter = AppState.selectedStudentCourseFilter;
+
+      const filtered = AppState.students.filter(st => {
+        if (courseFilter !== 'ALL') {
+          const codes = (st.courseCodes || "").split(/[\r\n,;\/\s\u00A0]+/).map(c => c.trim().toLowerCase());
+          if (!codes.includes(courseFilter.toLowerCase())) return false;
+        }
+
+        if (q) {
+          const matchName = st.name && st.name.toLowerCase().includes(q);
+          const matchPhone = st.phone && st.phone.includes(q);
+          const matchLevel = st.level && String(st.level).toLowerCase().includes(q);
+          const matchLoc = st.location && st.location.toLowerCase().includes(q);
+          const matchCity = st.city && st.city.toLowerCase().includes(q);
+          const matchId = st.id && st.id.toLowerCase().includes(q);
+          if (!matchName && !matchPhone && !matchLevel && !matchLoc && !matchCity && !matchId) return false;
+        }
+
+        return true;
+      });
+
+      const badge = document.getElementById('studentsTotalBadge');
+      if (badge) {
+        badge.innerText = `${filtered.length} / ${AppState.students.length}`;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+            لا يوجد طلاب مطابقين للبحث أو التصفية
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(st => {
+        const card = document.createElement('div');
+        card.className = "p-4 sm:p-5 glass-card rounded-3xl space-y-3";
+
+        const isLevel3Plus = parseInt(st.level, 10) >= 3;
+
+        const studentLogs = AppState.attendance.filter(a => a.studentName && a.studentName.trim() === st.name.trim());
+        let attendanceRateBadge = '';
+        if (studentLogs.length > 0) {
+          const presentCount = studentLogs.filter(a => a.value === 1 || a.status === 'حاضر').length;
+          const ratePercent = Math.round((presentCount / studentLogs.length) * 100);
+          
+          let rateColor = 'bg-emerald-100/90 text-emerald-900 border-emerald-300';
+          if (ratePercent < 50) {
+            rateColor = 'bg-red-100/90 text-red-900 border-red-300';
+          } else if (ratePercent < 75) {
+            rateColor = 'bg-amber-100/90 text-amber-900 border-amber-300';
+          }
+
+          attendanceRateBadge = `
+            <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-xl border num-font ${rateColor}">
+              <span>الحضور:</span>
+              <span>${ratePercent}%</span>
+              <span class="text-[11px] opacity-75 font-normal">(${presentCount}/${studentLogs.length})</span>
+            </span>
+          `;
+        }
+
+        const cityLabel = st.city ? st.city : 'غير محدد';
+        const locLabel = st.location ? st.location : 'غير محدد';
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="text-sm sm:text-base font-extrabold text-slate-900">${escapeHtml(st.name)}</h4>
+                ${st.id ? `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-mono">${escapeHtml(st.id)}</span>` : ''}
+                ${st.isUnassigned ? `<span class="text-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded-lg font-bold">بلا درس حالياً</span>` : ''}
+              </div>
+              <div class="flex flex-wrap items-center gap-2 mt-1.5">
+                <span class="text-xs font-bold text-indigo-900 bg-indigo-100/90 border border-indigo-200 px-2.5 py-0.5 rounded-lg">
+                  مستوى ${escapeHtml(st.level || '1')}
+                </span>
+                ${st.category ? `<span class="text-xs text-slate-700 bg-slate-200/90 border border-slate-300 px-2 py-0.5 rounded-lg font-semibold">${escapeHtml(st.category)}</span>` : ''}
+                ${st.ageGroup ? `<span class="text-xs text-slate-700 bg-slate-200/90 border border-slate-300 px-2 py-0.5 rounded-lg font-semibold">${escapeHtml(st.ageGroup)}</span>` : ''}
+              </div>
+            </div>
+
+            <button onclick="openEditStudentModal('${escapeHtml(st.name)}')" class="px-3.5 py-1.5 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
+              تحيين
+            </button>
+          </div>
+
+          ${isLevel3Plus && st.completedBooks ? `
+            <div class="p-2.5 bg-emerald-50 rounded-xl text-xs sm:text-sm text-emerald-900 border border-emerald-200">
+              <span class="font-bold">الكتب المنجزة:</span> ${escapeHtml(st.completedBooks)}
+            </div>
+          ` : ''}
+
+          <div class="pt-2.5 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-slate-700 font-medium">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span>المكان: <strong class="text-slate-900">${escapeHtml(cityLabel)}</strong></span>
+              <span class="text-slate-400">•</span>
+              <span>المقر: <strong class="text-emerald-800">${escapeHtml(locLabel)}</strong></span>
+              ${attendanceRateBadge}
+            </div>
+
+            ${st.phone ? `
+              <a href="tel:${escapeHtml(st.phone.replace(/[^0-9+]/g, ''))}" class="flex items-center gap-1.5 font-bold text-emerald-700 hover:text-emerald-800 num-font shrink-0 text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                </svg>
+                <span>${escapeHtml(st.phone)}</span>
+              </a>
+            ` : `
+              <span class="text-slate-400 text-xs">لا يوجد هاتف</span>
+            `}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function openAddStudentModal() {
+      document.getElementById('addStudentName').value = "";
+      document.getElementById('addStudentPhone').value = "";
+      document.getElementById('addStudentCity').value = "";
+      document.getElementById('addStudentCompletedBooks').value = "";
+      
+      AppState.selectedAddBooks.clear();
+      populateBooksDropdown('addStudentBooksDropdown');
+      renderAddBookChips();
+      
+      const courseSelect = document.getElementById('addStudentCourse');
+      if (courseSelect) {
+        courseSelect.innerHTML = '<option value="">-- بدون درس حالياً --</option>';
+        AppState.courses.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.code;
+          const catLabel = c.category ? ` [${c.category}]` : '';
+          opt.innerText = `${c.book || 'درس'}${catLabel} (${c.day || ''} ${c.timing || ''})`;
+          courseSelect.appendChild(opt);
+        });
+        courseSelect.value = "";
+      }
+
+      handleCourseSelectionChange("");
+
+      const addLevel = document.getElementById('addStudentLevel');
+      if (addLevel) toggleAddStudentCompletedBooks(addLevel.value || "1");
+
+      document.getElementById('addStudentModal').classList.remove('hidden');
+    }
+
+    function handleCourseSelectionChange(courseCode) {
+      const catSelect = document.getElementById('addStudentCategory');
+      const locSelect = document.getElementById('addStudentLocation');
+      if (!catSelect) return;
+
+      catSelect.disabled = false;
+
+      if (!courseCode) {
+        const firstCat = (AppState.courses.length > 0 && AppState.courses[0].category) 
+          ? AppState.courses[0].category 
+          : "رجال";
+        catSelect.value = firstCat.includes("نساء") ? "نساء" : "رجال";
+        return;
+      }
+
+      const course = AppState.courses.find(c => c.code === courseCode);
+      if (course) {
+        const rawCategory = (course.category || "").trim();
+        const cleanGender = rawCategory.includes("نساء") ? "نساء" : "رجال";
+        catSelect.value = cleanGender;
+
+        if (locSelect && course.venue) {
+          locSelect.value = course.venue;
+        }
+      }
+    }
+
+    function closeAddStudentModal() {
+      const m = document.getElementById('addStudentModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function toggleAddStudentCompletedBooks(lvl) {
+      const wrapper = document.getElementById('addStudentCompletedBooksWrapper');
+      if (!wrapper) return;
+      if (parseInt(lvl, 10) >= 3) {
+        wrapper.classList.remove('hidden');
+        populateBooksDropdown('addStudentBooksDropdown');
+      } else {
+        wrapper.classList.add('hidden');
+      }
+    }
+
+    async function submitAddStudent() {
+      const name = document.getElementById('addStudentName').value.trim();
+      if (!name) {
+        showToast("يرجى كتابة اسم الطالب", "error");
+        return;
+      }
+
+      const courseCode = document.getElementById('addStudentCourse').value;
+      const catSelect = document.getElementById('addStudentCategory');
+      const category = catSelect ? catSelect.value : "رجال";
+      const phone = document.getElementById('addStudentPhone').value.trim();
+      const level = document.getElementById('addStudentLevel').value;
+      const ageGroup = document.getElementById('addStudentAgeGroup').value;
+      const location = document.getElementById('addStudentLocation').value;
+      const city = document.getElementById('addStudentCity').value.trim();
+      const completedBooks = Array.from(AppState.selectedAddBooks).join('، ');
+
+      showLoading("جارٍ إضافة الطالب وتوثيق البيانات...");
+
+      try {
+        const response = await callBackend({
+          method: 'POST',
+          body: {
+            action: 'addStudent',
+            name: name,
+            category: category,
+            courseCode: courseCode,
+            phone: phone,
+            level: level,
+            ageGroup: ageGroup,
+            location: location,
+            city: city,
+            completedBooks: completedBooks
+          }
+        });
+
+        if (response && response.success) {
+          showToast("تمت إضافة الطالب بنجاح", "success");
+          if (response.student) {
+            AppState.students.push(response.student);
+          }
+          document.getElementById('dashStudentsCountText').innerText = `${AppState.students.length} طالب مسجل`;
+          document.getElementById('studentsTotalBadge').innerText = `${AppState.students.length}`;
+          buildStudentCourseFilterBar();
+          renderStudentsDirectory();
+          renderAttendanceCoursesList();
+          closeAddStudentModal();
+        } else {
+          showToast(response.error || "فشل إضافة الطالب", "error");
         }
       } catch (e) {
-        console.error("Erreur init:", e);
+        showToast("تعذر إضافة الطالب: " + e.message, "error");
+      } finally {
+        hideLoading();
       }
     }
 
-    function renderDashboardStats() {
-      document.getElementById("statCoursesCount").textContent = AppState.courses.length;
-      document.getElementById("statStudentsCount").textContent = AppState.students.length;
+    function toggleCompletedBooksField(level) {
+      const wrapper = document.getElementById('completedBooksWrapper');
+      if (parseInt(level, 10) >= 3) {
+        wrapper.classList.remove('hidden');
+        populateBooksDropdown('editStudentBooksDropdown');
+      } else {
+        wrapper.classList.add('hidden');
+      }
     }
 
-    function renderCourses() {
-      const container = document.getElementById("coursesListContainer");
+    function openEditStudentModal(studentName) {
+      const student = AppState.students.find(s => s.name === studentName);
+      if (!student) return;
+
+      document.getElementById('editStudentOrigName').value = student.name;
+      document.getElementById('editStudentName').value = student.name;
+      
+      const catSelect = document.getElementById('editStudentCategory');
+      if (catSelect) {
+        const rawCat = (student.category || "").trim();
+        catSelect.value = rawCat.includes("نساء") ? "نساء" : "رجال";
+      }
+
+      document.getElementById('editStudentLevel').value = student.level || "1";
+      document.getElementById('editStudentAgeGroup').value = student.ageGroup || "";
+      document.getElementById('editStudentCity').value = student.city || "";
+      document.getElementById('editStudentLocation').value = student.location || "";
+      document.getElementById('editStudentPhone').value = student.phone || "";
+      
+      AppState.selectedEditBooks.clear();
+      if (student.completedBooks) {
+        const rawBooks = student.completedBooks.split(/[\r\n,;،]+/).map(b => b.trim()).filter(Boolean);
+        rawBooks.forEach(b => AppState.selectedEditBooks.add(b));
+      }
+      populateBooksDropdown('editStudentBooksDropdown');
+      renderEditBookChips();
+
+      toggleCompletedBooksField(student.level || "1");
+      document.getElementById('editStudentModal').classList.remove('hidden');
+    }
+
+    function closeEditStudentModal() {
+      const m = document.getElementById('editStudentModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    async function submitStudentUpdate() {
+      const origName = document.getElementById('editStudentOrigName').value;
+      const name = document.getElementById('editStudentName').value;
+      const category = document.getElementById('editStudentCategory') ? document.getElementById('editStudentCategory').value : "";
+      const level = document.getElementById('editStudentLevel').value;
+      const ageGroup = document.getElementById('editStudentAgeGroup').value;
+      const city = document.getElementById('editStudentCity').value;
+      const location = document.getElementById('editStudentLocation').value;
+      const phone = document.getElementById('editStudentPhone').value;
+      const completedBooks = Array.from(AppState.selectedEditBooks).join('، ');
+
+      showLoading("حفظ وتوثيق تحيين الطالب...");
+
+      try {
+        const response = await callBackend({
+          method: 'POST',
+          body: {
+            action: 'updateStudent',
+            origName: origName,
+            name: name,
+            category: category,
+            level: level,
+            ageGroup: ageGroup,
+            city: city,
+            location: location,
+            phone: phone,
+            completedBooks: completedBooks
+          }
+        });
+
+        if (response && response.success) {
+          showToast("تم تحيين بيانات الطالب وتسجيلها في السجل", "success");
+          const st = AppState.students.find(s => s.name === origName);
+          if (st) {
+            st.name = name;
+            st.category = category;
+            st.level = level;
+            st.ageGroup = ageGroup;
+            st.city = city;
+            st.location = location;
+            st.phone = phone;
+            st.completedBooks = completedBooks;
+          }
+          renderStudentsDirectory();
+          closeEditStudentModal();
+        } else {
+          showToast(response.error || "فشل التحديث", "error");
+        }
+      } catch (e) {
+        showToast("تعذر التحديث: " + e.message, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // ==========================================
+    // 3. قائمة الدروس (Courses Directory)
+    // ==========================================
+    function openCreateCourseModal() {
+      const bookSelect = document.getElementById('newCourseBook');
+      if (bookSelect) {
+        bookSelect.innerHTML = '<option value="">-- اختر الكتاب المقرر --</option>';
+        const uniqueBooks = getAvailableBooksList();
+        uniqueBooks.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b;
+          opt.innerText = b;
+          bookSelect.appendChild(opt);
+        });
+      }
+
+      const venueSelect = document.getElementById('newCourseVenue');
+      if (venueSelect && AppState.currentUser && AppState.currentUser.location) {
+        venueSelect.value = AppState.currentUser.location;
+      }
+
+      const timeInput = document.getElementById('newCourseTiming');
+      if (timeInput) {
+        timeInput.value = "20:00";
+      }
+
+      recordInitialFormValues([
+        'newCourseCategory',
+        'newCourseDay',
+        'newCourseTiming',
+        'newCourseLocation',
+        'newCourseVenue',
+        'newCourseBook'
+      ]);
+
+      document.getElementById('createCourseModal').classList.remove('hidden');
+    }
+
+    function closeCreateCourseModal() {
+      document.getElementById('createCourseModal').classList.add('hidden');
+    }
+
+    async function submitCreateCourse() {
+      if (isCreatingCourse) return;
+
+      const submitBtn = document.getElementById('submitCreateCourseBtn');
+      const category = document.getElementById('newCourseCategory').value;
+      const day = document.getElementById('newCourseDay').value;
+      const timing = document.getElementById('newCourseTiming').value;
+      const location = document.getElementById('newCourseLocation').value;
+      const venue = document.getElementById('newCourseVenue') ? document.getElementById('newCourseVenue').value : '';
+      const book = document.getElementById('newCourseBook').value;
+
+      if (!book) {
+        showToast("يرجى اختيار الكتاب المقرر للدرس", "error");
+        return;
+      }
+
+      isCreatingCourse = true;
+      if (submitBtn) submitBtn.disabled = true;
+      closeCreateCourseModal();
+      showLoading("جارٍ فتح الدرس وتوثيقه...");
+
+      try {
+        const response = await callBackend({
+          method: 'POST',
+          body: {
+            action: 'createCourse',
+            category: category,
+            day: day,
+            timing: timing,
+            location: location,
+            venue: venue,
+            book: book
+          }
+        });
+
+        if (response && response.success) {
+          showToast("تم فتح الدرس وتوثيقه بنجاح: " + response.course.code, "success");
+          AppState.courses.push(response.course);
+          renderCoursesDirectory();
+          renderAttendanceCoursesList();
+          buildStudentCourseFilterBar();
+        } else {
+          showToast(response.error || "فشل فتح الدرس", "error");
+        }
+      } catch (err) {
+        showToast("تعذر فتح الدرس: " + err.message, "error");
+      } finally {
+        isCreatingCourse = false;
+        if (submitBtn) submitBtn.disabled = false;
+        hideLoading();
+      }
+    }
+
+    function renderCoursesDirectory() {
+      const container = document.getElementById('coursesDirectoryList');
       container.innerHTML = "";
+
       if (AppState.courses.length === 0) {
-        container.innerHTML = `<p class="text-slate-500 text-sm col-span-full text-center py-6">لا توجد دروس متاحة في نطاق صلاحياتك.</p>`;
+        container.innerHTML = `
+          <div class="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+            لا توجد دروس مسندة إليك
+          </div>
+        `;
         return;
       }
 
       AppState.courses.forEach(c => {
-        const card = document.createElement("div");
-        card.className = "bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-3";
+        const studentCount = getStudentCountForCourse(c.code);
+        const card = document.createElement('div');
+        card.className = "p-4 sm:p-5 glass-card rounded-3xl space-y-3.5";
+
+        const locLabel = c.location || 'مقر';
+        const venueLabel = c.venue || (AppState.currentUser ? AppState.currentUser.location : '') || 'منفلوري';
+
         card.innerHTML = `
-          <div class="flex justify-between items-start">
-            <span class="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md font-medium">${escapeHtml(c.code)}</span>
-            <span class="text-xs text-slate-500">${escapeHtml(c.category || '')}</span>
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-2">
+                ${c.category ? `<span class="text-xs bg-slate-200/90 text-slate-800 px-3 py-1 rounded-xl font-bold border border-slate-300">${escapeHtml(c.category)}</span>` : ''}
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 pt-0.5">${escapeHtml(c.book || 'درس')}</h3>
+              
+              <div class="flex items-center gap-2 pt-1">
+                <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-800 bg-slate-200/80 border border-slate-300 px-3 py-1.5 rounded-xl">
+                  <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <span>${escapeHtml(c.day || 'يوم غير محدد')}</span>
+                </div>
+                ${c.timing ? `
+                  <div class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-900 bg-emerald-100/90 px-3 py-1.5 rounded-xl num-font border border-emerald-300">
+                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>${escapeHtml(c.timing)}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <span class="text-xs sm:text-sm font-bold px-3 py-1.5 bg-slate-200/90 rounded-xl text-slate-800 border border-slate-300 num-font whitespace-nowrap">
+              ${studentCount} طالب
+            </span>
           </div>
-          <div>
-            <h4 class="font-bold text-slate-800 text-base">${escapeHtml(c.book || 'بدون كتاب محدد')}</h4>
-            <p class="text-xs text-slate-500 mt-1">المدرس: ${escapeHtml(c.teacher || '')}</p>
+
+          <div class="flex items-center justify-between text-xs sm:text-sm text-slate-700 font-medium pt-2.5 border-t border-slate-200/80">
+            <div class="flex items-center gap-3">
+              <div>المكان: <span class="font-bold text-slate-900">${escapeHtml(locLabel)}</span></div>
+              <span class="text-slate-400">•</span>
+              <div>المقر: <span class="font-bold text-emerald-800">${escapeHtml(venueLabel)}</span></div>
+            </div>
           </div>
-          <div class="text-xs text-slate-600 space-y-1 pt-2 border-t border-slate-100">
-            <div>📅 اليوم: ${escapeHtml(c.day || '-')} | التوقيت: ${escapeHtml(c.timing || '-')}</div>
-            <div>📍 المكان: ${escapeHtml(c.location || '-')} (${escapeHtml(c.venue || '-')})</div>
-          </div>
-          <div class="pt-2 flex justify-end space-x-2 space-x-reverse">
-            <button onclick="openAttendanceModal('${escapeHtml(c.code)}')" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-3 py-1.5 rounded-lg transition">تسجيل الحضور</button>
+
+          <div class="flex items-center gap-2 pt-1">
+            <button onclick="selectCourseAndOpenAttendance('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>تسجيل الحضور</span>
+            </button>
+            <button onclick="openEditCourseModal('${escapeHtml(c.code)}')" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 active:scale-[0.98] text-slate-800 text-xs sm:text-sm font-bold rounded-xl transition-all border border-slate-300 cursor-pointer">
+              تعديل الدرس
+            </button>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
-    function renderStudents() {
-      const tbody = document.getElementById("studentsTableBody");
-      tbody.innerHTML = "";
-      const query = (document.getElementById("studentSearchInput").value || "").toLowerCase();
+    function selectCourseAndOpenAttendance(courseCode) {
+      openAttendanceView();
+      selectCourseForAttendance(courseCode);
+    }
 
-      const filtered = AppState.students.filter(s => 
-        (s.name && s.name.toLowerCase().includes(query)) || 
-        (s.id && s.id.toLowerCase().includes(query))
-      );
+    function openEditCourseModal(courseCode) {
+      const course = AppState.courses.find(c => c.code === courseCode);
+      if (!course) return;
 
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">لا توجد نتائج مطابقة.</td></tr>`;
+      document.getElementById('editCourseCode').value = course.code;
+      
+      const bookSelect = document.getElementById('editCourseBookInput');
+      if (bookSelect) {
+        bookSelect.innerHTML = '<option value="">-- اختر الكتاب المقرر --</option>';
+        const uniqueBooks = getAvailableBooksList();
+        uniqueBooks.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b;
+          opt.innerText = b;
+          bookSelect.appendChild(opt);
+        });
+        
+        if (course.book) {
+          if (!uniqueBooks.includes(course.book)) {
+            const customOpt = document.createElement('option');
+            customOpt.value = course.book;
+            customOpt.innerText = course.book;
+            bookSelect.appendChild(customOpt);
+          }
+          bookSelect.value = course.book;
+        }
+      }
+
+      document.getElementById('editCourseDay').value = course.day || 'السبت';
+      document.getElementById('editCourseTiming').value = course.timing || '';
+      
+      const locSelect = document.getElementById('editCourseLocation');
+      if (locSelect) locSelect.value = course.location || 'مقر';
+
+      const venueSelect = document.getElementById('editCourseVenue');
+      if (venueSelect) {
+        venueSelect.value = course.venue || (AppState.currentUser ? AppState.currentUser.location : 'منفلوري');
+      }
+
+      recordInitialFormValues([
+        'editCourseBookInput',
+        'editCourseDay',
+        'editCourseTiming',
+        'editCourseLocation',
+        'editCourseVenue'
+      ]);
+
+      document.getElementById('editCourseModal').classList.remove('hidden');
+    }
+
+    function closeEditCourseModal() {
+      const m = document.getElementById('editCourseModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    async function submitCourseUpdate() {
+      const code = document.getElementById('editCourseCode').value;
+      const book = document.getElementById('editCourseBookInput').value.trim();
+      const day = document.getElementById('editCourseDay').value;
+      const timing = document.getElementById('editCourseTiming').value;
+      const location = document.getElementById('editCourseLocation').value;
+      const venue = document.getElementById('editCourseVenue') ? document.getElementById('editCourseVenue').value : '';
+
+      if (!book) {
+        showToast("يرجى كتابة اسم الكتاب", "error");
         return;
       }
 
-      filtered.forEach(s => {
-        const tr = document.createElement("tr");
-        tr.className = "hover:bg-slate-50 transition";
-        tr.innerHTML = `
-          <td class="p-3 font-medium text-slate-800">${escapeHtml(s.name)}</td>
-          <td class="p-3 text-slate-600">${escapeHtml(s.level || '-')}</td>
-          <td class="p-3 text-slate-600">${escapeHtml(s.courseCodes || '-')}</td>
-          <td class="p-3 text-slate-600" dir="ltr">${escapeHtml(s.phone || '-')}</td>
-          <td class="p-3 text-center">
-            <span class="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded font-medium">${escapeHtml(s.id || '')}</span>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function filterStudentsList() {
-      renderStudents();
-    }
-
-    function checkConsecutiveAbsences() {
-      const container = document.getElementById("followupListContainer");
-      container.innerHTML = `<p class="text-slate-500 text-sm text-center py-4">لا توجد حالات غياب متكرر مسجلة حالياً.</p>`;
-    }
-
-    function switchTab(tab) {
-      document.getElementById("tabContentCourses").classList.add("hidden");
-      document.getElementById("tabContentStudents").classList.add("hidden");
-      document.getElementById("tabContentFollowup").classList.add("hidden");
-
-      document.getElementById("tabBtnCourses").className = "pb-3 px-4 font-medium text-slate-500 hover:text-slate-800 transition border-b-2 border-transparent";
-      document.getElementById("tabBtnStudents").className = "pb-3 px-4 font-medium text-slate-500 hover:text-slate-800 transition border-b-2 border-transparent";
-      document.getElementById("tabBtnFollowup").className = "pb-3 px-4 font-medium text-slate-500 hover:text-slate-800 transition border-b-2 border-transparent";
-
-      if (tab === 'courses') {
-        document.getElementById("tabContentCourses").classList.remove("hidden");
-        document.getElementById("tabBtnCourses").className = "pb-3 px-4 font-medium text-emerald-700 border-b-2 border-emerald-700 transition";
-      } else if (tab === 'students') {
-        document.getElementById("tabContentStudents").classList.remove("hidden");
-        document.getElementById("tabBtnStudents").className = "pb-3 px-4 font-medium text-emerald-700 border-b-2 border-emerald-700 transition";
-      } else if (tab === 'followup') {
-        document.getElementById("tabContentFollowup").classList.remove("hidden");
-        document.getElementById("tabBtnFollowup").className = "pb-3 px-4 font-medium text-emerald-700 border-b-2 border-emerald-700 transition";
-      }
-    }
-
-    function openAttendanceModal(courseCode) {
-      AppState.selectedCourseForAttendance = courseCode;
-      document.getElementById("attendanceDate").valueAsDate = new Date();
-      document.getElementById("attendanceLastTopic").value = "";
-      
-      const tbody = document.getElementById("attendanceStudentsBody");
-      tbody.innerHTML = "";
-
-      // Filtrer les étudiants liés à ce cours
-      const courseStudents = AppState.students.filter(s => s.courseCodes && s.courseCodes.toLowerCase().includes(courseCode.toLowerCase()));
-
-      if (courseStudents.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-500">لا يوجد طلاب مسجلون في هذا الدرس.</td></tr>`;
-      } else {
-        courseStudents.forEach(s => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td class="p-2 font-medium">${escapeHtml(s.name)}</td>
-            <td class="p-2 text-center">
-              <select class="attendance-select px-2 py-1 border rounded text-xs" data-student="${escapeHtml(s.name)}">
-                <option value="1" selected>حاضر</option>
-                <option value="0">غائب</option>
-              </select>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      document.getElementById("attendanceModal").classList.remove("hidden");
-      document.getElementById("attendanceModal").classList.add("flex");
-    }
-
-    function closeAttendanceModal() {
-      document.getElementById("attendanceModal").classList.add("hidden");
-      document.getElementById("attendanceModal").classList.remove("flex");
-    }
-
-    async function submitAttendance() {
-      const courseCode = AppState.selectedCourseForAttendance;
-      const date = document.getElementById("attendanceDate").value;
-      const lastTopic = document.getElementById("attendanceLastTopic").value;
-
-      const selects = document.querySelectorAll(".attendance-select");
-      const records = [];
-      selects.forEach(sel => {
-        records.push({
-          studentName: sel.getAttribute("data-student"),
-          value: parseInt(sel.value)
-        });
-      });
+      showLoading("جارٍ حفظ التعديلات...");
 
       try {
-        const res = await callBackend({
+        const response = await callBackend({
+          method: 'POST',
           body: {
-            action: "saveAttendance",
-            courseCode: courseCode,
-            date: date,
-            lastTopic: lastTopic,
-            records: records
+            action: 'updateCourse',
+            code: code,
+            book: book,
+            day: day,
+            timing: timing,
+            location: location,
+            venue: venue
           }
         });
 
-        if (res && res.success) {
-          alert("تم حفظ الحضور بنجاح!");
-          closeAttendanceModal();
+        if (response && response.success) {
+          showToast("تم تحديث بيانات الدرس بنجاح", "success");
+          const crs = AppState.courses.find(c => c.code === code);
+          if (crs) {
+            crs.book = book;
+            crs.day = day;
+            crs.timing = timing;
+            crs.location = location;
+            crs.venue = venue;
+          }
+          renderCoursesDirectory();
+          renderAttendanceCoursesList();
+          buildStudentCourseFilterBar();
+          closeEditCourseModal();
         } else {
-          alert(res.error || "فشل حفظ الحضور.");
+          showToast(response.error || "فشل التحديث", "error");
         }
       } catch (e) {
-        alert("حدث خطأ أثناء الاتصال.");
+        showToast("تعذر التحديث: " + e.message, "error");
+      } finally {
+        hideLoading();
       }
     }
 
-    function handleLogout() {
-      sessionToken = null;
-      AppState.currentUser = null;
-      document.getElementById("appSection").classList.add("hidden");
-      document.getElementById("headerActions").classList.add("hidden");
-      document.getElementById("loginSection").classList.remove("hidden");
-      document.getElementById("loginPin").value = "";
-    }
+    // ==========================================
+    // 4. متابعة الغائبين (Follow-up)
+    // ==========================================
+    function checkConsecutiveAbsences() {
+      const historyMap = {};
 
-    function escapeHtml(str) {
-      if (!str) return "";
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+      AppState.attendance.forEach(log => {
+        if (!log.studentName || !log.courseCode) return;
+        const key = `${log.courseCode.trim()}__${log.studentName.trim()}`;
+        if (!historyMap[key]) historyMap[key] = [];
+        historyMap[key].push(log);
+      });
 
-    window.onload = function() {
-      const savedEmail = localStorage.getItem("saved_email");
-      if (savedEmail) {
-        document.getElementById("loginEmail").value = savedEmail;
+      const flaggedStudents = [];
+
+      for (const key in historyMap) {
+        const logs = historyMap[key];
+        logs.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        if (logs.length >= 2) {
+          const last1 = logs[logs.length - 1];
+          const last2 = logs[logs.length - 2];
+
+          const isAbs1 = (last1.status === 'غائب' || last1.value === 0);
+          const isAbs2 = (last2.status === 'غائب' || last2.value === 0);
+
+          if (isAbs1 && isAbs2) {
+            const studentName = last1.studentName;
+            if (!AppState.acknowledgedFollowUps.has(studentName)) {
+              const stObj = AppState.students.find(s => s.name === studentName);
+              flaggedStudents.push({
+                name: studentName,
+                courseCode: last1.courseCode,
+                lastDate1: last1.date,
+                lastDate2: last2.date,
+                phone: stObj ? stObj.phone : '',
+                location: stObj ? stObj.location : ''
+              });
+            }
+          }
+        }
       }
-    };
-  </script>
-</body>
-</html>
+
+      const pingEl = document.getElementById('dashAbsentAlertPing');
+      const dotEl = document.getElementById('dashAbsentAlertDot');
+      const textEl = document.getElementById('dashAbsentCountText');
+
+      if (flaggedStudents.length > 0) {
+        pingEl.classList.remove('hidden');
+        dotEl.classList.remove('hidden');
+        textEl.innerText = `${flaggedStudents.length} طلاب بحاجة للتواصل`;
+        textEl.classList.add('text-amber-600', 'font-bold');
+      } else {
+        pingEl.classList.add('hidden');
+        dotEl.classList.add('hidden');
+        textEl.innerText = "لا يوجد غياب متكرر";
+        textEl.classList.remove('text-amber-600', 'font-bold');
+      }
+
+      renderFollowUpList(flaggedStudents);
+    }
+
+    function renderFollowUpList(flaggedStudents) {
+      const container = document.getElementById('followUpList');
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (!flaggedStudents || flaggedStudents.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs">
+            لا يوجد طلاب لديهم غياب متتالي حالياً
+          </div>
+        `;
+        return;
+      }
+
+      flaggedStudents.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "p-4 bg-white rounded-3xl border border-amber-300 shadow-soft space-y-3";
+
+        const crs = AppState.courses.find(c => c.code === item.courseCode);
+        const displayCourse = crs ? (crs.book || crs.category || 'الدرس') : 'الدرس';
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">${escapeHtml(item.name)}</h4>
+              <p class="text-[11px] text-slate-500 mt-0.5">
+                الدرس: <span class="font-bold text-slate-800">${escapeHtml(displayCourse)}</span>
+                ${item.location ? ` • ${escapeHtml(item.location)}` : ''}
+              </p>
+            </div>
+            <span class="px-2.5 py-1 rounded-xl text-xs font-bold bg-red-100 text-red-700">
+              غياب متتالي (مرتين)
+            </span>
+          </div>
+
+          <div class="p-2.5 bg-amber-50 rounded-2xl text-[11px] text-amber-900">
+            تاريخ الغيابين: <span class="font-bold num-font">${escapeHtml(item.lastDate2)}</span> و <span class="font-bold num-font">${escapeHtml(item.lastDate1)}</span>
+          </div>
+
+          <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
+            ${item.phone ? `
+              <a href="tel:${escapeHtml(item.phone.replace(/[^0-9+]/g, ''))}" class="flex-1 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-center text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                </svg>
+                <span>اتصال (${escapeHtml(item.phone)})</span>
+              </a>
+            ` : `
+              <button onclick="openEditStudentModal('${escape
