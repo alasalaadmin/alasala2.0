@@ -1135,9 +1135,18 @@
       showLoading("الرجاء الانتظار");
 
       try {
-        const response = await callBackend({ action: 'login', email: email, pin: pin });
+        const slowTimer = setTimeout(() => showLoading("الخادم يستجيب ببطء، الرجاء الانتظار"), 8000);
+        let response;
+        try {
+          response = await callBackend({ action: 'login', email: email, pin: pin, lite: true });
+          if (response && response.success && response.token) {
+            AppState.token = response.token;
+            const initData = await callBackend({ action: 'init' });   // data loads separately, retried automatically
+            if (!(initData && initData.success)) { AppState.token = null; response = initData || { success: false }; }
+            else response = Object.assign({}, initData, { token: response.token });
+          }
+        } finally { clearTimeout(slowTimer); }
         if (response && response.success && response.token) {
-          AppState.token = response.token;
           applyInitData(response);
           try { localStorage.setItem('al_rawad_saved_email', email); } catch (e) {}
           if (pinInput) pinInput.value = '';
@@ -1846,7 +1855,8 @@
     // ==========================================
     // BACKEND CALLS & UTILITIES
     // ==========================================
-    const REQUEST_TIMEOUT_MS = 30000;
+    const REQUEST_TIMEOUT_MS = 45000;
+    const RETRY_ACTIONS = ['login', 'init'];   // read-only / idempotent: safe to retry once on timeout or network error
     // Only switch to true if fetch/POST is blocked in your environment AND the script property ALLOW_JSONP = "1" is set.
     const USE_JSONP_FALLBACK = false;
 
@@ -1895,7 +1905,13 @@
     async function callBackend(payload) {
       const body = Object.assign({}, payload);
       if (AppState.token && body.action !== 'login') body.token = AppState.token;
-      const data = USE_JSONP_FALLBACK ? await jsonpRequest(body) : await postRequest(body);
+      const send = () => USE_JSONP_FALLBACK ? jsonpRequest(body) : postRequest(body);
+      let data;
+      try { data = await send(); }
+      catch (err) {
+        if (RETRY_ACTIONS.indexOf(body.action) === -1) throw err;
+        data = await send();   // one automatic retry (server cold start / flaky mobile network)
+      }
       if (data && data.code === 'SESSION_EXPIRED' && body.action !== 'login') handleSessionExpired();
       return data;
     }
