@@ -1,84 +1,87 @@
-const CACHE_NAME = 'alasala-cache-v2';
+/**
+ * Service Worker — تطبيق المتابعة (PWA)
+ * - Never touches Apps Script calls or any non-GET request (they go straight to the network).
+ * - App shell: network-first, falls back to cache, and ALWAYS returns a valid Response.
+ * - Google Fonts: stale-while-revalidate so the text looks right offline.
+ * Bump CACHE_VERSION on every deployment to force clients to refresh.
+ */
+const CACHE_VERSION = 'v11';
+const SHELL_CACHE = 'moutabaa-shell-' + CACHE_VERSION;
+const FONT_CACHE = 'moutabaa-fonts-' + CACHE_VERSION;
 
-// Fichiers statiques à mettre en cache pour l'usage hors-ligne / PWA
-const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  './Cover.webp'
-];
+const CORE_ASSETS = ['./', './index.html', './styles.css', './manifest.json'];
+const OPTIONAL_ASSETS = ['./icon-192.png', './icon-512.png', './Cover.webp'];
 
-// Installation du Service Worker et mise en cache des ressources statiques
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
-  );
-  self.skipWaiting();
+  event.waitUntil((async () => {
+    const cache = await caches.open(SHELL_CACHE);
+    await cache.addAll(CORE_ASSETS);
+    // optional files must never make the installation fail
+    await Promise.all(OPTIONAL_ASSETS.map((u) => cache.add(u).catch(() => {})));
+    await self.skipWaiting();
+  })());
 });
 
-// Nettoyage des anciennes versions de cache
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keep = [SHELL_CACHE, FONT_CACHE];
+    const names = await caches.keys();
+    await Promise.all(names.filter((n) => !keep.includes(n)).map((n) => caches.delete(n)));
+    await self.clients.claim();
+  })());
 });
 
-// Interception des requêtes réseau
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') self.skipWaiting();
+});
 
-  // 1. Ignorer les protocoles non HTTP/HTTPS (comme chrome-extension://)
-  if (!url.protocol.startsWith('http')) {
+function offlineResponse() {
+  return new Response('أنت غير متصل بالإنترنت.', {
+    status: 503,
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+  });
+}
+
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;                       // POSTs (login, saves) are never intercepted
+  const url = new URL(req.url);
+
+  if (url.hostname.endsWith('script.google.com') || url.hostname.endsWith('googleusercontent.com')) return;
+
+  // Google Fonts: stale-while-revalidate
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith((async () => {
+      const cache = await caches.open(FONT_CACHE);
+      const cached = await cache.match(req);
+      const network = fetch(req).then((res) => {
+        if (res && (res.status === 200 || res.type === 'opaque')) cache.put(req, res.clone());
+        return res;
+      }).catch(() => null);
+      return cached || (await network) || offlineResponse();
+    })());
     return;
   }
 
-  // 2. Ne JAMAIS mettre en cache les requêtes envoyées à l'API Google Apps Script
-  if (
-    url.hostname.includes('script.google.com') ||
-    url.hostname.includes('script.googleusercontent.com')
-  ) {
-    return event.respondWith(fetch(event.request));
-  }
+  if (url.origin !== self.location.origin) return;
 
-  // 3. Ne pas mettre en cache les requêtes autres que GET (ex: POST)
-  if (event.request.method !== 'GET') {
-    return event.respondWith(fetch(event.request));
-  }
-
-  // 4. Stratégie Cache-First avec fallback réseau pour les assets statiques
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
+  // App shell: network-first, cache fallback
+  event.respondWith((async () => {
+    try {
+      const res = await fetch(req);
+      if (res && res.status === 200) {
+        const copy = res.clone();
+        caches.open(SHELL_CACHE).then((c) => c.put(req, copy)).catch(() => {});
       }
-
-      return fetch(event.request).then((networkResponse) => {
-        // Mettre en cache uniquement les réponses valides et du même domaine ou CDN autorisés
-        if (
-          networkResponse &&
-          networkResponse.status === 200 &&
-          (networkResponse.type === 'basic' || networkResponse.type === 'cors')
-        ) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      });
-    })
-  );
+      return res;
+    } catch (err) {
+      const cached = await caches.match(req, { ignoreSearch: true });
+      if (cached) return cached;
+      if (req.mode === 'navigate') {
+        const shell = (await caches.match('./index.html')) || (await caches.match('./'));
+        if (shell) return shell;
+      }
+      return offlineResponse();
+    }
+  })());
 });
