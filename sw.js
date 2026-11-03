@@ -1,79 +1,84 @@
-/**
- * Service Worker for تطبيق المتابعة (PWA)
- * Designed for GitHub Pages and production offline resilience.
- */
+const CACHE_NAME = 'alasala-cache-v2';
 
-const CACHE_NAME = 'dourous-cache-v10';
-
-// Essential static shell assets to cache on install
-const PRECACHE_ASSETS = [
+// Fichiers statiques à mettre en cache pour l'usage hors-ligne / PWA
+const STATIC_ASSETS = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './Cover.webp'
 ];
 
-// Install Event: pre-cache application shell
+// Installation du Service Worker et mise en cache des ressources statiques
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS);
-    }).then(() => self.skipWaiting())
+      return cache.addAll(STATIC_ASSETS);
+    })
   );
+  self.skipWaiting();
 });
 
-// Activate Event: clean up obsolete previous caches
+// Nettoyage des anciennes versions de cache
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((name) => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    })
   );
+  self.clients.claim();
 });
 
-// Allow immediate take-over when a new service worker is installed
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'skipWaiting') {
-    self.skipWaiting();
-  }
-});
-
-// Fetch Event: Network-first for live Google Sheets API requests, Cache-fallback for UI shell
+// Interception des requêtes réseau
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Bypass cache completely for Google Apps Script live backend queries
-  if (url.hostname.includes('script.google.com') || url.hostname.includes('googleusercontent.com')) {
-    event.respondWith(fetch(event.request));
+  // 1. Ignorer les protocoles non HTTP/HTTPS (comme chrome-extension://)
+  if (!url.protocol.startsWith('http')) {
     return;
   }
 
-  // Network-first strategy with cache fallback for HTML & local assets
+  // 2. Ne JAMAIS mettre en cache les requêtes envoyées à l'API Google Apps Script
+  if (
+    url.hostname.includes('script.google.com') ||
+    url.hostname.includes('script.googleusercontent.com')
+  ) {
+    return event.respondWith(fetch(event.request));
+  }
+
+  // 3. Ne pas mettre en cache les requêtes autres que GET (ex: POST)
+  if (event.request.method !== 'GET') {
+    return event.respondWith(fetch(event.request));
+  }
+
+  // 4. Stratégie Cache-First avec fallback réseau pour les assets statiques
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        if (event.request.method === 'GET' && networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      return fetch(event.request).then((networkResponse) => {
+        // Mettre en cache uniquement les réponses valides et du même domaine ou CDN autorisés
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          (networkResponse.type === 'basic' || networkResponse.type === 'cors')
+        ) {
+          const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
+            cache.put(event.request, responseToCache);
           });
         }
         return networkResponse;
-      })
-      .catch(() => {
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
-        });
-      })
+      });
+    })
   );
 });
