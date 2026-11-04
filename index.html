@@ -483,7 +483,6 @@
               </label>
               <div id="noSessionBox" class="hidden space-y-2">
                 <select id="noSessionReason" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900"></select>
-                <input type="text" id="noSessionDetails" maxlength="150" placeholder="تفاصيل السبب (إجباري عند اختيار «أخرى»)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900" />
                 <button type="button" id="noSessionSaveBtn" onclick="submitNoSession()" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white font-extrabold rounded-xl text-sm cursor-pointer">تسجيل: الدرس لم ينعقد</button>
               </div>
             </div>
@@ -1122,8 +1121,9 @@
         <div><label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف</label><input id="rfPhone" type="tel" inputmode="tel" maxlength="20" dir="ltr" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="98 123 456" /></div>
         <div class="grid grid-cols-2 gap-2">
           <div><label class="block text-xs font-bold text-slate-700 mb-1">البلد</label><input id="rfCountry" type="text" maxlength="40" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" /></div>
-          <div><label class="block text-xs font-bold text-slate-700 mb-1">المدينة أو الحيّ</label><input id="rfCity" type="text" maxlength="60" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="مثال: باردو" /></div>
+          <div><label class="block text-xs font-bold text-slate-700 mb-1">الولاية</label><input id="rfState" type="text" maxlength="40" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="مثال: تونس، أريانة، بن عروس" /></div>
         </div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">الحيّ</label><input id="rfCity" type="text" maxlength="60" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="مثال: باردو" /></div>
       </div>
 
       <div id="reqStep2" class="hidden space-y-3">
@@ -1208,6 +1208,13 @@
   <!-- ========================================== -->
   <!-- MODAL: CONFIRM LEAVE WITHOUT SAVING        -->
   <!-- ========================================== -->
+  <div id="floatingSaveBar" class="hidden fixed bottom-4 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+    <button type="button" onclick="submitAttendanceSession()" class="pointer-events-auto w-full max-w-sm py-3.5 bg-olive-700 hover:bg-olive-600 text-white font-extrabold rounded-2xl shadow-float flex items-center justify-center gap-2 active:scale-[0.98] text-sm cursor-pointer">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M5 13l4 4L19 7"/></svg>
+      <span>حفظ الحضور والغياب</span>
+    </button>
+  </div>
+
   <div id="confirmLeaveAttendanceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 text-center space-y-4">
       <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
@@ -1217,9 +1224,10 @@
       </div>
       <div>
         <h3 class="text-sm font-bold text-slate-900 mb-1">مغادرة تسجيل الحضور؟</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">لم يتم حفظ بيانات حضور هذا الدرس بعد. هل ترغب في الخروج دون حفظ؟</p>
+        <p class="text-xs text-slate-500 leading-relaxed">لم تحفظ الحضور والغياب بعد. احفظه قبل الخروج حتى لا تضيع البيانات.</p>
       </div>
       <div class="flex gap-2 pt-1">
+        <button type="button" onclick="closeConfirmLeaveModal(); submitAttendanceSession();" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs cursor-pointer">حفظ الآن</button>
         <button type="button" onclick="confirmDiscardAttendance()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs cursor-pointer">خروج دون حفظ</button>
         <button type="button" onclick="closeConfirmLeaveModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer">البقاء</button>
       </div>
@@ -1231,6 +1239,12 @@
   <!-- ========================================== -->
   <script>
     let isAttendanceDirty = false;
+    // the floating save button follows the "unsaved attendance" state
+    function setAttDirty(v) {
+      isAttendanceDirty = !!v;
+      const bar = document.getElementById('floatingSaveBar');
+      if (bar) bar.classList.toggle('hidden', !(isAttendanceDirty && AppState.selectedCourseForAtt && currentActiveView === 'viewAttendance' && !(document.getElementById('noSessionToggle') || {}).checked));
+    }
     let isCreatingCourse = false;
     let deferredInstallPrompt = null;
 
@@ -1501,7 +1515,7 @@
       AppState.followAck = {};
       AppState.selectedAddBooks = new Set();
       AppState.selectedEditBooks = new Set();
-      isAttendanceDirty = false;
+      setAttDirty(false);
       MODAL_IDS.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
@@ -1525,7 +1539,7 @@
         const resp = await callBackend({ action: 'init' });
         if (resp && resp.success) {
           applyInitData(resp);
-          isAttendanceDirty = false;
+          setAttDirty(false);
           refreshAllViews();
           showToast("تم تحديث البيانات", "success");
         } else if (resp && resp.code !== 'SESSION_EXPIRED') {
@@ -1939,7 +1953,7 @@
         value: 1
       }));
 
-      isAttendanceDirty = false;
+      setAttDirty(false);
       renderAttendanceStudentList();
       document.getElementById('noSessionToggle').checked = false;
       refreshNoSessionState();
@@ -1950,7 +1964,7 @@
         if (!confirm("هل تريد بالتأكيد تغيير الدرس دون حفظ الحضور الحالي؟")) return;
       }
       AppState.selectedCourseForAtt = null;
-      isAttendanceDirty = false;
+      setAttDirty(false);
       document.getElementById('attendanceActiveForm').classList.add('hidden');
       document.getElementById('attendanceCoursesGrid').classList.remove('hidden');
       renderAttendanceCoursesGrid();
@@ -1976,7 +1990,7 @@
         card.className = `p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none ${isPresent ? 'glass-card border-olive-600' : 'bg-red-50 border-red-300'}`;
         card.onclick = () => {
           item.value = item.value === 1 ? 0 : 1;
-          isAttendanceDirty = true;
+          setAttDirty(true);
           renderAttendanceStudentList();
         };
 
@@ -2002,7 +2016,7 @@
 
     function setAllAttendanceState(isPresent) {
       AppState.currentAttendanceRoster.forEach(item => { item.value = isPresent ? 1 : 0; });
-      isAttendanceDirty = true;
+      setAttDirty(true);
       renderAttendanceStudentList();
     }
 
@@ -2010,7 +2024,7 @@
     // ==========================================
     // PHASE 1: deletion requests, "session not held", feed
     // ==========================================
-    const FALLBACK_NO_SESSION_REASONS = ['عطلة رسمية', 'ظرف طارئ', 'غياب المدرس', 'ظروف الطلبة', 'أخرى'];
+    const FALLBACK_NO_SESSION_REASONS = ['أعياد', 'ظرف طارئ', 'غياب المدرس', 'ظروف الطلبة'];
     function userRank() { const t = AppState.currentUser && AppState.currentUser.accessTier; return t === 'T4' ? 4 : t === 'T3' ? 3 : t === 'T2' ? 2 : 1; }
     function pendingDeletionFor(studentId, code) { return (AppState.myDeletionRequests || []).some(r => r.studentId === studentId && (!code || sameCode(r.courseCode, code))); }
     function pendingNameFor(studentId) { return (AppState.myNameSuggestions || []).some(r => r.studentId === studentId); }
@@ -2270,7 +2284,7 @@
       const ex = document.getElementById('noSessionExisting');
       if (ex) {
         ex.classList.toggle('hidden', !rec);
-        if (rec) document.getElementById('noSessionExistingText').innerText = rec.reason + (rec.details ? ' — ' + rec.details : '');
+        if (rec) document.getElementById('noSessionExistingText').innerText = rec.reason;
       }
       const toggle = document.getElementById('noSessionToggle');
       if (rec && toggle) toggle.checked = false;
@@ -2281,6 +2295,7 @@
       document.getElementById('noSessionBox').classList.toggle('hidden', !on);
       document.getElementById('attendanceRosterBlock').classList.toggle('hidden', on);
       document.getElementById('attendanceSaveBlock').classList.toggle('hidden', on);
+      setAttDirty(isAttendanceDirty);
     }
     let noSessionBusy = false;
     async function submitNoSession() {
@@ -2288,18 +2303,15 @@
       const course = AppState.selectedCourseForAtt;
       const date = document.getElementById('attDateInput').value;
       const reason = document.getElementById('noSessionReason').value;
-      const details = document.getElementById('noSessionDetails').value.trim();
       if (!date) { showToast("يرجى اختيار تاريخ الدرس", "error"); return; }
-      if (reason === 'أخرى' && !details) { showToast("اكتب سبب عدم انعقاد الدرس", "error"); return; }
       noSessionBusy = true;
       showLoading("الرجاء الانتظار");
       try {
-        const res = await callBackend({ action: 'markNoSession', courseCode: course.code, date: date, reason: reason, details: details });
+        const res = await callBackend({ action: 'markNoSession', courseCode: course.code, date: date, reason: reason });
         if (res && res.success) {
           AppState.noSessions = (AppState.noSessions || []).filter(x => !(sameCode(x.courseCode, course.code) && x.date === date));
           AppState.noSessions.push(res.noSession);
           document.getElementById('noSessionToggle').checked = false;
-          document.getElementById('noSessionDetails').value = '';
           refreshNoSessionState();
           showToast("تم تسجيل أن الدرس لم ينعقد", "success");
         } else if (!(res && res.code === 'SESSION_EXPIRED')) {
@@ -2359,7 +2371,7 @@
         const t = document.getElementById(id);
         if (!t) return;
         const parts = [];
-        if (actions) parts.push(`${actions} بانتظار تصرفك`);
+        if (actions) parts.push(`${actions} بانتظار المراجعة`);
         if (alerts) parts.push(`⏰ ${alerts} متأخر`);
         t.innerText = parts.length ? parts.join(' • ') : 'طلبات التحاق الطلاب بدروس جديدة';
         t.className = 'text-xs font-semibold mt-0.5 ' + (alerts ? 'text-red-600' : 'text-slate-500');
@@ -2398,7 +2410,7 @@
           <p class="text-[11px] text-slate-500 leading-relaxed">أُدمج هذا الشهر: <b class="num-font">${stats.doneThisMonth}</b> • بدون إسناد: <b class="num-font">${stats.unassigned}</b> • أقدم طلب مفتوح: <b class="num-font">${stats.oldestOpenDays}</b> يوم • متوسط الإسناد: <b class="num-font">${stats.avgDaysToAssign === null ? '—' : stats.avgDaysToAssign}</b> يوم</p>`;
       } else if (statsEl) { statsEl.classList.add('hidden'); }
 
-      const chips = [['open', 'مفتوحة'], ['action', 'بانتظار تصرفي'], ['overdue', 'متأخرة']];
+      const chips = [['open', 'مفتوحة'], ['action', 'بانتظار المراجعة'], ['overdue', 'متأخرة']];
       Object.keys(RQ_STYLE).forEach(st => { if (list.some(r => r.status === st)) chips.push(['st:' + st, st]); });
       chips.push(['all', 'الكل']);
       document.getElementById('reqFilters').innerHTML = chips.map(([k, label]) => {
@@ -2429,7 +2441,7 @@
           <div class="flex flex-wrap items-center gap-2 mt-2 text-[11px] text-slate-600">
             <span class="num-font">${escapeHtml(r.id)}</span><span>${days}</span>${late}
           </div>
-          <p class="text-[11px] text-slate-600 mt-1.5">${who}${r.needsAction ? ' <b class="text-sky-700">• بانتظار تصرفك</b>' : ''}</p>
+          <p class="text-[11px] text-slate-600 mt-1.5">${who}${r.needsAction ? ' <b class="text-sky-700">• بانتظار المراجعة</b>' : ''}</p>
         </div>`;
       }).join('');
     }
@@ -2449,7 +2461,7 @@
       fillSelect('rfEssentials', en.essentials || []);
       fillSelect('rfInvited', en.invited || ['نعم', 'لا'], 'لا');
       fillSelect('rfCourseType', en.courseTypes || []);
-      ['rfName', 'rfPhone', 'rfCity', 'rfTimes', 'rfIntermediary', 'rfOther'].forEach(id => setVal(id, ''));
+      ['rfName', 'rfPhone', 'rfState', 'rfCity', 'rfTimes', 'rfIntermediary', 'rfOther'].forEach(id => setVal(id, ''));
       setVal('rfCountry', 'تونس');
       rfStep = 1; rfForce = false; renderRequestStep();
       showModal('requestFormModal');
@@ -2466,7 +2478,8 @@
       if (n === 1) {
         if (getVal('rfName').length < 2) { showToast("يرجى كتابة الاسم واللقب", "error"); return false; }
         if (!/^[0-9+\s]{6,20}$/.test(getVal('rfPhone'))) { showToast("رقم الهاتف غير صالح", "error"); return false; }
-        if (!getVal('rfCity')) { showToast("يرجى كتابة المدينة أو الحيّ", "error"); return false; }
+        if (!getVal('rfState')) { showToast("يرجى كتابة الولاية", "error"); return false; }
+        if (!getVal('rfCity')) { showToast("يرجى كتابة الحيّ", "error"); return false; }
       }
       return true;
     }
@@ -2482,7 +2495,7 @@
       try {
         const res = await callBackend({
           action: 'createRequest', force: rfForce,
-          name: getVal('rfName'), phone: getVal('rfPhone'), country: getVal('rfCountry'), city: getVal('rfCity'),
+          name: getVal('rfName'), phone: getVal('rfPhone'), country: getVal('rfCountry'), state: getVal('rfState'), city: getVal('rfCity'),
           level: getVal('rfLevel'), age: getVal('rfAge'), essentials: getVal('rfEssentials'), courseType: getVal('rfCourseType'),
           times: getVal('rfTimes'), invited: getVal('rfInvited'), intermediary: getVal('rfIntermediary'), other: getVal('rfOther')
         });
@@ -2536,7 +2549,7 @@
         ${days ? `<p class="text-xs text-slate-700">${days}</p>` : ''}
         <div class="rounded-2xl border border-slate-200 px-3 py-1">
           ${rdRow('الهاتف', `<a href="tel:${e(safePhone(r.phone))}" class="text-sky-700 num-font" dir="ltr">${e(r.phone)}</a>`)}
-          ${rdRow('البلد', e(r.country))}${rdRow('المدينة / الحيّ', e(r.city))}${rdRow('المستوى', e(r.level))}${rdRow('الفئة العمرية', e(r.age))}
+          ${rdRow('البلد', e(r.country))}${rdRow('الولاية', e(r.state))}${rdRow('الحيّ', e(r.city))}${rdRow('المستوى', e(r.level))}${rdRow('الفئة العمرية', e(r.age))}
           ${rdRow('أكمل الضروري؟', e(r.essentials))}${rdRow('نوع الدرس', e(r.courseType))}${rdRow('أوقات مقترحة', e(r.times))}
           ${rdRow('دُعي للدرس العام', e(r.invited))}${rdRow('الوسيط', e(r.intermediary))}${rdRow('معطيات أخرى', e(r.other))}
           ${rdRow('أنشأه', nameWithTier(r.createdBy))}${rdRow('المسؤول', nameWithTier(r.t3))}${rdRow('المكلّف بالمتابعة', nameWithTier(r.assignee))}
@@ -2677,7 +2690,7 @@
 
         if (response && response.success) {
           showToast("تم حفظ الحضور بنجاح", "success");
-          isAttendanceDirty = false;
+          setAttDirty(false);
           // replace (never duplicate) the local copy of this session
           const keyOf = (code, date, name) => normCode(code) + '|' + date + '|' + normalizeArabic(name);
           const fresh = new Set(compactRecords.map(r => keyOf(course.code, dateVal, r[0])));
@@ -2714,7 +2727,7 @@
     function backToAttendanceGrid() {
       AppState.selectedCourseForAtt = null;
       AppState.currentAttendanceRoster = [];
-      isAttendanceDirty = false;
+      setAttDirty(false);
       document.getElementById('attendanceActiveForm').classList.add('hidden');
       document.getElementById('attendanceCoursesGrid').classList.remove('hidden');
       renderAttendanceCoursesGrid();
@@ -2961,6 +2974,7 @@
         if (el) el.classList.toggle('hidden', id !== targetId);
       });
       currentActiveView = targetId;
+      setAttDirty(isAttendanceDirty);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
