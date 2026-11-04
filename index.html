@@ -262,7 +262,7 @@
             دروسي
           </button>
           <button type="button" onclick="switchWorkspaceTab('supervision')" id="tabBtnSupervision" class="py-2.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
-            الدروس التي أتابعها
+            الدروس التي أتابعها<span id="supTabDot" class="hidden inline-block w-2 h-2 bg-red-600 rounded-full align-middle mr-1"></span>
           </button>
         </div>
 
@@ -343,6 +343,23 @@
               </span>
             </button>
 
+            <!-- 4. طلبات الدروس -->
+            <button onclick="openRequestsView()" class="col-span-2 p-4 glass-card rounded-3xl hover:border-sky-500 active:scale-[0.98] transition-all flex items-center justify-between text-right relative group cursor-pointer">
+              <div class="flex items-center gap-3.5">
+                <div class="relative w-12 h-12 rounded-2xl bg-sky-100 text-sky-800 border border-sky-200 flex items-center justify-center shrink-0 text-2xl">
+                  <span id="dashRequestsBadge" class="hidden absolute -top-2 -left-2 min-w-[22px] h-[22px] px-1 bg-red-600 text-white rounded-full text-[11px] font-bold flex items-center justify-center num-font shadow-sm">0</span>
+                  📨
+                </div>
+                <div>
+                  <h3 class="text-base font-extrabold text-slate-900">طلبات الدروس</h3>
+                  <p id="dashRequestsText" class="text-xs text-slate-500 font-semibold mt-0.5">طلبات التحاق الطلاب بدروس جديدة</p>
+                </div>
+              </div>
+              <span class="w-8 h-8 inline-flex items-center justify-center text-sky-800 bg-sky-100 rounded-xl">
+                <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M9 5l7 7-7 7"/></svg>
+              </span>
+            </button>
+
           </div>
         </div>
 
@@ -354,6 +371,27 @@
               <span id="supervisedTeachersCountBadge" class="text-xs font-bold px-2.5 py-0.5 bg-olive-200 text-olive-900 rounded-full num-font">0 مدرس</span>
             </div>
             <p class="text-xs text-olive-700 leading-relaxed">يمكنك متابعة جدول دروس كل مدرس، الاطلاع على قوائم طلابهم، والتأكد من تسجيل الحضور الأسبوعي.</p>
+          </div>
+
+          <div id="mgmtTools" class="hidden grid grid-cols-2 gap-3">
+            <button type="button" onclick="openFeedModal()" class="p-4 glass-card rounded-2xl hover:border-sky-500 active:scale-[0.98] transition-all text-right cursor-pointer relative">
+              <span id="feedBadge" class="hidden absolute -top-2 -left-2 min-w-[22px] h-[22px] px-1 bg-red-600 text-white rounded-full text-[11px] font-bold flex items-center justify-center num-font shadow-sm">0</span>
+              <div class="text-2xl mb-1">🔔</div>
+              <h4 class="text-sm font-extrabold text-slate-900">المستجدات</h4>
+              <p class="text-[11px] text-slate-500 mt-0.5">دروس جديدة، حصص لم تنعقد</p>
+            </button>
+            <button type="button" id="deletionInboxBtn" onclick="openDeletionInbox()" class="hidden p-4 glass-card rounded-2xl hover:border-red-500 active:scale-[0.98] transition-all text-right cursor-pointer relative">
+              <span id="deletionBadge" class="hidden absolute -top-2 -left-2 min-w-[22px] h-[22px] px-1 bg-red-600 text-white rounded-full text-[11px] font-bold flex items-center justify-center num-font shadow-sm">0</span>
+              <div class="text-2xl mb-1">🗑️</div>
+              <h4 class="text-sm font-extrabold text-slate-900">طلبات الحذف</h4>
+              <p class="text-[11px] text-slate-500 mt-0.5">إزالة من درس، بانتظار موافقتك</p>
+            </button>
+            <button type="button" id="nameInboxBtn" onclick="openNameInbox()" class="hidden p-4 glass-card rounded-2xl hover:border-amber-500 active:scale-[0.98] transition-all text-right cursor-pointer relative">
+              <span id="nameBadge" class="hidden absolute -top-2 -left-2 min-w-[22px] h-[22px] px-1 bg-red-600 text-white rounded-full text-[11px] font-bold flex items-center justify-center num-font shadow-sm">0</span>
+              <div class="text-2xl mb-1">✏️</div>
+              <h4 class="text-sm font-extrabold text-slate-900">اقتراحات الأسماء</h4>
+              <p class="text-[11px] text-slate-500 mt-0.5">بانتظار اعتمادك</p>
+            </button>
           </div>
 
           <div id="supervisedTeachersContainer" class="space-y-3"></div>
@@ -398,7 +436,7 @@
           <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3.5">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ الدرس</label>
-              <input type="date" id="attDateInput" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-900 num-font focus:outline-none focus:ring-2 focus:ring-olive-600" />
+              <input type="date" id="attDateInput" onchange="refreshNoSessionState()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold text-slate-900 num-font focus:outline-none focus:ring-2 focus:ring-olive-600" />
             </div>
 
             <div>
@@ -417,9 +455,26 @@
                 <option value="">-- اختر الباب المشروح من قائمة الكتاب --</option>
               </select>
             </div>
+
+            <div class="pt-3 border-t border-slate-200 space-y-2">
+              <div id="noSessionExisting" class="hidden p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-900 space-y-1.5">
+                <p class="font-extrabold">⚠️ سُجّل أن الدرس لم ينعقد في هذا اليوم</p>
+                <p id="noSessionExistingText" class="text-[11px]"></p>
+                <button type="button" onclick="clearNoSession()" class="text-[11px] font-bold underline text-amber-900 cursor-pointer">إلغاء هذا التسجيل (الدرس انعقد)</button>
+              </div>
+              <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
+                <input type="checkbox" id="noSessionToggle" onchange="onNoSessionToggle()" class="w-4 h-4 accent-amber-600" />
+                <span>الدرس لم ينعقد في هذا اليوم</span>
+              </label>
+              <div id="noSessionBox" class="hidden space-y-2">
+                <select id="noSessionReason" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900"></select>
+                <input type="text" id="noSessionDetails" maxlength="150" placeholder="تفاصيل السبب (إجباري عند اختيار «أخرى»)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900" />
+                <button type="button" id="noSessionSaveBtn" onclick="submitNoSession()" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white font-extrabold rounded-xl text-sm cursor-pointer">تسجيل: الدرس لم ينعقد</button>
+              </div>
+            </div>
           </div>
 
-          <div class="relative">
+          <div class="relative" id="attendanceRosterBlock">
             <div class="flex items-center justify-between mb-3 px-1">
               <div class="flex items-center gap-2">
                 <h3 class="text-sm font-extrabold text-slate-800">قائمة حضور الطلاب</h3>
@@ -443,7 +498,7 @@
             <div id="attendanceStudentList" class="space-y-2.5"></div>
           </div>
 
-          <div class="pt-2">
+          <div class="pt-2" id="attendanceSaveBlock">
             <button 
               type="button" 
               onclick="submitAttendanceSession()" 
@@ -459,6 +514,23 @@
 
         </div>
 
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW: طلبات الدروس                          -->
+      <!-- ========================================== -->
+      <section id="viewRequests" class="hidden space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900">طلبات الدروس</h2>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openRequestForm()" class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-extrabold cursor-pointer">+ طلب جديد</button>
+            <button type="button" onclick="openDashboardView()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold cursor-pointer">الرجوع</button>
+          </div>
+        </div>
+        <div id="reqStats" class="hidden space-y-2"></div>
+        <div id="reqFilters" class="flex flex-wrap gap-1.5"></div>
+        <div id="reqList" class="space-y-2.5"></div>
       </section>
 
       <!-- ========================================== -->
@@ -689,6 +761,7 @@
           <div class="col-span-2">
             <label class="block text-xs font-semibold text-slate-600 mb-1">اسم الطالب</label>
             <input type="text" id="editStudentName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+            <button type="button" id="editStudentSuggestBtn" onclick="openNameSuggest()" class="hidden mt-1 text-[11px] font-bold text-olive-700 underline cursor-pointer">✏️ اقتراح تغيير الاسم</button>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">الصنف</label>
@@ -755,7 +828,7 @@
   <!-- ========================================== -->
   <!-- MODAL: CREATE NEW COURSE                   -->
   <!-- ========================================== -->
-  <div id="createCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+  <div id="createCourseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
         <h3 class="text-sm font-bold text-slate-900">فتح درس جديد</h3>
@@ -918,6 +991,178 @@
   <!-- ========================================== -->
   <!-- MODAL: MOVE STUDENT TO ANOTHER COURSE      -->
   <!-- ========================================== -->
+
+  <!-- ========================================== -->
+  <!-- PHASE 1 MODALS: delete request / inbox / feed -->
+  <!-- ========================================== -->
+  <div id="deleteRequestModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">طلب إزالة طالب من درس</h3>
+        <button type="button" onclick="hideModal('deleteRequestModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <input type="hidden" id="deleteRequestStudentId" />
+      <input type="hidden" id="deleteRequestCourse" />
+      <div class="p-3 bg-red-50 border border-red-200 rounded-2xl">
+        <p class="text-[11px] text-red-700">الطالب</p>
+        <p id="deleteRequestStudentName" class="text-sm font-extrabold text-slate-900"></p>
+        <p class="text-[11px] text-red-700 mt-1">سيُزال من الدرس: <b id="deleteRequestCourseLabel" class="num-font"></b></p>
+      </div>
+      <p class="text-[11px] text-slate-600 leading-relaxed">تُزال الإدارةُ الطالبَ من <b>هذا الدرس فقط</b> بعد موافقتها، ولا يتأثر بقية دروسه. إن لم يبق له درس يصبح «بلا درس» ويظهر لك. سيبقى في درسك إلى حين البتّ في الطلب.</p>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">سبب الحذف (إجباري)</label>
+        <textarea id="deleteRequestReason" rows="3" maxlength="200" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900" placeholder="مثال: انتقل إلى بلد آخر، تسجيل مكرّر..."></textarea>
+      </div>
+      <button type="button" id="deleteRequestSubmitBtn" onclick="submitDeleteRequest()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-xl text-sm cursor-pointer">إرسال الطلب إلى الإدارة</button>
+    </div>
+  </div>
+
+  <div id="deletionInboxModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+        <h3 class="text-sm font-bold text-slate-900">طلبات الحذف بانتظار الموافقة</h3>
+        <button type="button" onclick="hideModal('deletionInboxModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <div id="deletionInboxList" class="space-y-3 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <div id="nameInboxModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+        <h3 class="text-sm font-bold text-slate-900">اقتراحات تغيير الأسماء</h3>
+        <button type="button" onclick="hideModal('nameInboxModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <div id="nameInboxList" class="space-y-3 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <div id="nameSuggestModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">اقتراح تغيير اسم</h3>
+        <button type="button" onclick="hideModal('nameSuggestModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <input type="hidden" id="nameSuggestStudentId" />
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+        <p class="text-[11px] text-slate-500">الاسم الحالي</p>
+        <p id="nameSuggestCurrent" class="text-sm font-extrabold text-slate-900"></p>
+      </div>
+      <p class="text-[11px] text-slate-600 leading-relaxed">لا يتغيّر الاسم إلا بعد اعتماد الإدارة، حتى يبقى للطالب اسم واحد عند كل المدرسين.</p>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">الاسم المقترح</label>
+        <input type="text" id="nameSuggestNew" maxlength="80" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-900" />
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">السبب (اختياري)</label>
+        <input type="text" id="nameSuggestReason" maxlength="200" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900" placeholder="مثال: لقب العائلة الصحيح، خطأ في الكتابة..." />
+      </div>
+      <button type="button" id="nameSuggestSubmitBtn" onclick="submitNameSuggestion()" class="w-full py-3 bg-olive-700 hover:bg-olive-600 text-white font-extrabold rounded-xl text-sm cursor-pointer">إرسال الاقتراح إلى الإدارة</button>
+    </div>
+  </div>
+
+  <div id="dupStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+        <h3 class="text-sm font-bold text-slate-900">هل هذا الطالب مسجّل من قبل؟</h3>
+        <button type="button" onclick="hideModal('dupStudentModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <div class="overflow-y-auto space-y-3">
+        <div class="p-3 bg-amber-50 border border-amber-300 rounded-2xl text-[11px] text-amber-900 leading-relaxed">وجدنا في السجل من يشبه من تُدخله (<b id="dupNewName"></b>). الهاتف المتطابق قد يكون لأفراد من نفس العائلة، فالقرار لك.</div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">الدرس الذي يُضاف إليه إن كان هو نفسه</label>
+          <select id="dupCourseSelect" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900"></select>
+        </div>
+        <div id="dupMatches" class="space-y-3"></div>
+        <button type="button" data-action="dup-new" class="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-800 border-2 border-slate-300 text-xs font-extrabold rounded-xl cursor-pointer">شخص آخر — أنشئ طالباً جديداً</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="feedModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+        <h3 class="text-sm font-bold text-slate-900">المستجدات (آخر 30 يوماً)</h3>
+        <button type="button" onclick="hideModal('feedModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <div id="feedList" class="space-y-2 overflow-y-auto"></div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- PHASE 2 MODALS: course requests              -->
+  <!-- ========================================== -->
+  <div id="requestFormModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">طلب التحاق بدرس</h3>
+        <button type="button" onclick="hideModal('requestFormModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <div class="flex items-center gap-1.5" id="reqStepDots"></div>
+      <p id="reqStepTitle" class="text-xs font-extrabold text-sky-800"></p>
+
+      <div id="reqStep1" class="space-y-3">
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">الاسم واللقب</label><input id="rfName" type="text" maxlength="80" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="مثال: عبد الرحمان بن علي" /></div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف</label><input id="rfPhone" type="tel" inputmode="tel" maxlength="20" dir="ltr" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="98 123 456" /></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="block text-xs font-bold text-slate-700 mb-1">البلد</label><input id="rfCountry" type="text" maxlength="40" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" /></div>
+          <div><label class="block text-xs font-bold text-slate-700 mb-1">المدينة أو الحيّ</label><input id="rfCity" type="text" maxlength="60" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="مثال: باردو" /></div>
+        </div>
+      </div>
+
+      <div id="reqStep2" class="hidden space-y-3">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="block text-xs font-bold text-slate-700 mb-1">المستوى</label><select id="rfLevel" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"></select></div>
+          <div><label class="block text-xs font-bold text-slate-700 mb-1">الفئة العمرية</label><select id="rfAge" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"></select></div>
+        </div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">هل أكمل الضروري؟</label><select id="rfEssentials" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"></select></div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">هل دُعي للدرس العام؟</label><select id="rfInvited" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"></select></div>
+      </div>
+
+      <div id="reqStep3" class="hidden space-y-3">
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">نوع الدرس الذي يطلبه</label><select id="rfCourseType" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"></select></div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">أوقات الدرس التي يقترحها</label><textarea id="rfTimes" rows="2" maxlength="200" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="مثال: مساء بعد 18:00، أو يوم السبت"></textarea></div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">الوسيط</label><input id="rfIntermediary" type="text" maxlength="80" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="من عرّف بالطالب؟" /></div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">معطيات أخرى</label><textarea id="rfOther" rows="2" maxlength="300" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea></div>
+        <p class="text-[11px] text-slate-500">تاريخ وصول الطلب: <b>اليوم</b> (يُسجَّل تلقائياً). يصل الطلب إلى الإدارة مباشرة.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" id="reqPrevBtn" onclick="requestFormStep(-1)" class="py-3 bg-white hover:bg-slate-100 text-slate-800 border-2 border-slate-300 text-sm font-extrabold rounded-xl cursor-pointer">السابق</button>
+        <button type="button" id="reqNextBtn" onclick="requestFormStep(1)" class="py-3 bg-sky-600 hover:bg-sky-500 text-white text-sm font-extrabold rounded-xl cursor-pointer">التالي</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="requestDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">تفاصيل الطلب</h3>
+        <button type="button" onclick="hideModal('requestDetailModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <input type="hidden" id="rdId" />
+      <div id="rdBody" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <div id="requestPlaceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">إدماج الطالب في درس</h3>
+        <button type="button" onclick="hideModal('requestPlaceModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <input type="hidden" id="rpId" />
+      <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl"><p class="text-[11px] text-emerald-700">الطالب</p><p id="rpName" class="text-sm font-extrabold text-slate-900"></p></div>
+      <div id="rpMain" class="space-y-3">
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">اختر أحد دروسك</label><select id="rpCourse" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"></select></div>
+        <button type="button" onclick="openCreateCourseForPlacement()" class="w-full py-2.5 bg-teal-50 hover:bg-teal-100 text-teal-900 border-2 border-teal-200 text-xs font-extrabold rounded-xl cursor-pointer">+ فتح درس جديد</button>
+        <button type="button" id="rpSubmitBtn" onclick="submitPlacement()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-sm cursor-pointer">إدماج الطالب</button>
+      </div>
+      <div id="rpDup" class="hidden space-y-2"></div>
+    </div>
+  </div>
+
   <div id="moveStudentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-float border border-slate-100 space-y-3">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -1098,6 +1343,20 @@
       AppState.books = response.books || [];
       AppState.attendance = response.attendance || [];
       if (response.dropdowns) AppState.dropdowns = response.dropdowns;
+      AppState.noSessions = response.noSessions || [];
+      AppState.noSessionReasons = response.noSessionReasons || [];
+      AppState.myDeletionRequests = response.myDeletionRequests || [];
+      AppState.deletionInbox = response.deletionInbox || [];
+      AppState.nameInbox = response.nameInbox || [];
+      AppState.myNameSuggestions = response.myNameSuggestions || [];
+      AppState.feed = response.feed || [];
+      AppState.feedSeen = response.feedSeen || '';
+      AppState.feedUnread = response.feedUnread || 0;
+      AppState.requests = response.requests || [];
+      AppState.requestEvents = response.requestEvents || {};
+      AppState.requestAssignees = response.requestAssignees || [];
+      AppState.requestStats = response.requestStats || null;
+      AppState.requestEnums = response.requestEnums || null;
       populateDropdownMenus();
     }
 
@@ -1196,6 +1455,7 @@
         switchWorkspaceTab('personal');
       }
 
+      refreshMgmtTools();
       loadFollowAck();
       checkWeeklyAttendanceNotifications();
       checkConsecutiveAbsences();
@@ -1265,6 +1525,7 @@
 
     function refreshAllViews() {
       updateDashboardCounts();
+      refreshMgmtTools();
       if (isSupervisorUser()) setupSupervisionPortal();
       checkWeeklyAttendanceNotifications();
       checkConsecutiveAbsences();
@@ -1591,6 +1852,8 @@
 
       isAttendanceDirty = false;
       renderAttendanceStudentList();
+      document.getElementById('noSessionToggle').checked = false;
+      refreshNoSessionState();
     }
 
     function resetActiveCourseSelection() {
@@ -1654,6 +1917,640 @@
       renderAttendanceStudentList();
     }
 
+
+    // ==========================================
+    // PHASE 1: deletion requests, "session not held", feed
+    // ==========================================
+    const FALLBACK_NO_SESSION_REASONS = ['عطلة رسمية', 'ظرف طارئ', 'غياب المدرس', 'ظروف الطلبة', 'أخرى'];
+    function userRank() { const t = AppState.currentUser && AppState.currentUser.accessTier; return t === 'T4' ? 4 : t === 'T3' ? 3 : t === 'T2' ? 2 : 1; }
+    function pendingDeletionFor(studentId, code) { return (AppState.myDeletionRequests || []).some(r => r.studentId === studentId && (!code || sameCode(r.courseCode, code))); }
+    function pendingNameFor(studentId) { return (AppState.myNameSuggestions || []).some(r => r.studentId === studentId); }
+
+    function refreshMgmtTools() {
+      const box = document.getElementById('mgmtTools');
+      const rank = userRank();
+      if (box) box.classList.toggle('hidden', rank < 3);
+      const inboxBtn = document.getElementById('deletionInboxBtn');
+      if (inboxBtn) inboxBtn.classList.toggle('hidden', rank < 4);
+      const nameBtn = document.getElementById('nameInboxBtn');
+      if (nameBtn) nameBtn.classList.toggle('hidden', rank < 4);
+      const nb = document.getElementById('nameBadge'), nn = (AppState.nameInbox || []).length;
+      if (nb) { nb.innerText = String(nn); nb.classList.toggle('hidden', nn === 0); }
+      const fb = document.getElementById('feedBadge'), n = AppState.feedUnread || 0;
+      if (fb) { fb.innerText = String(n); fb.classList.toggle('hidden', n === 0); }
+      const db = document.getElementById('deletionBadge'), m = (AppState.deletionInbox || []).length;
+      if (db) { db.innerText = String(m); db.classList.toggle('hidden', m === 0); }
+      refreshRequestsBadge();
+      const dot = document.getElementById('supTabDot');
+      if (dot) dot.classList.toggle('hidden', !(rank >= 3 && (n > 0 || m > 0 || nn > 0)));
+    }
+
+    // ---- delete request (teacher) ----
+    function openDeleteRequestModal(studentId, courseCode) {
+      const st = AppState.students.find(x => x.id === studentId);
+      if (!st) { showToast("تعذر العثور على الطالب. حدّث الصفحة.", "error"); return; }
+      if (!courseCode) { showToast("حدّد الدرس.", "error"); return; }
+      document.getElementById('deleteRequestStudentId').value = st.id;
+      document.getElementById('deleteRequestCourse').value = courseCode;
+      document.getElementById('deleteRequestCourseLabel').innerText = courseCode;
+      document.getElementById('deleteRequestStudentName').innerText = st.name;
+      document.getElementById('deleteRequestReason').value = '';
+      showModal('deleteRequestModal');
+    }
+    let deleteReqBusy = false;
+    async function submitDeleteRequest() {
+      if (deleteReqBusy) return;
+      const id = document.getElementById('deleteRequestStudentId').value;
+      const reason = document.getElementById('deleteRequestReason').value.trim();
+      if (reason.length < 3) { showToast("يرجى كتابة سبب الحذف", "error"); return; }
+      deleteReqBusy = true;
+      showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend({ action: 'requestDeletion', studentId: id, courseCode: document.getElementById('deleteRequestCourse').value, reason: reason });
+        if (res && res.success) {
+          (AppState.myDeletionRequests = AppState.myDeletionRequests || []).push(res.request);
+          hideModal('deleteRequestModal');
+          showToast("تم إرسال طلب الحذف إلى الإدارة", "success");
+          if (currentActiveView === 'viewCourseStudents') renderCourseStudentsList();
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) {
+          showToast((res && res.error) || "تعذر إرسال الطلب", "error");
+        }
+      } catch (err) { showToast(err.message, "error"); }
+      finally { deleteReqBusy = false; hideLoading(); }
+    }
+
+    // ---- T4 inbox ----
+    function openDeletionInbox() { renderDeletionInbox(); showModal('deletionInboxModal'); }
+    function renderDeletionInbox() {
+      const box = document.getElementById('deletionInboxList');
+      const list = AppState.deletionInbox || [];
+      if (!list.length) { box.innerHTML = '<div class="p-6 text-center text-slate-400 text-xs">لا توجد طلبات حذف بانتظار البتّ.</div>'; return; }
+      box.innerHTML = list.map(r => `
+        <div class="p-3 rounded-2xl border border-red-200 bg-red-50/40 space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <h4 class="text-sm font-extrabold text-slate-900">${escapeHtml(r.studentName)}</h4>
+            <span class="text-[10px] text-slate-500 num-font">${escapeHtml(r.at)}</span>
+          </div>
+          <p class="text-[11px] text-slate-600">طلب من: <b>${escapeHtml(r.by)}</b></p>
+          ${r.courseCode ? `<p class="text-[11px] text-slate-700">إزالته من الدرس: <b class="num-font">${escapeHtml(r.courseCode)}</b> <span class="text-slate-500">• دروسه الحالية: <span class="num-font">${escapeHtml(((AppState.students.find(x => x.id === r.studentId) || {}).courseCodes) || '—')}</span></span></p>` : '<p class="text-[11px] text-red-700 font-bold">طلب قديم بلا درس محدّد — ارفضه ليُعيد المدرس الطلب.</p>'}
+          <p class="text-xs text-slate-800 bg-white border border-slate-200 rounded-xl p-2">${escapeHtml(r.reason)}</p>
+          <input type="text" id="drNote_${escapeHtml(r.id)}" maxlength="200" placeholder="ملاحظة (إجبارية عند الرفض)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900" />
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" data-action="decide-deletion" data-id="${escapeHtml(r.id)}" data-decision="approve" ${r.courseCode ? '' : 'disabled'} class="py-2.5 bg-red-600 disabled:opacity-40 hover:bg-red-500 text-white text-xs font-extrabold rounded-xl cursor-pointer">موافقة وإزالة من الدرس</button>
+            <button type="button" data-action="decide-deletion" data-id="${escapeHtml(r.id)}" data-decision="reject" class="py-2.5 bg-white hover:bg-slate-100 text-slate-800 border-2 border-slate-300 text-xs font-extrabold rounded-xl cursor-pointer">رفض</button>
+          </div>
+        </div>`).join('');
+    }
+    let decideBusy = false;
+    async function decideDeletion(reqId, decision) {
+      if (decideBusy) return;
+      const noteEl = document.getElementById('drNote_' + reqId);
+      const note = noteEl ? noteEl.value.trim() : '';
+      const req = (AppState.deletionInbox || []).find(r => r.id === reqId);
+      if (decision === 'reject' && !note) { showToast("اكتب ملاحظة سبب الرفض", "error"); return; }
+      if (decision === 'approve' && !confirm(`سيُزال الطالب «${req ? req.studentName : ''}» من الدرس ${req ? req.courseCode : ''} فقط. هل تؤكد؟`)) return;
+      decideBusy = true;
+      showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend({ action: 'decideDeletion', requestId: reqId, decision: decision, note: note });
+        if (res && res.success) {
+          AppState.deletionInbox = (AppState.deletionInbox || []).filter(r => r.id !== reqId);
+          if (decision === 'approve') {
+            const stx = AppState.students.find(s => s.id === res.studentId);
+            if (stx) { stx.courseCodes = res.codes; stx.isUnassigned = !!res.unassigned; }
+          }
+          renderDeletionInbox(); refreshMgmtTools();
+          showToast(res.message || "تم", "success");
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) {
+          showToast((res && res.error) || "تعذر تنفيذ القرار", "error");
+        }
+      } catch (err) { showToast(err.message, "error"); }
+      finally { decideBusy = false; hideLoading(); }
+    }
+
+
+    // ---- names: teachers suggest, T4 decides ----
+    function openNameSuggest() {
+      const id = getVal('editStudentOrigName');
+      const st = AppState.students.find(x => x.id === id);
+      if (!st) return;
+      if (pendingNameFor(id)) { showToast("يوجد اقتراح اسم قيد المراجعة لهذا الطالب.", "error"); return; }
+      setVal('nameSuggestStudentId', id);
+      document.getElementById('nameSuggestCurrent').innerText = st.name;
+      setVal('nameSuggestNew', st.name); setVal('nameSuggestReason', '');
+      showModal('nameSuggestModal');
+    }
+    let nameSugBusy = false;
+    async function submitNameSuggestion() {
+      if (nameSugBusy) return;
+      const id = getVal('nameSuggestStudentId'), nn = getVal('nameSuggestNew');
+      if (nn.length < 2) { showToast("اكتب الاسم المقترح", "error"); return; }
+      nameSugBusy = true; showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend({ action: 'suggestNameChange', studentId: id, newName: nn, reason: getVal('nameSuggestReason') });
+        if (res && res.success) {
+          (AppState.myNameSuggestions = AppState.myNameSuggestions || []).push(res.request);
+          hideModal('nameSuggestModal');
+          showToast("تم إرسال اقتراح الاسم إلى الإدارة", "success");
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) showToast((res && res.error) || "تعذر الإرسال", "error");
+      } catch (err) { showToast(err.message, "error"); }
+      finally { nameSugBusy = false; hideLoading(); }
+    }
+    function openNameInbox() { renderNameInbox(); showModal('nameInboxModal'); }
+    function renderNameInbox() {
+      const box = document.getElementById('nameInboxList');
+      const list = AppState.nameInbox || [];
+      if (!list.length) { box.innerHTML = '<div class="p-6 text-center text-slate-400 text-xs">لا توجد اقتراحات بانتظار الاعتماد.</div>'; return; }
+      box.innerHTML = list.map(r => `
+        <div class="p-3 rounded-2xl border border-amber-200 bg-amber-50/40 space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <p class="text-[11px] text-slate-600">اقتراح من: <b>${escapeHtml(r.by)}</b></p>
+            <span class="text-[10px] text-slate-500 num-font">${escapeHtml(r.at)}</span>
+          </div>
+          <p class="text-xs text-slate-700">الاسم الحالي: <b>${escapeHtml(r.oldName)}</b></p>
+          <p class="text-xs text-slate-700">الاسم المقترح: <b>${escapeHtml(r.newName)}</b></p>
+          ${r.reason ? `<p class="text-xs text-slate-800 bg-white border border-slate-200 rounded-xl p-2">${escapeHtml(r.reason)}</p>` : ''}
+          <label class="block text-[11px] font-bold text-slate-600">الاسم المعتمد (عدّله إن لزم)</label>
+          <input type="text" id="ncFinal_${escapeHtml(r.id)}" maxlength="80" value="${escapeHtml(r.newName)}" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900" />
+          <input type="text" id="ncNote_${escapeHtml(r.id)}" maxlength="200" placeholder="ملاحظة (إجبارية عند الرفض)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900" />
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" data-action="decide-name" data-id="${escapeHtml(r.id)}" data-decision="approve" class="py-2.5 bg-olive-700 hover:bg-olive-600 text-white text-xs font-extrabold rounded-xl cursor-pointer">اعتماد الاسم</button>
+            <button type="button" data-action="decide-name" data-id="${escapeHtml(r.id)}" data-decision="reject" class="py-2.5 bg-white hover:bg-slate-100 text-slate-800 border-2 border-slate-300 text-xs font-extrabold rounded-xl cursor-pointer">رفض</button>
+          </div>
+        </div>`).join('');
+    }
+    let decideNameBusy = false;
+    async function decideNameChange(reqId, decision) {
+      if (decideNameBusy) return;
+      const note = (document.getElementById('ncNote_' + reqId) || {}).value || '';
+      const finalName = ((document.getElementById('ncFinal_' + reqId) || {}).value || '').trim();
+      if (decision === 'reject' && !note.trim()) { showToast("اكتب ملاحظة سبب الرفض", "error"); return; }
+      decideNameBusy = true; showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend({ action: 'decideNameChange', requestId: reqId, decision: decision, note: note.trim(), finalName: finalName });
+        if (res && res.success) {
+          AppState.nameInbox = (AppState.nameInbox || []).filter(r => r.id !== reqId);
+          if (decision === 'approve') { const stx = AppState.students.find(x => x.id === res.studentId); if (stx) stx.name = res.name; }
+          renderNameInbox(); refreshMgmtTools();
+          showToast(res.message || "تم", "success");
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) showToast((res && res.error) || "تعذر تنفيذ القرار", "error");
+      } catch (err) { showToast(err.message, "error"); }
+      finally { decideNameBusy = false; hideLoading(); }
+    }
+
+    // ---- "same person?" candidates (shared by add-student and request placement) ----
+    function dupReasonsHtml(m) {
+      const r = m.reasons || [], out = [];
+      if (r.includes('phone') && r.includes('name')) out.push('<span class="text-emerald-800 bg-emerald-50 border border-emerald-200">نفس الاسم ونفس الهاتف — على الأرجح نفس الشخص</span>');
+      else if (r.includes('phone')) out.push('<span class="text-amber-900 bg-amber-50 border border-amber-300">نفس رقم الهاتف لكن باسم مختلف — قد يكون نفس الشخص (لقب آخر) أو أحد أفراد العائلة</span>');
+      else if (r.includes('name')) out.push('<span class="text-amber-900 bg-amber-50 border border-amber-300">نفس الاسم</span>');
+      else if (r.includes('similar')) out.push('<span class="text-slate-700 bg-slate-50 border border-slate-300">اسم مشابه</span>');
+      if (m.cityDiffers) out.push('<span class="text-slate-600 bg-slate-50 border border-slate-200">المدينة مختلفة (للعلم فقط، لا تنفي أنه نفس الشخص)</span>');
+      return out.map(x => x.replace('<span class="', '<span class="inline-block text-[10px] font-bold rounded-lg px-2 py-0.5 ')).join(' ');
+    }
+
+    let pendingAddPayload = null;
+    function openDupStudentModal(matches, payload) {
+      pendingAddPayload = payload;
+      document.getElementById('dupNewName').innerText = payload.name;
+      const sel = document.getElementById('dupCourseSelect');
+      sel.innerHTML = '';
+      const src = document.getElementById('addStudentCourse');
+      Array.from(src.options).filter(o => o.value).forEach(o => { const c = document.createElement('option'); c.value = o.value; c.textContent = o.textContent; sel.appendChild(c); });
+      sel.value = payload.courseCode || '';
+      document.getElementById('dupMatches').innerHTML = matches.map(m => `<div class="p-3 rounded-2xl border border-slate-200 space-y-1.5">
+          <p class="text-sm font-extrabold text-slate-900">${escapeHtml(m.name)}</p>
+          <p class="text-[11px] text-slate-600">${escapeHtml(m.city || '—')} • مستوى ${escapeHtml(m.level || '—')} • ${escapeHtml(m.ageGroup || '—')}${m.phoneTail ? ` • هاتف ينتهي بـ <span class="num-font">${escapeHtml(m.phoneTail)}</span>` : ''}</p>
+          <p class="text-[11px] text-slate-500">الدروس: <span class="num-font">${escapeHtml(m.unassigned ? 'بلا درس' : (m.courseCodes || '—'))}</span></p>
+          <div class="flex flex-wrap gap-1">${dupReasonsHtml(m)}</div>
+          <button type="button" data-action="dup-join" data-id="${escapeHtml(m.id)}" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold rounded-xl cursor-pointer">هو نفس الطالب — أضِفه إلى الدرس المختار</button>
+        </div>`).join('');
+      showModal('dupStudentModal');
+    }
+    async function dupJoinExisting(id) {
+      const code = getVal('dupCourseSelect');
+      if (!code) { showToast("اختر الدرس الذي يُضاف إليه الطالب", "error"); return; }
+      if (addStudentBusy) return;
+      addStudentBusy = true; showLoading("جارٍ إضافة الطالب...");
+      try {
+        const res = await callBackend({ action: 'addStudent', name: pendingAddPayload ? pendingAddPayload.name : '', courseCode: code, existingStudentId: id });
+        if (res && res.success) {
+          const i = AppState.students.findIndex(x => x.id === res.student.id);
+          if (i >= 0) AppState.students[i] = Object.assign({}, AppState.students[i], res.student); else AppState.students.push(res.student);
+          hideModal('dupStudentModal'); closeAddStudentModal();
+          showToast(res.message || "تمت الإضافة", "success");
+          if (currentActiveView === 'viewCourseStudents') renderCourseStudentsList();
+          if (currentActiveView === 'viewCourses') renderCoursesDirectory();
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) showToast((res && res.error) || "تعذرت الإضافة", "error");
+      } catch (err) { showToast(err.message, "error"); }
+      finally { addStudentBusy = false; hideLoading(); }
+    }
+
+    // ---- feed ----
+    const FEED_ICONS = { new_course: '📚', no_session: '⚠️', deletion_request: '🗑️', name_suggestion: '✏️' };
+    function openFeedModal() {
+      const box = document.getElementById('feedList');
+      const seen = AppState.feedSeen || '';
+      const list = AppState.feed || [];
+      box.innerHTML = list.length ? list.map(f => `
+        <div class="p-3 rounded-2xl border ${f.at > seen ? 'border-sky-400 bg-sky-50' : 'border-slate-200 bg-white'} flex gap-2.5">
+          <span class="text-lg">${FEED_ICONS[f.type] || '•'}</span>
+          <div class="min-w-0"><p class="text-xs text-slate-900 leading-relaxed">${escapeHtml(f.text)}</p><p class="text-[10px] text-slate-500 num-font mt-0.5">${escapeHtml(f.at)}</p></div>
+        </div>`).join('') : '<div class="p-6 text-center text-slate-400 text-xs">لا توجد مستجدات.</div>';
+      showModal('feedModal');
+      if ((AppState.feedUnread || 0) > 0) {
+        AppState.feedUnread = 0; refreshMgmtTools();
+        callBackend({ action: 'markFeedSeen' }).catch(() => {});
+      }
+    }
+
+    // ---- session did not take place ----
+    function noSessionFor(code, date) { return (AppState.noSessions || []).find(x => sameCode(x.courseCode, code) && x.date === date); }
+    function fillNoSessionReasons() {
+      const sel = document.getElementById('noSessionReason');
+      if (!sel || sel.options.length) return;
+      (AppState.noSessionReasons && AppState.noSessionReasons.length ? AppState.noSessionReasons : FALLBACK_NO_SESSION_REASONS)
+        .forEach(r => { const o = document.createElement('option'); o.value = r; o.innerText = r; sel.appendChild(o); });
+    }
+    function refreshNoSessionState() {
+      fillNoSessionReasons();
+      const course = AppState.selectedCourseForAtt;
+      const date = document.getElementById('attDateInput').value;
+      const rec = course && date ? noSessionFor(course.code, date) : null;
+      const ex = document.getElementById('noSessionExisting');
+      if (ex) {
+        ex.classList.toggle('hidden', !rec);
+        if (rec) document.getElementById('noSessionExistingText').innerText = rec.reason + (rec.details ? ' — ' + rec.details : '');
+      }
+      const toggle = document.getElementById('noSessionToggle');
+      if (rec && toggle) toggle.checked = false;
+      onNoSessionToggle(true);
+    }
+    function onNoSessionToggle(silent) {
+      const on = document.getElementById('noSessionToggle').checked;
+      document.getElementById('noSessionBox').classList.toggle('hidden', !on);
+      document.getElementById('attendanceRosterBlock').classList.toggle('hidden', on);
+      document.getElementById('attendanceSaveBlock').classList.toggle('hidden', on);
+    }
+    let noSessionBusy = false;
+    async function submitNoSession() {
+      if (noSessionBusy || !AppState.selectedCourseForAtt) return;
+      const course = AppState.selectedCourseForAtt;
+      const date = document.getElementById('attDateInput').value;
+      const reason = document.getElementById('noSessionReason').value;
+      const details = document.getElementById('noSessionDetails').value.trim();
+      if (!date) { showToast("يرجى اختيار تاريخ الدرس", "error"); return; }
+      if (reason === 'أخرى' && !details) { showToast("اكتب سبب عدم انعقاد الدرس", "error"); return; }
+      noSessionBusy = true;
+      showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend({ action: 'markNoSession', courseCode: course.code, date: date, reason: reason, details: details });
+        if (res && res.success) {
+          AppState.noSessions = (AppState.noSessions || []).filter(x => !(sameCode(x.courseCode, course.code) && x.date === date));
+          AppState.noSessions.push(res.noSession);
+          document.getElementById('noSessionToggle').checked = false;
+          document.getElementById('noSessionDetails').value = '';
+          refreshNoSessionState();
+          showToast("تم تسجيل أن الدرس لم ينعقد", "success");
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) {
+          showToast((res && res.error) || "تعذر التسجيل", "error");
+        }
+      } catch (err) { showToast(err.message, "error"); }
+      finally { noSessionBusy = false; hideLoading(); }
+    }
+    async function clearNoSession() {
+      const course = AppState.selectedCourseForAtt;
+      const date = document.getElementById('attDateInput').value;
+      if (!course || !date || noSessionBusy) return;
+      noSessionBusy = true;
+      showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend({ action: 'clearNoSession', courseCode: course.code, date: date });
+        if (res && res.success) {
+          AppState.noSessions = (AppState.noSessions || []).filter(x => !(sameCode(x.courseCode, course.code) && x.date === date));
+          refreshNoSessionState();
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) { showToast((res && res.error) || "تعذر الإلغاء", "error"); }
+      } catch (err) { showToast(err.message, "error"); }
+      finally { noSessionBusy = false; hideLoading(); }
+    }
+
+    // ==========================================
+    // PHASE 2: طلبات الدروس (course requests)
+    // ==========================================
+    const RQ = { NEW: 'جديد', T3: 'عند مسؤول', ASSIGNED: 'مُسنَد', CALLED: 'تم الاتصال الأول', PROGRESS: 'قيد المتابعة', NOANS: 'لم يردّ', DONE: 'تم الإدماج', CANCEL: 'ملغى' };
+    const RQ_STYLE = {
+      'جديد':             { chip: 'bg-sky-100 text-sky-800 border-sky-300', bar: 'bg-sky-500', hint: 'بانتظار إسناد المدير' },
+      'عند مسؤول':        { chip: 'bg-purple-100 text-purple-800 border-purple-300', bar: 'bg-purple-500', hint: 'عند المسؤول ليُسنده إلى مكلّف' },
+      'مُسنَد':           { chip: 'bg-indigo-100 text-indigo-800 border-indigo-300', bar: 'bg-indigo-500', hint: 'بانتظار الاتصال الأول' },
+      'تم الاتصال الأول': { chip: 'bg-amber-100 text-amber-900 border-amber-300', bar: 'bg-amber-500', hint: 'تم الاتصال بالطالب' },
+      'قيد المتابعة':     { chip: 'bg-orange-100 text-orange-900 border-orange-300', bar: 'bg-orange-500', hint: 'المتابعة جارية' },
+      'لم يردّ':          { chip: 'bg-red-100 text-red-800 border-red-300', bar: 'bg-red-500', hint: 'لم يردّ الطالب على الاتصال' },
+      'تم الإدماج':       { chip: 'bg-emerald-100 text-emerald-800 border-emerald-300', bar: 'bg-emerald-500', hint: 'الطالب الآن في درس' },
+      'ملغى':             { chip: 'bg-slate-200 text-slate-600 border-slate-300', bar: 'bg-slate-400', hint: 'تم إلغاء الطلب' }
+    };
+    function rqStyle(st) { return RQ_STYLE[st] || RQ_STYLE['جديد']; }
+    function rqChip(st) { return `<span class="inline-block text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${rqStyle(st).chip}">${escapeHtml(st)}</span>`; }
+    function rqById(id) { return (AppState.requests || []).find(r => r.id === id); }
+    function rqDaysText(n) { if (n === null || n === undefined) return ''; return n === 0 ? 'اليوم' : n === 1 ? 'منذ يوم' : n === 2 ? 'منذ يومين' : (n <= 10 ? `منذ ${n} أيام` : `منذ ${n} يوماً`); }
+
+    let reqFilter = 'open';
+
+    function refreshRequestsBadge() {
+      const list = AppState.requests || [];
+      const actions = list.filter(r => r.needsAction).length;
+      const alerts = list.filter(r => r.overdue && r.can && r.can.note).length;
+      AppState.requestActions = actions; AppState.requestAlerts = alerts;
+      const b = document.getElementById('dashRequestsBadge');
+      const n = Math.max(actions, alerts);
+      if (b) { b.innerText = String(n); b.classList.toggle('hidden', n === 0); b.className = b.className.replace(/bg-(red|sky)-600/, alerts > 0 ? 'bg-red-600' : 'bg-sky-600'); }
+      const t = document.getElementById('dashRequestsText');
+      if (t) {
+        const parts = [];
+        if (actions) parts.push(`${actions} بانتظار تصرفك`);
+        if (alerts) parts.push(`⏰ ${alerts} متأخر`);
+        t.innerText = parts.length ? parts.join(' • ') : 'طلبات التحاق الطلاب بدروس جديدة';
+        t.className = 'text-xs font-semibold mt-0.5 ' + (alerts ? 'text-red-600' : 'text-slate-500');
+      }
+    }
+
+    function openRequestsView() {
+      reqFilter = (AppState.requestActions || 0) > 0 ? 'action' : 'open';
+      renderRequestsView();
+      switchView('viewRequests');
+    }
+
+    function reqFilterFn(key) {
+      if (key === 'all') return () => true;
+      if (key === 'open') return r => r.open;
+      if (key === 'action') return r => r.needsAction;
+      if (key === 'overdue') return r => r.overdue;
+      if (key.indexOf('st:') === 0) { const st = key.slice(3); return r => r.status === st; }
+      return () => true;
+    }
+
+    function renderRequestsView() {
+      const list = AppState.requests || [];
+      const stats = AppState.requestStats;
+      const statsEl = document.getElementById('reqStats');
+      if (stats && statsEl) {
+        const tile = (label, val, cls) => `<div class="p-2.5 rounded-2xl border ${cls} text-center"><div class="text-lg font-black num-font">${escapeHtml(val === null || val === undefined ? '—' : String(val))}</div><div class="text-[10px] font-bold leading-tight">${label}</div></div>`;
+        statsEl.classList.remove('hidden');
+        statsEl.innerHTML = `
+          <div class="grid grid-cols-4 gap-2">
+            ${tile('مفتوحة', stats.open, 'bg-sky-50 border-sky-200 text-sky-900')}
+            ${tile('متأخرة', stats.overdue, stats.overdue ? 'bg-red-50 border-red-300 text-red-800' : 'bg-slate-50 border-slate-200 text-slate-700')}
+            ${tile('أيام حتى الإدماج (متوسط)', stats.avgDaysToDone, 'bg-emerald-50 border-emerald-200 text-emerald-900')}
+            ${tile('أيام حتى أول اتصال (متوسط)', stats.avgDaysToFirstCall, 'bg-amber-50 border-amber-200 text-amber-900')}
+          </div>
+          <p class="text-[11px] text-slate-500 leading-relaxed">أُدمج هذا الشهر: <b class="num-font">${stats.doneThisMonth}</b> • بدون إسناد: <b class="num-font">${stats.unassigned}</b> • أقدم طلب مفتوح: <b class="num-font">${stats.oldestOpenDays}</b> يوم • متوسط الإسناد: <b class="num-font">${stats.avgDaysToAssign === null ? '—' : stats.avgDaysToAssign}</b> يوم</p>`;
+      } else if (statsEl) { statsEl.classList.add('hidden'); }
+
+      const chips = [['open', 'مفتوحة'], ['action', 'بانتظار تصرفي'], ['overdue', 'متأخرة']];
+      Object.keys(RQ_STYLE).forEach(st => { if (list.some(r => r.status === st)) chips.push(['st:' + st, st]); });
+      chips.push(['all', 'الكل']);
+      document.getElementById('reqFilters').innerHTML = chips.map(([k, label]) => {
+        const n = list.filter(reqFilterFn(k)).length;
+        const on = k === reqFilter;
+        return `<button type="button" data-action="req-filter" data-key="${escapeHtml(k)}" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold border cursor-pointer ${on ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-300'}">${escapeHtml(label)} <span class="num-font">${n}</span></button>`;
+      }).join('');
+
+      const rows = list.filter(reqFilterFn(reqFilter)).slice().sort((a, b) => {
+        if (a.overdue !== b.overdue) return a.overdue ? -1 : 1;
+        if (a.needsAction !== b.needsAction) return a.needsAction ? -1 : 1;
+        return a.createdAt < b.createdAt ? 1 : -1;
+      });
+      const box = document.getElementById('reqList');
+      if (!rows.length) { box.innerHTML = '<div class="p-8 text-center bg-white rounded-2xl text-slate-400 text-xs">لا توجد طلبات في هذه القائمة.</div>'; return; }
+      box.innerHTML = rows.map(r => {
+        const stl = rqStyle(r.status);
+        const days = r.status === RQ.DONE ? `✅ أُدمج بعد ${r.daysOpen} يوم` : (r.open ? `📅 ${rqDaysText(r.daysOpen)}` : '');
+        const late = r.overdue ? `<span class="text-[11px] font-extrabold text-red-700 bg-red-50 border border-red-200 rounded-lg px-1.5 py-0.5">⏰ بدون تحديث ${rqDaysText(r.daysSinceUpdate).replace('منذ ', '')}</span>` : '';
+        const who = r.assignee ? `المكلّف: <b>${escapeHtml(r.assignee)}</b>` : (r.t3 ? `المسؤول: <b>${escapeHtml(r.t3)}</b>` : `أنشأه: ${escapeHtml(r.createdBy)}`);
+        return `<div data-action="req-open" data-id="${escapeHtml(r.id)}" class="relative p-3.5 pr-4 glass-card rounded-2xl cursor-pointer overflow-hidden ${r.needsAction ? 'ring-2 ring-sky-400' : ''}">
+          <span class="absolute right-0 top-0 bottom-0 w-1.5 ${stl.bar}"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0"><h4 class="text-sm font-extrabold text-slate-900 truncate">${escapeHtml(r.name)}</h4>
+              <p class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(r.city)} • مستوى ${escapeHtml(r.level)} • ${escapeHtml(r.age)} • ${escapeHtml(r.courseType)}</p></div>
+            ${rqChip(r.status)}
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mt-2 text-[11px] text-slate-600">
+            <span class="num-font">${escapeHtml(r.id)}</span><span>${days}</span>${late}
+          </div>
+          <p class="text-[11px] text-slate-600 mt-1.5">${who}${r.needsAction ? ' <b class="text-sky-700">• بانتظار تصرفك</b>' : ''}</p>
+        </div>`;
+      }).join('');
+    }
+
+    // ---- create form (3 steps) ----
+    let rfStep = 1, rfForce = false, rfBusy = false;
+    const RF_TITLES = ['1/3 — هوية الطالب', '2/3 — مستوى الطالب', '3/3 — الدرس المطلوب'];
+    function fillSelect(id, items, selected) {
+      const sel = document.getElementById(id); if (!sel) return;
+      sel.innerHTML = '';
+      items.forEach(v => { const o = document.createElement('option'); o.value = v; o.innerText = v; if (v === selected) o.selected = true; sel.appendChild(o); });
+    }
+    function openRequestForm() {
+      const en = AppState.requestEnums || {};
+      fillSelect('rfLevel', en.levels || ['1', '2', '3', '4']);
+      fillSelect('rfAge', en.ageGroups || ['15-', '16-35', '36-60', '60+']);
+      fillSelect('rfEssentials', en.essentials || []);
+      fillSelect('rfInvited', en.invited || ['نعم', 'لا'], 'لا');
+      fillSelect('rfCourseType', en.courseTypes || []);
+      ['rfName', 'rfPhone', 'rfCity', 'rfTimes', 'rfIntermediary', 'rfOther'].forEach(id => setVal(id, ''));
+      setVal('rfCountry', 'تونس');
+      rfStep = 1; rfForce = false; renderRequestStep();
+      showModal('requestFormModal');
+    }
+    function renderRequestStep() {
+      [1, 2, 3].forEach(n => document.getElementById('reqStep' + n).classList.toggle('hidden', n !== rfStep));
+      document.getElementById('reqStepTitle').innerText = RF_TITLES[rfStep - 1];
+      document.getElementById('reqStepDots').innerHTML = [1, 2, 3].map(n => `<span class="h-1.5 flex-1 rounded-full ${n <= rfStep ? 'bg-sky-600' : 'bg-slate-200'}"></span>`).join('');
+      document.getElementById('reqPrevBtn').classList.toggle('hidden', rfStep === 1);
+      document.getElementById('reqNextBtn').classList.toggle('col-span-2', rfStep === 1);
+      document.getElementById('reqNextBtn').innerText = rfStep === 3 ? 'إرسال الطلب إلى الإدارة' : 'التالي';
+    }
+    function validateRequestStep(n) {
+      if (n === 1) {
+        if (getVal('rfName').length < 2) { showToast("يرجى كتابة الاسم واللقب", "error"); return false; }
+        if (!/^[0-9+\s]{6,20}$/.test(getVal('rfPhone'))) { showToast("رقم الهاتف غير صالح", "error"); return false; }
+        if (!getVal('rfCity')) { showToast("يرجى كتابة المدينة أو الحيّ", "error"); return false; }
+      }
+      return true;
+    }
+    function requestFormStep(dir) {
+      if (dir < 0) { if (rfStep > 1) { rfStep--; renderRequestStep(); } return; }
+      if (!validateRequestStep(rfStep)) return;
+      if (rfStep < 3) { rfStep++; renderRequestStep(); return; }
+      submitRequestForm();
+    }
+    async function submitRequestForm() {
+      if (rfBusy) return;
+      rfBusy = true; showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend({
+          action: 'createRequest', force: rfForce,
+          name: getVal('rfName'), phone: getVal('rfPhone'), country: getVal('rfCountry'), city: getVal('rfCity'),
+          level: getVal('rfLevel'), age: getVal('rfAge'), essentials: getVal('rfEssentials'), courseType: getVal('rfCourseType'),
+          times: getVal('rfTimes'), invited: getVal('rfInvited'), intermediary: getVal('rfIntermediary'), other: getVal('rfOther')
+        });
+        if (res && res.success) {
+          (AppState.requests = AppState.requests || []).unshift(res.request);
+          hideModal('requestFormModal'); refreshRequestsBadge();
+          if (currentActiveView === 'viewRequests') { reqFilter = 'all'; renderRequestsView(); }
+          showToast(res.warningExistingStudent ? "تم الإرسال — تنبيه: يوجد طالب بنفس الاسم في قاعدة البيانات" : "تم إرسال الطلب إلى الإدارة", "success");
+        } else if (res && res.code === 'DUPLICATE') {
+          hideLoading();
+          if (confirm(res.error)) { rfBusy = false; rfForce = true; return submitRequestForm(); }
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) { showToast((res && res.error) || "تعذر إرسال الطلب", "error"); }
+      } catch (err) { showToast(err.message, "error"); }
+      finally { rfBusy = false; hideLoading(); }
+    }
+
+    // ---- detail ----
+    function openRequestDetail(id) { setVal('rdId', id); renderRequestDetail(); showModal('requestDetailModal'); }
+    function rdRow(label, val) { return val ? `<div class="flex justify-between gap-3 text-xs py-1.5 border-b border-slate-100"><span class="text-slate-500 shrink-0">${label}</span><span class="font-bold text-slate-900 text-left">${val}</span></div>` : ''; }
+    function renderRequestDetail() {
+      const r = rqById(getVal('rdId')); const box = document.getElementById('rdBody');
+      if (!r) { box.innerHTML = '<p class="text-xs text-slate-500">الطلب غير متاح.</p>'; return; }
+      const stl = rqStyle(r.status), e = escapeHtml;
+      const ev = (AppState.requestEvents && AppState.requestEvents[r.id]) || [];
+      const timeline = ev.length ? ev.map(x => `<div class="flex gap-2 text-[11px]"><span class="mt-1 w-2 h-2 rounded-full shrink-0 ${rqStyle(x.to || r.status).bar}"></span><div class="min-w-0"><p class="text-slate-900"><b>${e(x.type)}</b>${x.to && x.from !== x.to ? ` — ${e(x.from || '')} ← ${e(x.to)}` : ''}${x.target ? ` — إلى <b>${e(x.target)}</b>` : ''}</p>${x.text ? `<p class="text-slate-700 bg-slate-50 rounded-lg px-2 py-1 mt-0.5">${e(x.text)}</p>` : ''}<p class="text-slate-400 num-font">${e(x.at)} • ${e(x.by)}</p></div></div>`).join('') : '<p class="text-[11px] text-slate-400">لا يوجد سجل.</p>';
+      const days = r.status === RQ.DONE ? `<b class="text-emerald-700">${r.daysOpen} يوم</b> من وصول الطلب إلى الإدماج` : (r.open ? `<b>${rqDaysText(r.daysOpen)}</b>` + (r.overdue ? ` <span class="text-red-700 font-extrabold">• ⏰ بدون تحديث ${rqDaysText(r.daysSinceUpdate).replace('منذ ', '')}</span>` : '') : '');
+      let actions = '';
+      const c = r.can || {};
+      if (c.assign) {
+        const opts = (AppState.requestAssignees || []).map(a => `<option value="${e(a.email)}">${e(a.name)} (${e(a.tier)})</option>`).join('');
+        actions += `<div class="p-3 rounded-2xl border border-purple-200 bg-purple-50/50 space-y-2"><p class="text-xs font-extrabold text-purple-900">${AppState.currentUser.accessTier === 'T4' ? 'إسناد إلى مسؤول (T3)' : 'إسناد إلى مكلّف بالمتابعة'}</p>
+          <select id="rdAssignTo" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900">${opts}</select>
+          <input id="rdAssignNote" type="text" maxlength="200" placeholder="ملاحظة للمكلّف (اختياري)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900" />
+          <button type="button" data-action="req-assign" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold rounded-xl cursor-pointer">إسناد</button></div>`;
+      }
+      if (c.status || c.note || c.cancel) {
+        actions += `<div class="p-3 rounded-2xl border border-slate-200 bg-slate-50 space-y-2"><p class="text-xs font-extrabold text-slate-800">تحديث الحالة / ملاحظة</p>
+          <textarea id="rdNote" rows="2" maxlength="300" placeholder="تفاصيل ما تحصّلت عليه من الطالب (إجبارية عند «تم الاتصال الأول» أو الإلغاء)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900"></textarea>
+          <div class="grid grid-cols-2 gap-2">
+            ${c.status ? `<button type="button" data-action="req-status" data-status="${RQ.CALLED}" class="py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-[11px] font-extrabold rounded-xl cursor-pointer">📞 تم الاتصال الأول</button>
+            <button type="button" data-action="req-status" data-status="${RQ.PROGRESS}" class="py-2 bg-orange-100 hover:bg-orange-200 text-orange-900 border border-orange-300 text-[11px] font-extrabold rounded-xl cursor-pointer">⏳ قيد المتابعة</button>
+            <button type="button" data-action="req-status" data-status="${RQ.NOANS}" class="py-2 bg-red-100 hover:bg-red-200 text-red-800 border border-red-300 text-[11px] font-extrabold rounded-xl cursor-pointer">📵 لم يردّ</button>` : ''}
+            ${c.note ? `<button type="button" data-action="req-note" class="py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-[11px] font-extrabold rounded-xl cursor-pointer">📝 حفظ كملاحظة</button>` : ''}
+            ${c.cancel ? `<button type="button" data-action="req-status" data-status="${RQ.CANCEL}" class="col-span-2 py-2 bg-white hover:bg-slate-200 text-slate-600 border border-slate-300 text-[11px] font-extrabold rounded-xl cursor-pointer">✖ إلغاء الطلب</button>` : ''}
+          </div></div>`;
+      }
+      if (c.place) actions += `<button type="button" data-action="req-place" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-sm cursor-pointer">✅ إدماج الطالب في درس</button>`;
+      box.innerHTML = `
+        <div class="flex items-start justify-between gap-2"><div><h4 class="text-base font-black text-slate-900">${e(r.name)}</h4><p class="text-[11px] text-slate-500 num-font">${e(r.id)} • ${e(r.createdAt)}</p></div>${rqChip(r.status)}</div>
+        <p class="text-[11px] text-slate-600">${e(stl.hint)}</p>
+        ${days ? `<p class="text-xs text-slate-700">${days}</p>` : ''}
+        <div class="rounded-2xl border border-slate-200 px-3 py-1">
+          ${rdRow('الهاتف', `<a href="tel:${e(safePhone(r.phone))}" class="text-sky-700 num-font" dir="ltr">${e(r.phone)}</a>`)}
+          ${rdRow('البلد', e(r.country))}${rdRow('المدينة / الحيّ', e(r.city))}${rdRow('المستوى', e(r.level))}${rdRow('الفئة العمرية', e(r.age))}
+          ${rdRow('أكمل الضروري؟', e(r.essentials))}${rdRow('نوع الدرس', e(r.courseType))}${rdRow('أوقات مقترحة', e(r.times))}
+          ${rdRow('دُعي للدرس العام', e(r.invited))}${rdRow('الوسيط', e(r.intermediary))}${rdRow('معطيات أخرى', e(r.other))}
+          ${rdRow('أنشأه', e(r.createdBy))}${rdRow('المسؤول', e(r.t3))}${rdRow('المكلّف بالمتابعة', e(r.assignee))}
+          ${r.status === RQ.DONE ? rdRow('الدرس', `<span class="num-font">${e(r.courseCode)}</span>`) : ''}
+        </div>
+        ${actions}
+        <div class="space-y-2 pt-1"><p class="text-xs font-extrabold text-slate-800">السجل</p>${timeline}</div>`;
+    }
+
+    function rqApply(res, evType, target, text) {
+      const i = (AppState.requests || []).findIndex(x => x.id === res.request.id);
+      if (i >= 0) AppState.requests[i] = res.request; else AppState.requests.unshift(res.request);
+      const evs = (AppState.requestEvents = AppState.requestEvents || {});
+      const prev = (evs[res.request.id] = evs[res.request.id] || []);
+      const d = new Date(), pad = n => String(n).padStart(2, '0');
+      prev.push({ at: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`, by: AppState.currentUser.name, type: evType, from: '', to: res.request.status, text: text || '', target: target || '' });
+      refreshRequestsBadge();
+      if (currentActiveView === 'viewRequests') renderRequestsView();
+      if (!document.getElementById('requestDetailModal').classList.contains('hidden')) renderRequestDetail();
+    }
+    let rqBusy = false;
+    async function rqCall(payload, onOk) {
+      if (rqBusy) return; rqBusy = true; showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend(payload);
+        if (res && res.success) { onOk(res); }
+        else if (!(res && res.code === 'SESSION_EXPIRED')) showToast((res && res.error) || "تعذر تنفيذ العملية", "error");
+      } catch (err) { showToast(err.message, "error"); }
+      finally { rqBusy = false; hideLoading(); }
+    }
+    function rqAssign() {
+      const id = getVal('rdId'), to = getVal('rdAssignTo'), note = getVal('rdAssignNote');
+      if (!to) { showToast("اختر الشخص", "error"); return; }
+      const sel = document.getElementById('rdAssignTo'); const name = sel.options[sel.selectedIndex].text;
+      rqCall({ action: 'assignRequest', requestId: id, toEmail: to, note: note }, res => { showToast(res.message, "success"); rqApply(res, 'إسناد', name, note); });
+    }
+    function rqSetStatus(st) {
+      const id = getVal('rdId'), note = getVal('rdNote');
+      if ((st === RQ.CALLED || st === RQ.CANCEL) && !note) { showToast(st === RQ.CANCEL ? "اكتب سبب الإلغاء" : "اكتب تفاصيل الاتصال", "error"); return; }
+      if (st === RQ.CANCEL && !confirm("هل تريد إلغاء هذا الطلب؟")) return;
+      rqCall({ action: 'setRequestStatus', requestId: id, status: st, note: note }, res => { showToast(res.message, "success"); rqApply(res, st === RQ.CANCEL ? 'إلغاء' : 'تغيير الحالة', '', note); });
+    }
+    function rqAddNote() {
+      const id = getVal('rdId'), note = getVal('rdNote');
+      if (!note) { showToast("اكتب الملاحظة", "error"); return; }
+      rqCall({ action: 'addRequestNote', requestId: id, note: note }, res => { showToast(res.message, "success"); rqApply(res, 'ملاحظة', '', note); });
+    }
+
+    // ---- placement ----
+    function rpFillCourses(selectCode) {
+      const sel = document.getElementById('rpCourse'); sel.innerHTML = '';
+      const mine = AppState.courses.filter(c => c.isOwnCourse || AppState.currentUser.accessTier === 'T4');
+      if (!mine.length) { const o = document.createElement('option'); o.value = ''; o.innerText = 'لا توجد دروس — افتح درساً جديداً'; sel.appendChild(o); return; }
+      mine.forEach(c => { const o = document.createElement('option'); o.value = c.code; o.innerText = `${c.book || 'درس'} — ${c.day || ''} ${c.timing || ''} (${c.code})`; if (c.code === selectCode) o.selected = true; sel.appendChild(o); });
+    }
+    function openPlacement() {
+      const r = rqById(getVal('rdId')); if (!r) return;
+      setVal('rpId', r.id); document.getElementById('rpName').innerText = r.name;
+      rpFillCourses(); document.getElementById('rpMain').classList.remove('hidden'); document.getElementById('rpDup').classList.add('hidden');
+      showModal('requestPlaceModal');
+    }
+    function openCreateCourseForPlacement() {
+      openCreateCourseModal();
+      AppState.afterCourseCreated = (course) => { rpFillCourses(course.code); };
+    }
+    let placeBusy = false;
+    async function submitPlacement(extra) {
+      if (placeBusy) return;
+      const id = getVal('rpId'), code = getVal('rpCourse');
+      if (!code) { showToast("اختر الدرس", "error"); return; }
+      placeBusy = true; showLoading("الرجاء الانتظار");
+      try {
+        const res = await callBackend(Object.assign({ action: 'placeRequest', requestId: id, courseCode: code }, extra || {}));
+        if (res && res.success) {
+          hideModal('requestPlaceModal');
+          rqApply(res, 'إدماج', '', '');
+          showToast(res.enrolledExisting ? "أُضيف الطالب الموجود إلى درسك" : "تم إدماج الطالب في الدرس", "success");
+          placeBusy = false; hideLoading();
+          await silentReload();
+          return;
+        } else if (res && res.code === 'DUPLICATE' && res.data && res.data.matches) {
+          renderPlacementDuplicates(res.data.matches);
+        } else if (!(res && res.code === 'SESSION_EXPIRED')) { showToast((res && res.error) || "تعذر الإدماج", "error"); }
+      } catch (err) { showToast(err.message, "error"); }
+      finally { placeBusy = false; hideLoading(); }
+    }
+    function renderPlacementDuplicates(matches) {
+      document.getElementById('rpMain').classList.add('hidden');
+      const box = document.getElementById('rpDup'); box.classList.remove('hidden');
+      box.innerHTML = `<div class="p-3 bg-amber-50 border border-amber-300 rounded-2xl text-xs text-amber-900 font-bold">وجدنا في السجل من يشبه هذا الطالب (بالاسم أو الهاتف). هل هو نفس الشخص؟</div>` +
+        matches.map(m => `<div class="p-3 rounded-2xl border border-slate-200 space-y-1.5">
+          <p class="text-sm font-extrabold text-slate-900">${escapeHtml(m.name)}</p>
+          <p class="text-[11px] text-slate-600">${escapeHtml(m.city || '—')} • مستوى ${escapeHtml(m.level || '—')} • ${escapeHtml(m.ageGroup || '—')}${m.phoneTail ? ` • هاتف ينتهي بـ <span class="num-font">${escapeHtml(m.phoneTail)}</span>` : ''}</p>
+          <p class="text-[11px] text-slate-500">الدروس: <span class="num-font">${escapeHtml(m.courseCodes || '—')}</span></p>
+          <div class="flex flex-wrap gap-1">${dupReasonsHtml(m)}</div>
+          <button type="button" data-action="req-place-existing" data-id="${escapeHtml(m.id)}" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold rounded-xl cursor-pointer">هو نفس الطالب — أضِفه إلى درسي</button></div>`).join('') +
+        `<button type="button" data-action="req-place-new" class="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-800 border-2 border-slate-300 text-xs font-extrabold rounded-xl cursor-pointer">شخص آخر — أنشئ سجلاً جديداً</button>
+         <button type="button" onclick="document.getElementById('rpDup').classList.add('hidden');document.getElementById('rpMain').classList.remove('hidden')" class="w-full py-2 text-xs font-bold text-slate-500 underline cursor-pointer">رجوع</button>`;
+    }
+    async function silentReload() {
+      try {
+        const resp = await callBackend({ action: 'init' });
+        if (resp && resp.success) { applyInitData(resp); refreshAllViews(); if (currentActiveView === 'viewRequests') renderRequestsView(); }
+      } catch (e) { /* the local state is already correct for the request itself */ }
+    }
+
+
     let isSavingAttendance = false;
     async function submitAttendanceSession() {
       if (!AppState.selectedCourseForAtt || isSavingAttendance) return;
@@ -1700,6 +2597,7 @@
             status: r[1] === 1 ? 'حاضر' : 'غائب',
             value: r[1]
           })));
+          AppState.noSessions = (AppState.noSessions || []).filter(x => !(sameCode(x.courseCode, course.code) && x.date === dateVal));
           AppState.selectedCourseForAtt = null;
           AppState.currentAttendanceRoster = [];
           document.getElementById('attendanceActiveForm').classList.add('hidden');
@@ -1841,7 +2739,10 @@
           ${st.id ? `<div class="grid ${canMove ? 'grid-cols-2' : 'grid-cols-1'} gap-2 pt-2 border-t border-slate-200">
             <button type="button" data-action="edit-student" data-id="${escapeHtml(st.id)}" class="py-2.5 bg-white hover:bg-olive-50 text-olive-800 border-2 border-olive-600 text-xs font-extrabold rounded-xl cursor-pointer">تحيين معطيات الطالب</button>
             ${canMove ? `<button type="button" data-action="move-student" data-id="${escapeHtml(st.id)}" data-code="${escapeHtml(course.code)}" class="py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border-2 border-indigo-200 text-xs font-extrabold rounded-xl cursor-pointer">نقل إلى درس آخر</button>` : ''}
-          </div>` : '<span class="text-[11px] text-slate-400">بدون معرف</span>'}
+          </div>
+          <div class="pt-1">${pendingDeletionFor(st.id, course.code)
+            ? '<span class="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1 inline-block">⏳ طلب الإزالة من الدرس قيد المراجعة</span>'
+            : `<button type="button" data-action="request-delete" data-id="${escapeHtml(st.id)}" data-code="${escapeHtml(course.code)}" class="text-[11px] font-bold text-red-700 hover:text-red-900 underline cursor-pointer">طلب إزالة الطالب من هذا الدرس</button>`}</div>` : '<span class="text-[11px] text-slate-400">بدون معرف</span>'}
         `;
         container.appendChild(card);
       });
@@ -1962,7 +2863,7 @@
 
     let currentActiveView = 'viewDashboard';
     function switchView(targetId) {
-      ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp'].forEach(id => {
+      ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp', 'viewRequests'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('hidden', id !== targetId);
       });
@@ -2106,7 +3007,7 @@
       addStudentBusy = true;
       showLoading("جارٍ إضافة الطالب...");
       try {
-        const res = await callBackend({
+        const payload = {
           action: 'addStudent',
           name: name,
           courseCode: getVal('addStudentCourse'),
@@ -2118,7 +3019,8 @@
           city: getVal('addStudentCity'),
           completedBooks: booksFieldVisible('add') ? getVal('addStudentCompletedBooks') : '',
           force: force === true
-        });
+        };
+        const res = await callBackend(payload);
         if (res && res.success) {
           AppState.students.push(res.student);
           closeAddStudentModal();
@@ -2127,7 +3029,8 @@
           if (currentActiveView === 'viewCourses') renderCoursesDirectory();
         } else if (res && res.code === 'DUPLICATE') {
           hideLoading();
-          if (confirm(res.error)) { addStudentBusy = false; return submitAddStudent(true); }
+          if (res.data && res.data.matches && res.data.matches.length) openDupStudentModal(res.data.matches, payload);
+          else if (confirm(res.error)) { addStudentBusy = false; return submitAddStudent(true); }
         } else if (!(res && res.code === 'SESSION_EXPIRED')) {
           showToast((res && res.error) || "تعذرت الإضافة", "error");
         }
@@ -2145,6 +3048,9 @@
       if (!st) { showToast("تعذر العثور على الطالب. حدّث الصفحة.", "error"); return; }
       setVal('editStudentOrigName', st.id);
       setVal('editStudentName', st.name);
+      const canRename = userRank() >= 4, nmEl = document.getElementById('editStudentName');
+      nmEl.readOnly = !canRename; nmEl.classList.toggle('opacity-70', !canRename);
+      document.getElementById('editStudentSuggestBtn').classList.toggle('hidden', canRename);
       setSelectValue('editStudentCategory', st.category || 'رجال');
       setVal('editStudentPhone', st.phone);
       setSelectValue('editStudentLevel', st.level || '1');
@@ -2163,11 +3069,11 @@
       const id = getVal('editStudentOrigName');
       const name = getVal('editStudentName');
       if (!id) { showToast("معرف الطالب مفقود.", "error"); return; }
-      if (name.length < 2) { showToast("يرجى كتابة اسم الطالب", "error"); return; }
+      const canRename = userRank() >= 4;
+      if (canRename && name.length < 2) { showToast("يرجى كتابة اسم الطالب", "error"); return; }
       const payload = {
         action: 'updateStudent',
         id: id,
-        name: name,
         category: getVal('editStudentCategory'),
         phone: getVal('editStudentPhone'),
         level: getVal('editStudentLevel'),
@@ -2175,6 +3081,7 @@
         location: getVal('editStudentLocation'),
         city: getVal('editStudentCity')
       };
+      if (canRename) payload.name = name;
       if (booksFieldVisible('edit')) payload.completedBooks = getVal('editStudentCompletedBooks');
       editStudentBusy = true;
       showLoading("جارٍ حفظ التحيين...");
@@ -2183,7 +3090,7 @@
         if (res && res.success) {
           const st = AppState.students.find(s => s.id === id);
           if (st) {
-            ['name', 'category', 'phone', 'level', 'ageGroup', 'location', 'city'].forEach(k => { st[k] = payload[k]; });
+            ['name', 'category', 'phone', 'level', 'ageGroup', 'location', 'city'].forEach(k => { if (k in payload) st[k] = payload[k]; });
             if ('completedBooks' in payload) st.completedBooks = payload.completedBooks;
           }
           closeEditStudentModal();
@@ -2201,8 +3108,9 @@
     }
 
     // ---- create course ----------------------------------------------------------------
-    function openCreateCourseModal() { showModal('createCourseModal'); }
+    function openCreateCourseModal() { AppState.afterCourseCreated = null; showModal('createCourseModal'); }
     function closeCreateCourseModal() { hideModal('createCourseModal'); }
+    // (a hook set by the placement flow is cleared when the course modal is dismissed without creating)
 
     async function submitCreateCourse() {
       if (isCreatingCourse) return;
@@ -2224,7 +3132,9 @@
         });
         if (res && res.success) {
           AppState.courses.push(res.course);
+          const afterCb = AppState.afterCourseCreated; AppState.afterCourseCreated = null;
           closeCreateCourseModal();
+          if (afterCb) afterCb(res.course);
           updateDashboardCounts();
           showToast(`تم فتح الدرس (${res.course.code}) بنجاح`, "success");
           if (currentActiveView === 'viewCourses') renderCoursesDirectory();
@@ -2478,7 +3388,7 @@
     // ==========================================
     // ANDROID BACK BUTTON: never quits by mistake
     // ==========================================
-    const MODAL_IDS = ['topicHistoryModal', 'moveStudentModal', 'confirmLeaveAttendanceModal', 'addStudentModal', 'editStudentModal', 'createCourseModal', 'editCourseModal', 'notificationsModal'];
+    const MODAL_IDS = ['dupStudentModal', 'nameSuggestModal', 'nameInboxModal', 'createCourseModal', 'requestPlaceModal', 'requestFormModal', 'requestDetailModal', 'deleteRequestModal', 'deletionInboxModal', 'feedModal', 'topicHistoryModal', 'moveStudentModal', 'confirmLeaveAttendanceModal', 'addStudentModal', 'editStudentModal', 'editCourseModal', 'notificationsModal'];
     function openModalId() {
       for (const id of MODAL_IDS) {
         const el = document.getElementById(id);
@@ -2496,7 +3406,8 @@
         case 'viewAttendance': handleAttendanceBackNav(); return true;
         case 'viewCourseStudents': goBackFromCourseStudents(); return true;
         case 'viewCourses':
-        case 'viewFollowUp': openDashboardView(); return true;
+        case 'viewFollowUp':
+        case 'viewRequests': openDashboardView(); return true;
         default:
           if (AppState.activeWorkspaceTab === 'supervision') { switchWorkspaceTab('personal'); return true; }
           return false;
@@ -2568,6 +3479,19 @@
         case 'move-student': openMoveStudentModal(d.id, d.code); break;
         case 'edit-course': openEditCourseModal(d.code); break;
         case 'edit-student': openEditStudentModal(d.id); break;
+        case 'request-delete': openDeleteRequestModal(d.id, d.code); break;
+        case 'req-filter': reqFilter = d.key; renderRequestsView(); break;
+        case 'req-open': openRequestDetail(d.id); break;
+        case 'req-assign': rqAssign(); break;
+        case 'req-status': rqSetStatus(d.status); break;
+        case 'req-note': rqAddNote(); break;
+        case 'req-place': openPlacement(); break;
+        case 'req-place-existing': submitPlacement({ existingStudentId: d.id }); break;
+        case 'req-place-new': submitPlacement({ force: true }); break;
+        case 'decide-deletion': decideDeletion(d.id, d.decision); break;
+        case 'decide-name': decideNameChange(d.id, d.decision); break;
+        case 'dup-join': dupJoinExisting(d.id); break;
+        case 'dup-new': setVal('addStudentCourse', getVal('dupCourseSelect')); hideModal('dupStudentModal'); submitAddStudent(true); break;
         case 'remove-book': removeCompletedBook(d.target, d.book); break;
         case 'followup-done': markFollowUpDone(d.id, d.name, d.code, d.date); break;
       }
