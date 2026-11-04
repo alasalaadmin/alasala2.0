@@ -197,6 +197,7 @@
 
         <div class="flex items-center gap-1.5">
           <!-- Notification Bell for Supervisors/Managers (T2-T4) -->
+          <button id="viewAsBtn" type="button" onclick="openViewAs()" class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white hover:bg-slate-700 transition-all cursor-pointer" title="معاينة حساب آخر (للقراءة فقط)">معاينة</button>
           <button id="deptSwitchBtn" type="button" onclick="toggleDept()" class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-olive-100 text-olive-900 hover:bg-olive-700 hover:text-white transition-all cursor-pointer" title="تبديل القسم"></button>
           <button id="notificationBellBtn" onclick="openNotificationsModal()" class="hidden relative p-2.5 rounded-xl text-slate-700 hover:bg-slate-200/60 transition-all cursor-pointer" title="تنبيهات المتابعة الأسبوعية">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,6 +217,10 @@
             </svg>
           </button>
         </div>
+      </div>
+      <div id="previewBanner" class="hidden max-w-2xl mx-auto mt-2 flex items-center justify-between gap-2 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 px-3 py-2 text-[11px] font-bold">
+        <span id="previewBannerText"></span>
+        <button type="button" onclick="exitViewAs()" class="px-2.5 py-1 rounded-lg bg-amber-900 text-white font-extrabold cursor-pointer shrink-0">العودة لحسابي</button>
       </div>
     </header>
 
@@ -1067,6 +1072,17 @@
     </div>
   </div>
 
+  <div id="viewAsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+        <h3 class="text-sm font-bold text-slate-900">معاينة حساب (للقراءة فقط)</h3>
+        <button type="button" onclick="hideModal('viewAsModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer text-lg leading-none">✕</button>
+      </div>
+      <input id="viewAsSearch" type="search" placeholder="ابحث بالاسم" oninput="renderViewAsList()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white shrink-0">
+      <div id="viewAsList" class="space-y-2 overflow-y-auto"></div>
+    </div>
+  </div>
+
   <div id="nameInboxModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-float border border-slate-100 space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
@@ -1288,6 +1304,9 @@
     const AppState = {
       token: null,
       departments: [],
+      canViewAs: false,
+      preview: null,
+      viewAsPeople: [],
       dept: 'edu',
       act: null,
       actState: { filter: 'teacher', classKey: '', q: '' },
@@ -1461,6 +1480,7 @@
           if (response && response.success && response.token) {
             AppState.token = response.token;
             AppState.departments = response.departments || ['edu'];
+            AppState.canViewAs = response.canViewAs === true;
             let merged = { success: true, token: response.token };
             if (AppState.departments.includes('edu')) {
               const initData = await callBackend({ action: 'init' });   // data loads separately, retried automatically
@@ -1561,6 +1581,13 @@
       if (loc) loc.innerText = inAct ? 'الأنشطة' : (AppState.currentUser.location || '');
       const bell = document.getElementById('notificationBellBtn');
       if (bell && inAct) bell.classList.add('hidden');
+      const vb = document.getElementById('viewAsBtn');
+      if (vb) vb.classList.toggle('hidden', !(AppState.canViewAs && !AppState.preview));
+      const pb = document.getElementById('previewBanner');
+      if (pb) {
+        pb.classList.toggle('hidden', !AppState.preview);
+        if (AppState.preview) document.getElementById('previewBannerText').textContent = 'تعاين حساب ' + AppState.preview.name + ' (' + [AppState.preview.edu, AppState.preview.act].filter(Boolean).join(' · ') + ') — للقراءة فقط';
+      }
     }
 
     function setupActivitiesAfterLogin() {
@@ -1679,10 +1706,7 @@
       handleLogout(false);
     }
 
-    function handleLogout(callServer = true) {
-      if (callServer && AppState.token) {
-        callBackend({ action: 'logout' }).catch(() => {});
-      }
+    function resetClientState_() {
       AppState.token = null;
       AppState.currentUser = null;
       AppState.departments = [];
@@ -1707,6 +1731,18 @@
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
       });
+    }
+
+    function handleLogout(callServer = true) {
+      if (callServer && AppState.token) {
+        callBackend({ action: 'logout' }).catch(() => {});
+      }
+      resetClientState_();
+      AppState.preview = null;
+      AppState.canViewAs = false;
+      AppState.viewAsPeople = [];
+      const pb = document.getElementById('previewBanner'); if (pb) pb.classList.add('hidden');
+      const vb = document.getElementById('viewAsBtn'); if (vb) vb.classList.add('hidden');
       const pinInput = document.getElementById('loginPinInput');
       if (pinInput) pinInput.value = '';
       const errorBox = document.getElementById('loginErrorMsg');
@@ -1714,6 +1750,72 @@
       document.getElementById('appShell').classList.add('hidden');
       document.getElementById('loginScreen').classList.remove('hidden');
       switchView('viewDashboard');
+    }
+
+    // ===== معاينة حساب آخر (للمالك فقط، قراءة فقط) =====
+    async function enterWithDepartments_(deps) {
+      AppState.departments = deps;
+      if (deps.includes('edu')) {
+        const r = await callBackend({ action: 'init' });
+        if (!(r && r.success)) throw new Error((r && r.error) || 'تعذر تحميل البيانات');
+        applyInitData(r);
+      }
+      if (deps.includes('act')) {
+        const a = await callBackend({ action: 'actInit' });
+        if (!(a && a.success)) throw new Error((a && a.error) || 'تعذر تحميل البيانات');
+        applyActData(a);
+      }
+      if (deps.includes('edu')) { AppState.dept = 'edu'; setupDashboardAfterLogin(); }
+      else { AppState.dept = 'act'; AppState.currentUser = { name: AppState.act.name, accessTier: AppState.act.tier, location: '' }; setupActivitiesAfterLogin(); }
+    }
+
+    async function openViewAs() {
+      if (!AppState.canViewAs || AppState.preview) return;
+      showLoading("الرجاء الانتظار");
+      try {
+        const r = await callBackend({ action: 'viewAsList' });
+        if (!(r && r.success)) { showToast((r && r.error) || 'غير متاح', 'error'); return; }
+        AppState.viewAsPeople = r.people || [];
+        const s = document.getElementById('viewAsSearch'); if (s) s.value = '';
+        renderViewAsList();
+        showModal('viewAsModal');
+      } catch (e) { showToast(e.message, 'error'); } finally { hideLoading(); }
+    }
+
+    function renderViewAsList() {
+      const q = normalizeSearch((document.getElementById('viewAsSearch') || {}).value);
+      const list = AppState.viewAsPeople.filter(p => !q || normalizeSearch(p.name).includes(q));
+      document.getElementById('viewAsList').innerHTML = list.length ? list.map(p =>
+        `<button type="button" data-action="view-as" data-email="${escapeHtml(p.email)}" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-between gap-2 cursor-pointer"><span class="text-sm font-bold text-slate-900">${escapeHtml(p.name)}</span><span class="text-[10px] font-bold num-font text-slate-500" dir="ltr">${escapeHtml([p.edu, p.act].filter(Boolean).join(' · '))}</span></button>`).join('')
+        : '<p class="text-center text-xs text-slate-500 py-6">لا نتائج</p>';
+    }
+
+    async function startViewAs(email) {
+      if (!AppState.canViewAs || AppState.preview) return;
+      showLoading("الرجاء الانتظار");
+      try {
+        const r = await callBackend({ action: 'viewAs', email: email });
+        if (!(r && r.success)) { showToast((r && r.error) || 'تعذرت المعاينة', 'error'); return; }
+        const adminToken = AppState.token, adminDeps = AppState.departments.slice();
+        resetClientState_();
+        AppState.token = r.token;
+        AppState.preview = { name: r.target.name, edu: r.target.edu, act: r.target.act, adminToken: adminToken, adminDeps: adminDeps };
+        try { await enterWithDepartments_(r.departments); }
+        catch (e) { showToast(e.message, 'error'); await exitViewAs(true); }
+      } catch (e) { showToast(e.message, 'error'); } finally { hideLoading(); }
+    }
+
+    async function exitViewAs(quiet) {
+      const pv = AppState.preview;
+      if (!pv) return;
+      callBackend({ action: 'logout' }).catch(() => {});   // closes the preview session (sent with the preview token)
+      resetClientState_();
+      AppState.token = pv.adminToken;
+      AppState.preview = null;
+      showLoading("الرجاء الانتظار");
+      try { await enterWithDepartments_(pv.adminDeps); }
+      catch (e) { showToast(e.message, 'error'); handleLogout(false); }
+      finally { hideLoading(); }
     }
 
     let refreshBusy = false;
@@ -3111,6 +3213,9 @@
     // payload = { action, ...fields }. The session token is added automatically (never stored on disk).
     async function callBackend(payload) {
       const body = Object.assign({}, payload);
+      if (AppState.preview && ['init', 'actInit', 'logout'].indexOf(body.action) === -1) {
+        return { success: false, code: 'READONLY', error: 'وضع المعاينة للقراءة فقط.' };   // the server refuses these too
+      }
       if (AppState.token && body.action !== 'login') body.token = AppState.token;
       const send = () => USE_JSONP_FALLBACK ? jsonpRequest(body) : postRequest(body);
       let data;
@@ -3695,7 +3800,7 @@
     // ==========================================
     // ANDROID BACK BUTTON: never quits by mistake
     // ==========================================
-    const MODAL_IDS = ['dupStudentModal', 'nameSuggestModal', 'nameInboxModal', 'createCourseModal', 'requestPlaceModal', 'requestFormModal', 'requestDetailModal', 'deleteRequestModal', 'deletionInboxModal', 'feedModal', 'topicHistoryModal', 'moveStudentModal', 'confirmLeaveAttendanceModal', 'addStudentModal', 'editStudentModal', 'editCourseModal', 'notificationsModal'];
+    const MODAL_IDS = ['viewAsModal', 'dupStudentModal', 'nameSuggestModal', 'nameInboxModal', 'createCourseModal', 'requestPlaceModal', 'requestFormModal', 'requestDetailModal', 'deleteRequestModal', 'deletionInboxModal', 'feedModal', 'topicHistoryModal', 'moveStudentModal', 'confirmLeaveAttendanceModal', 'addStudentModal', 'editStudentModal', 'editCourseModal', 'notificationsModal'];
     function openModalId() {
       for (const id of MODAL_IDS) {
         const el = document.getElementById(id);
@@ -3782,6 +3887,7 @@
       if (!el) return;
       const d = el.dataset;
       switch (d.action) {
+        case 'view-as': startViewAs(d.email); break;
         case 'act-filter': AppState.actState.filter = d.key; AppState.actState.classKey = ''; renderActivities(); break;
         case 'act-class': AppState.actState.classKey = d.key; renderActivities(); break;
         case 'act-set-default': actSetDefault(); break;
