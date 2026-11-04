@@ -197,6 +197,7 @@
 
         <div class="flex items-center gap-1.5">
           <!-- Notification Bell for Supervisors/Managers (T2-T4) -->
+          <button id="deptSwitchBtn" type="button" onclick="toggleDept()" class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-olive-100 text-olive-900 hover:bg-olive-700 hover:text-white transition-all cursor-pointer" title="تبديل القسم"></button>
           <button id="notificationBellBtn" onclick="openNotificationsModal()" class="hidden relative p-2.5 rounded-xl text-slate-700 hover:bg-slate-200/60 transition-all cursor-pointer" title="تنبيهات المتابعة الأسبوعية">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -622,6 +623,33 @@
       <!-- ========================================== -->
       <!-- VIEW 4: متابعة الغائبين                      -->
       <!-- ========================================== -->
+      <!-- ========================================== -->
+      <!-- VIEW: الأنشطة (نظام الصفوف)                -->
+      <!-- ========================================== -->
+      <section id="viewActivities" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-sm font-extrabold text-slate-900">الصفوف والأعضاء</h3>
+            <span id="actTotal" class="text-[11px] font-bold text-slate-500 num-font"></span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl" id="actFilterTabs">
+            <button type="button" data-action="act-filter" data-key="teacher" id="actTabTeacher" class="py-2 rounded-lg text-xs font-extrabold cursor-pointer">حسب المدرس</button>
+            <button type="button" data-action="act-filter" data-key="geo" id="actTabGeo" class="py-2 rounded-lg text-xs font-extrabold cursor-pointer">حسب المنطقة</button>
+          </div>
+          <div id="actDefaultRow" class="hidden flex items-center justify-between gap-2 text-[11px] text-slate-600">
+            <span id="actDefaultNote"></span>
+            <button type="button" data-action="act-set-default" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold cursor-pointer">اجعله الافتراضي</button>
+          </div>
+          <p id="actTeacherHint" class="hidden text-[11px] text-slate-500">قد يظهر العضو في أكثر من صف إذا كان له أكثر من مدرس.</p>
+        </div>
+        <div id="actClassList" class="grid grid-cols-2 gap-2"></div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-3 shadow-sm">
+          <input id="actSearch" type="search" placeholder="ابحث بالاسم أو الهاتف أو المدينة" oninput="actSearchInput(this.value)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+          <div id="actMembers" class="space-y-2"></div>
+        </div>
+        <div id="actReports" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-slate-800 space-y-2"></div>
+      </section>
+
       <section id="viewFollowUp" class="hidden space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-slate-200">
           <h2 class="text-base sm:text-lg font-bold text-slate-900">متابعة الغائبين</h2>
@@ -1259,6 +1287,10 @@
 
     const AppState = {
       token: null,
+      departments: [],
+      dept: 'edu',
+      act: null,
+      actState: { filter: 'teacher', classKey: '', q: '' },
       currentUser: null,
       courses: [],
       students: [],
@@ -1428,17 +1460,30 @@
           response = await callBackend({ action: 'login', email: email, pin: pin, lite: true });
           if (response && response.success && response.token) {
             AppState.token = response.token;
-            const initData = await callBackend({ action: 'init' });   // data loads separately, retried automatically
-            if (!(initData && initData.success)) { AppState.token = null; response = initData || { success: false }; }
-            else response = Object.assign({}, initData, { token: response.token });
+            AppState.departments = response.departments || ['edu'];
+            let merged = { success: true, token: response.token };
+            if (AppState.departments.includes('edu')) {
+              const initData = await callBackend({ action: 'init' });   // data loads separately, retried automatically
+              if (!(initData && initData.success)) merged = initData || { success: false };
+              else merged = Object.assign({}, initData, { token: response.token });
+            }
+            if (merged.success && AppState.departments.includes('act')) {
+              const actData = await callBackend({ action: 'actInit' });
+              if (!(actData && actData.success)) merged = actData || { success: false };
+              else merged.actData = actData;
+            }
+            if (!merged.success) AppState.token = null;
+            response = merged;
           }
         } finally { clearTimeout(slowTimer); }
         if (response && response.success && response.token) {
-          applyInitData(response);
+          if (AppState.departments.includes('edu')) applyInitData(response);
+          if (response.actData) applyActData(response.actData);
           try { localStorage.setItem('al_rawad_saved_email', email); } catch (e) {}
           if (pinInput) pinInput.value = '';
           if (successNotice) successNotice.classList.add('hidden');
-          setupDashboardAfterLogin();
+          if (AppState.departments.includes('edu')) { AppState.dept = 'edu'; setupDashboardAfterLogin(); }
+          else { AppState.dept = 'act'; AppState.currentUser = { name: AppState.act.name, accessTier: AppState.act.tier, location: '' }; setupActivitiesAfterLogin(); }
         } else {
           showLoginError((response && response.error) || "البريد أو الرمز السري غير صحيح.");
         }
@@ -1489,7 +1534,143 @@
       loadFollowAck();
       checkWeeklyAttendanceNotifications();
       checkConsecutiveAbsences();
+      applyDeptChrome();
       openDashboardView();
+    }
+
+    // ===== الأنشطة =====
+    function applyActData(resp) {
+      AppState.geoEnabled = resp.geoEnabled === true;
+      AppState.act = Object.assign({}, resp.act, { classes: resp.classes || [], members: resp.members || [], reports: resp.reports || null, setup: resp.setup || {} });
+      AppState.actState.filter = (AppState.geoEnabled && resp.defaultFilter === 'geo') ? 'geo' : 'teacher';
+      AppState.actDefaultFilter = AppState.actState.filter;
+      if (!AppState.act.classes.some(c => c.key === AppState.actState.classKey)) AppState.actState.classKey = '';
+    }
+
+    function applyDeptChrome() {
+      const inAct = AppState.dept === 'act';
+      const both = AppState.departments.length > 1;
+      const sw = document.getElementById('deptSwitchBtn');
+      if (sw) { sw.classList.toggle('hidden', !both); sw.textContent = inAct ? 'التعليم' : 'الأنشطة'; }
+      const tier = inAct ? (AppState.act && AppState.act.tier) : (AppState.currentUser && AppState.currentUser.accessTier);
+      const ut = document.getElementById('userTier');
+      if (ut) { ut.textContent = /^[TA][1-4]$/.test(tier || '') ? tier : ''; ut.classList.toggle('hidden', !ut.textContent); }
+      const nm = document.getElementById('userName');
+      if (nm) nm.innerText = inAct ? (AppState.act.name || 'الأنشطة') : (AppState.currentUser.name || 'المدرس');
+      const loc = document.getElementById('userLocationText');
+      if (loc) loc.innerText = inAct ? 'الأنشطة' : (AppState.currentUser.location || '');
+      const bell = document.getElementById('notificationBellBtn');
+      if (bell && inAct) bell.classList.add('hidden');
+    }
+
+    function setupActivitiesAfterLogin() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+      AppState.dept = 'act';
+      applyDeptChrome();
+      renderActivities();
+      switchView('viewActivities');
+    }
+
+    async function toggleDept() {
+      if (AppState.departments.length < 2) return;
+      if (isAttendanceDirty && !confirm("لديك حضور غير محفوظ وسيُفقد عند التبديل. هل تريد المتابعة؟")) return;
+      setAttDirty(false);
+      if (AppState.dept === 'edu') {
+        AppState.dept = 'act';
+        applyDeptChrome();
+        renderActivities();
+        switchView('viewActivities');
+        actReload(true);
+      } else {
+        AppState.dept = 'edu';
+        applyDeptChrome();
+        refreshMgmtTools();
+        if (isSupervisorUser()) setupSupervisionPortal();
+        openDashboardView();
+      }
+    }
+
+    async function actReload(silent) {
+      try {
+        const resp = await callBackend({ action: 'actInit' });
+        if (resp && resp.success) { applyActData(resp); renderActivities(); if (silent !== true) showToast("تم تحديث البيانات", "success"); }
+        else if (resp && resp.code !== 'SESSION_EXPIRED' && silent !== true) showToast((resp && resp.error) || "تعذر التحديث", "error");
+      } catch (e) { if (silent !== true) showToast(e.message, "error"); }
+    }
+
+    function actMembersOf(key) {
+      const f = AppState.actState.filter, all = AppState.act.members;
+      if (key === '__none') return all.filter(m => f === 'teacher' ? !m.k1.length : !m.k2);
+      return all.filter(m => f === 'teacher' ? m.k1.includes(key) : m.k2 === key);
+    }
+
+    function renderActivities() {
+      if (!AppState.act) return;
+      const st = AppState.actState, a = AppState.act;
+      document.getElementById('actFilterTabs').classList.toggle('hidden', !AppState.geoEnabled);
+      document.getElementById('actTabTeacher').className = 'py-2 rounded-lg text-xs font-extrabold cursor-pointer ' + (st.filter === 'teacher' ? 'bg-white shadow text-slate-900' : 'text-slate-500');
+      document.getElementById('actTabGeo').className = 'py-2 rounded-lg text-xs font-extrabold cursor-pointer ' + (st.filter === 'geo' ? 'bg-white shadow text-slate-900' : 'text-slate-500');
+      document.getElementById('actTeacherHint').classList.toggle('hidden', st.filter !== 'teacher');
+      document.getElementById('actTotal').textContent = a.members.length + ' عضو';
+      const defRow = document.getElementById('actDefaultRow');
+      defRow.classList.toggle('hidden', a.tier !== 'A4' || !AppState.geoEnabled);
+      if (a.tier === 'A4' && AppState.geoEnabled) {
+        const same = st.filter === AppState.actDefaultFilter;
+        document.getElementById('actDefaultNote').textContent = 'الافتراضي الحالي: ' + (AppState.actDefaultFilter === 'geo' ? 'حسب المنطقة' : 'حسب المدرس');
+        defRow.querySelector('button').classList.toggle('hidden', same);
+      }
+      const cards = a.classes.map(c => ({ key: c.key, label: c.name + ' ' + c.category, n: actMembersOf(c.key).length }));
+      if (a.tier === 'A4') cards.push({ key: '__none', label: 'بدون صف', n: actMembersOf('__none').length });
+      document.getElementById('actClassList').innerHTML =
+        `<button type="button" data-action="act-class" data-key="" class="text-right p-3 rounded-2xl border-2 ${st.classKey === '' ? 'border-olive-700 bg-olive-50' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">الكل</div><div class="text-[11px] text-slate-500 num-font">${a.members.length}</div></button>` +
+        cards.map(c => `<button type="button" data-action="act-class" data-key="${escapeHtml(c.key)}" class="text-right p-3 rounded-2xl border-2 ${st.classKey === c.key ? 'border-olive-700 bg-olive-50' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">${escapeHtml(c.label)}</div><div class="text-[11px] text-slate-500 num-font">${c.n}</div></button>`).join('');
+      renderActMembers();
+      renderActReports();
+    }
+
+    function renderActMembers() {
+      const st = AppState.actState, a = AppState.act;
+      let list = st.classKey === '' ? a.members.slice() : actMembersOf(st.classKey);
+      const q = normalizeSearch(st.q);
+      if (q) list = list.filter(m => normalizeSearch([m.name, m.phone, m.city].join(' ')).includes(q));
+      const box = document.getElementById('actMembers');
+      if (!list.length) { box.innerHTML = '<p class="text-center text-xs text-slate-500 py-6">لا يوجد أعضاء</p>'; return; }
+      const nameOfClass = k => { const c = a.classes.find(x => x.key === k); return c ? c.name + ' ' + c.category : ''; };
+      box.innerHTML = list.slice(0, 200).map(m => {
+        const keys = st.filter === 'teacher' ? m.k1 : (m.k2 ? [m.k2] : []);
+        const rate = m.att.t ? Math.round(100 * m.att.p / m.att.t) + '%' : '—';
+        const tel = String(m.phone || '').replace(/[^0-9+]/g, '');
+        return `<div class="p-3 rounded-xl border border-slate-200 bg-white space-y-1">
+          <div class="flex items-center justify-between gap-2"><div class="text-sm font-extrabold text-slate-900">${escapeHtml(m.name)}</div>${m.level ? `<span class="text-[10px] font-bold px-1.5 py-px rounded bg-slate-100 text-slate-600 num-font">المستوى ${escapeHtml(m.level)}</span>` : ''}</div>
+          <div class="text-[11px] text-slate-600">${escapeHtml(m.city || '—')}${tel ? ` · <a href="tel:${escapeHtml(tel)}" class="num-font underline">${escapeHtml(m.phone)}</a>` : ''}</div>
+          <div class="text-[11px] text-slate-600">${keys.length ? escapeHtml(keys.map(nameOfClass).filter(Boolean).join('، ')) : 'بدون صف'}${m.pinned ? ' · دروس الصف' : ''}</div>
+          <div class="text-[11px] text-slate-500">المدرس: ${escapeHtml(m.teachers.join('، ') || '—')} · الحضور: <span class="num-font">${rate}</span>${m.att.last ? ` · آخر حضور <span class="num-font">${escapeHtml(m.att.last)}</span>` : ''}</div>
+        </div>`;
+      }).join('') + (list.length > 200 ? `<p class="text-center text-[11px] text-slate-500 py-2">يُعرض أول 200 من ${list.length}. استعمل البحث.</p>` : '');
+    }
+
+    function renderActReports() {
+      const box = document.getElementById('actReports'), r = AppState.act.reports;
+      if (!r) { box.classList.add('hidden'); return; }
+      box.classList.remove('hidden');
+      const lst = arr => arr.length ? arr.map(x => `${escapeHtml(x.name)} (${x.count})`).join('، ') : '—';
+      box.innerHTML = `<div class="font-extrabold">ما ينقص الإعداد</div>
+        <div>أعضاء بلا صف: <b class="num-font">${r.noClassTeacher}</b>${AppState.geoEnabled ? ` · حسب المنطقة: <b class="num-font">${r.noClassGeo}</b> · صفّهم يختلف بين الطريقتين: <b class="num-font">${r.differ}</b>` : ''}</div>
+        ${AppState.geoEnabled ? `<div>مدن/أحياء بلا صف: ${lst(r.unmappedCities)}</div>` : ''}
+        <div>مدرسون بلا صف: ${lst(r.unmappedTeachers)}</div>`;
+    }
+
+    function normalizeSearch(v) { return String(v || '').toLowerCase().replace(/[\u064B-\u0652]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').trim(); }
+    function actSearchInput(v) { AppState.actState.q = v; renderActMembers(); }
+
+    async function actSetDefault() {
+      showLoading("الرجاء الانتظار");
+      try {
+        const resp = await callBackend({ action: 'actSetDefaultFilter', filter: AppState.actState.filter });
+        if (resp && resp.success) { AppState.actDefaultFilter = resp.defaultFilter; renderActivities(); showToast(resp.message, "success"); }
+        else showToast((resp && resp.error) || "تعذر الحفظ", "error");
+      } catch (e) { showToast(e.message, "error"); } finally { hideLoading(); }
     }
 
     function handleSessionExpired() {
@@ -1504,6 +1685,12 @@
       }
       AppState.token = null;
       AppState.currentUser = null;
+      AppState.departments = [];
+      AppState.dept = 'edu';
+      AppState.act = null;
+      AppState.actState = { filter: 'teacher', classKey: '', q: '' };
+      const sw0 = document.getElementById('deptSwitchBtn'); if (sw0) sw0.classList.add('hidden');
+      const sq = document.getElementById('actSearch'); if (sq) sq.value = '';
       AppState.courses = [];
       AppState.students = [];
       AppState.attendance = [];
@@ -1532,6 +1719,7 @@
     let refreshBusy = false;
     async function refreshLiveBackend(silent) {
       if (!AppState.token || refreshBusy) return;
+      if (AppState.dept === 'act') { refreshBusy = true; showLoading("جارٍ تحديث البيانات..."); try { await actReload(false); } finally { refreshBusy = false; hideLoading(); } return; }
       if (isAttendanceDirty && !confirm("لديك حضور غير محفوظ وسيُفقد عند التحديث. هل تريد المتابعة؟")) return;
       refreshBusy = true;
       if (silent !== true) showLoading("جارٍ تحديث البيانات...");
@@ -2661,6 +2849,7 @@
          <button type="button" onclick="document.getElementById('rpDup').classList.add('hidden');document.getElementById('rpMain').classList.remove('hidden')" class="w-full py-2 text-xs font-bold text-slate-500 underline cursor-pointer">رجوع</button>`;
     }
     async function silentReload() {
+      if (!AppState.departments.includes('edu')) return;
       try {
         const resp = await callBackend({ action: 'init' });
         if (resp && resp.success) { applyInitData(resp); refreshAllViews(); if (currentActiveView === 'viewRequests') renderRequestsView(); }
@@ -2980,7 +3169,7 @@
 
     let currentActiveView = 'viewDashboard';
     function switchView(targetId) {
-      ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp', 'viewRequests'].forEach(id => {
+      ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp', 'viewRequests', 'viewActivities'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('hidden', id !== targetId);
       });
@@ -3593,6 +3782,9 @@
       if (!el) return;
       const d = el.dataset;
       switch (d.action) {
+        case 'act-filter': AppState.actState.filter = d.key; AppState.actState.classKey = ''; renderActivities(); break;
+        case 'act-class': AppState.actState.classKey = d.key; renderActivities(); break;
+        case 'act-set-default': actSetDefault(); break;
         case 'open-course-students': openCourseStudents(d.code); break;
         case 'move-student': openMoveStudentModal(d.id, d.code); break;
         case 'edit-course': openEditCourseModal(d.code); break;

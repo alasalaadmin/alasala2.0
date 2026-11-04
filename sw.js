@@ -5,7 +5,7 @@
  * - Google Fonts: stale-while-revalidate so the text looks right offline.
  * Bump CACHE_VERSION on every deployment to force clients to refresh.
  */
-const CACHE_VERSION = 'v24';
+const CACHE_VERSION = 'v25';
 const SHELL_CACHE = 'moutabaa-shell-' + CACHE_VERSION;
 const FONT_CACHE = 'moutabaa-fonts-' + CACHE_VERSION;
 
