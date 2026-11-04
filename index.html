@@ -188,10 +188,8 @@
           <div>
             <div class="flex items-center gap-2">
               <h2 id="userName" class="text-sm font-bold text-slate-900 leading-tight">المدرس</h2>
-              <span id="syncDot" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="syncText">متصل</span>
-              </span>
+              <span id="userTier" dir="ltr" class="hidden text-[10px] font-bold num-font px-1.5 py-px rounded bg-slate-100 text-slate-600 border border-slate-200"></span>
+              <span id="syncDot" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
             </div>
             <p id="userLocationText" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
           </div>
@@ -459,7 +457,7 @@
                 <label class="block text-xs font-bold text-slate-700">آخر ما تم شرحه</label>
                 <button type="button" id="topicHistoryBtn" onclick="openTopicHistory()" class="inline-flex items-center gap-1 text-xs text-olive-800 font-bold bg-olive-100 hover:bg-olive-200 px-2.5 py-1 rounded-lg border border-olive-200 cursor-pointer">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                  <span>السجل</span>
+                  <span>الاطلاع على سجلّ ما تم شرحه</span>
                 </button>
               </div>
               <select 
@@ -1356,7 +1354,7 @@
       const excluded = ["المختصر س1", "القول الجلي"];
       excluded.forEach(ex => booksSet.delete(ex));
 
-      const rawList = Array.from(booksSet).filter(b => b && !excluded.includes(b));
+      const rawList = Array.from(booksSet).filter(b => b && !excluded.includes(b) && !/^بلا درس/.test(b));
       const priorityOrder = ["أوجز س1", "أوجز س2", "إظهار س1"];
       const prioritized = priorityOrder.filter(p => rawList.includes(p) || true);
       const remaining = rawList.filter(b => !priorityOrder.includes(b)).sort((a, b) => a.localeCompare(b, 'ar'));
@@ -1472,6 +1470,8 @@
 
       const user = AppState.currentUser;
       document.getElementById('userName').innerText = user.name || "المدرس";
+      const ut = document.getElementById('userTier');
+      if (ut) { ut.textContent = /^T[1-4]$/.test(user.accessTier || '') ? user.accessTier : ''; ut.classList.toggle('hidden', !ut.textContent); }
       /* avatar is a neutral person icon (Arabic initials such as ي / ن read badly) */
       document.getElementById('userLocationText').innerText = user.location || "";
       updateDashboardCounts();
@@ -1614,7 +1614,7 @@
       ['newCourseBook', 'editCourseBookInput'].forEach(id => {
         const sel = document.getElementById(id);
         if (sel) {
-          sel.innerHTML = '<option value="">-- اختر الكتاب المقرر --</option>';
+          sel.innerHTML = '<option value="" disabled selected hidden>اختر الكتاب المقرر</option>';
           booksList.forEach(b => {
             const opt = document.createElement('option');
             opt.value = b;
@@ -1676,7 +1676,8 @@
 
     // ---- tier tag shown next to a teacher's name: just "T1".."T4", no explanation ----
     function tierChip(t) {
-      return /^T[1-4]$/.test(t || '') ? `<span dir="ltr" class="inline-block align-middle text-[10px] font-bold num-font bg-slate-100 text-slate-500 border border-slate-200 rounded px-1.5 py-px mr-1">${t}</span>` : '';
+      const me = AppState.currentUser && AppState.currentUser.accessTier;
+      return me === 'T4' && /^T[1-4]$/.test(t || '') ? `<span dir="ltr" class="inline-block align-middle text-[10px] font-bold num-font bg-slate-100 text-slate-500 border border-slate-200 rounded px-1.5 py-px mr-1">${t}</span>` : '';
     }
     function tierOfName(name) {
       const nm = String(name || '').trim();
@@ -1731,7 +1732,7 @@
             <div><div class="text-lg font-black num-font text-emerald-800">${rs.avgDaysToDone === null || rs.avgDaysToDone === undefined ? '—' : rs.avgDaysToDone}</div><div class="text-[10px] text-slate-600">أيام حتى الإدماج</div></div>
           </div></div>`;
       }
-      html += `<div class="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">${['T4', 'T3', 'T2', 'T1'].filter(t => byTier[t]).map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded-lg"><span dir="ltr" class="num-font font-bold">${t}</span> <span class="num-font">${byTier[t]}</span></span>`).join('')}</div>`;
+      if (AppState.currentUser.accessTier === 'T4') html += `<div class="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">${['T4', 'T3', 'T2', 'T1'].filter(t => byTier[t]).map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded-lg"><span dir="ltr" class="num-font font-bold">${t}</span> <span class="num-font">${byTier[t]}</span></span>`).join('')}</div>`;
       box.innerHTML = html;
     }
 
@@ -1908,6 +1909,7 @@
             <div>
               <h4 class="text-sm font-bold text-slate-900">${escapeHtml(c.book || 'درس')}</h4>
               <p class="text-sm font-bold text-slate-700 mt-0.5">${escapeHtml(c.day || '')} • <span class="num-font">${escapeHtml(c.timing || '')}</span> • ${escapeHtml(c.location || '')}</p>
+              ${c.venue ? `<p class="text-xs font-bold text-teal-800 mt-0.5">📍 ${escapeHtml(c.venue)}</p>` : ''}
             </div>
           </div>
           <span class="px-3 py-1 bg-slate-200 text-slate-800 rounded-xl text-xs font-bold num-font whitespace-nowrap">
@@ -1925,7 +1927,7 @@
       AppState.selectedCourseForAtt = course;
       document.getElementById('attendanceCoursesGrid').classList.add('hidden');
       document.getElementById('attendanceActiveForm').classList.remove('hidden');
-      document.getElementById('activeSelectedCourseTitle').innerText = `${course.book || 'درس'} (${course.day || ''} ${course.timing || ''})`;
+      document.getElementById('activeSelectedCourseTitle').innerText = `${course.book || 'درس'} (${course.day || ''} ${course.timing || ''})${course.venue ? ' • ' + course.venue : ''}`;
 
       const pastRecords = AppState.attendance.filter(a => sameCode(a.courseCode, course.code) && a.lastTopic);
       const lastTaught = pastRecords.length > 0 ? pastRecords[pastRecords.length - 1].lastTopic : "";
@@ -1947,6 +1949,7 @@
       const enrolled = AppState.students.filter(st => studentHasCourse(st, course.code));
 
       AppState.currentAttendanceRoster = enrolled.map(st => ({
+        studentId: st.id,
         studentName: st.name,
         phone: st.phone,
         status: 'حاضر',
@@ -2002,10 +2005,17 @@
               ${item.phone ? `<span class="text-[11px] text-slate-500 num-font">${escapeHtml(item.phone)}</span>` : ''}
             </div>
           </div>
-          <span class="text-xs font-bold px-3 py-1 rounded-xl ${isPresent ? 'bg-olive-700 text-white' : 'bg-red-600 text-white'}">
-            ${isPresent ? '✓ حاضر' : '✕ غائب'}
-          </span>
+          <div class="flex flex-col items-end gap-1.5">
+            <span class="text-xs font-bold px-3 py-1 rounded-xl ${isPresent ? 'bg-olive-700 text-white' : 'bg-red-600 text-white'}">
+              ${isPresent ? '✓ حاضر' : '✕ غائب'}
+            </span>
+            ${item.studentId && AppState.selectedCourseForAtt ? (pendingDeletionFor(item.studentId, AppState.selectedCourseForAtt.code)
+              ? '<span class="text-[10px] font-bold text-amber-700">⏳ طلب الإزالة قيد المراجعة</span>'
+              : '<button type="button" data-remove class="text-[10px] font-bold text-red-700 underline cursor-pointer">إزالة من هذا الدرس</button>') : ''}
+          </div>
         `;
+        const rm = card.querySelector('[data-remove]');
+        if (rm) rm.onclick = (ev) => { ev.stopPropagation(); openDeleteRequestModal(item.studentId, AppState.selectedCourseForAtt.code); };
         container.appendChild(card);
       });
 
@@ -2076,6 +2086,7 @@
           hideModal('deleteRequestModal');
           showToast("تم إرسال طلب الحذف إلى الإدارة", "success");
           if (currentActiveView === 'viewCourseStudents') renderCourseStudentsList();
+          if (currentActiveView === 'viewAttendance' && AppState.selectedCourseForAtt) renderAttendanceStudentList();
         } else if (!(res && res.code === 'SESSION_EXPIRED')) {
           showToast((res && res.error) || "تعذر إرسال الطلب", "error");
         }
@@ -2525,7 +2536,7 @@
       let actions = '';
       const c = r.can || {};
       if (c.assign) {
-        const opts = (AppState.requestAssignees || []).map(a => `<option value="${e(a.email)}">${e(a.name)} (${e(a.tier)})</option>`).join('');
+        const opts = (AppState.requestAssignees || []).map(a => `<option value="${e(a.email)}">${e(a.name)}${AppState.currentUser.accessTier === 'T4' ? ' (' + e(a.tier) + ')' : ''}</option>`).join('');
         actions += `<div class="p-3 rounded-2xl border border-purple-200 bg-purple-50/50 space-y-2"><p class="text-xs font-extrabold text-purple-900">${AppState.currentUser.accessTier === 'T4' ? 'إسناد إلى مسؤول (T3)' : 'إسناد إلى مكلّف بالمتابعة'}</p>
           <select id="rdAssignTo" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900">${opts}</select>
           <input id="rdAssignNote" type="text" maxlength="200" placeholder="ملاحظة للمكلّف (اختياري)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-900" />
