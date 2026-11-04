@@ -31,6 +31,7 @@
     /* one colour identity per department: التعليم = olive, الأنشطة = indigo */
     #appShell[data-dept="edu"] > header { border-top: 4px solid #223d2f; }
     #appShell[data-dept="act"] > header { border-top: 4px solid #4338ca; }
+    #actBanner { background: linear-gradient(135deg, #312e81, #4338ca); }
     #appShell[data-dept="act"] #userAvatar { background: #e0e7ff; color: #3730a3; }
     #appShell[data-dept="act"] #userTier { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
     #appShell[data-dept="act"] #userLocationText { color: #4338ca; font-weight: 700; }
@@ -642,6 +643,16 @@
       <!-- VIEW: الأنشطة (نظام الصفوف)                -->
       <!-- ========================================== -->
       <section id="viewActivities" class="hidden space-y-4">
+        <!-- Chalkboard Banner (same slogan in الأنشطة, indigo identity) -->
+        <div id="actBanner" class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden border border-[#4338ca]/70 shadow-sm">
+          <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 0.6px, transparent 0.6px); background-size: 16px 16px;"></div>
+          <div class="relative z-10 flex flex-col items-center justify-center gap-1">
+            <h2 class="handwritten-chalk text-xl sm:text-2xl font-bold py-0.5 select-none leading-normal">
+              المتابعة نصف العمل
+            </h2>
+            <div class="w-16 h-[1px] bg-white/30 rounded-full"></div>
+          </div>
+        </div>
         <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-3 shadow-sm">
           <div class="flex items-center justify-between gap-2">
             <h3 class="text-sm font-extrabold text-slate-900">الصفوف والأعضاء</h3>
@@ -660,12 +671,21 @@
         <div id="actClassList" class="grid grid-cols-2 gap-2"></div>
         <div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-3 shadow-sm">
           <input id="actSearch" type="search" placeholder="ابحث بالاسم أو الهاتف أو المدينة" oninput="actSearchInput(this.value)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
-          <div class="flex items-center gap-2"><span class="text-[11px] font-bold text-slate-500 shrink-0">تجميع</span>
-            <div id="actGroupTabs" class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl flex-1">
-              <button type="button" data-action="act-group-mode" data-mode="teacher_level" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">مدرس ← مستوى</button>
-              <button type="button" data-action="act-group-mode" data-mode="level_teacher" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">مستوى ← مدرس</button>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="text-[11px] font-bold text-slate-500 space-y-1 block">المقر
+              <select id="actLocFilter" onchange="actFilterChange()" class="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs bg-white font-semibold text-slate-800"></select></label>
+            <label class="text-[11px] font-bold text-slate-500 space-y-1 block">المدينة / الحيّ
+              <select id="actCityFilter" onchange="actFilterChange()" class="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs bg-white font-semibold text-slate-800"></select></label>
+          </div>
+          <div class="space-y-1"><span class="text-[11px] font-bold text-slate-500">تجميع</span>
+            <div id="actGroupTabs" class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
+              <button type="button" data-action="act-group-mode" data-mode="level" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">مستوى فقط</button>
+              <button type="button" data-action="act-group-mode" data-mode="teacher" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">مدرس فقط</button>
               <button type="button" data-action="act-group-mode" data-mode="none" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">بلا تجميع</button>
+              <button type="button" data-action="act-group-mode" data-mode="teacher_level" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">مدرس ← مستوى</button>
+              <button type="button" data-action="act-group-mode" data-mode="level_teacher" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer col-span-2">مستوى ← مدرس</button>
             </div></div>
+          <div id="actResultCount" class="text-[11px] font-bold text-slate-500 num-font"></div>
           <div id="actMembers" class="space-y-2"></div>
         </div>
         <div id="actReports" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-slate-800 space-y-2"></div>
@@ -1325,7 +1345,7 @@
       viewAsPeople: [],
       dept: 'edu',
       act: null,
-      actState: { filter: 'teacher', classKey: '', q: '', group: 'teacher_level', open: {} },
+      actState: { filter: 'teacher', classKey: '', q: '', group: 'teacher_level', open: {}, loc: '', city: '' },
       currentUser: null,
       courses: [],
       students: [],
@@ -1682,6 +1702,8 @@
       document.getElementById('actClassList').innerHTML =
         `<button type="button" data-action="act-class" data-key="" class="text-right p-3 rounded-2xl border-2 ${st.classKey === '' ? 'border-[#4338ca] bg-[#eef2ff]' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">الكل</div><div class="text-[11px] text-slate-500 num-font">${a.members.length}</div></button>` +
         cards.map(c => `<button type="button" data-action="act-class" data-key="${escapeHtml(c.key)}" class="text-right p-3 rounded-2xl border-2 ${st.classKey === c.key ? 'border-[#4338ca] bg-[#eef2ff]' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">${escapeHtml(c.label)}</div><div class="text-[11px] text-slate-500 num-font">${c.n}</div></button>`).join('');
+      actFillSelect('actLocFilter', 'location', 'بدون مقر', 'كل المقرات');
+      actFillSelect('actCityFilter', 'city', 'بدون مدينة', 'كل المدن');
       renderActMembers();
       renderActReports();
     }
@@ -1722,16 +1744,40 @@
       return items.slice(0, 200).map(actMemberCard).join('') + (items.length > 200 ? `<p class="text-center text-[11px] text-slate-500 py-2">يُعرض أول 200 من ${items.length}. استعمل البحث.</p>` : '');
     }
 
+    function actFillSelect(id, field, noneLabel, allLabel) {
+      const st = AppState.actState, sel = document.getElementById(id), key = field === 'location' ? 'loc' : 'city';
+      const counts = new Map();
+      AppState.act.members.forEach(m => { const v = (m[field] || '').trim(); counts.set(v, (counts.get(v) || 0) + 1); });
+      const vals = Array.from(counts.keys()).filter(Boolean).sort((x, y) => x.localeCompare(y, 'ar'));
+      if (st[key] && st[key] !== '__none' && !counts.has(st[key])) st[key] = '';
+      sel.innerHTML = `<option value="">${allLabel}</option>` + vals.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)} (${counts.get(v)})</option>`).join('') + (counts.has('') ? `<option value="__none">${noneLabel} (${counts.get('')})</option>` : '');
+      sel.value = st[key] || '';
+    }
+    function actFilterChange() {
+      const st = AppState.actState;
+      st.loc = document.getElementById('actLocFilter').value;
+      st.city = document.getElementById('actCityFilter').value;
+      renderActMembers();
+    }
+    function actApplyFilters(list) {
+      const st = AppState.actState;
+      if (st.loc) list = list.filter(m => st.loc === '__none' ? !(m.location || '').trim() : (m.location || '').trim() === st.loc);
+      if (st.city) list = list.filter(m => st.city === '__none' ? !(m.city || '').trim() : (m.city || '').trim() === st.city);
+      return list;
+    }
+
     function renderActMembers() {
       const st = AppState.actState, a = AppState.act;
       let list = st.classKey === '' ? a.members.slice() : actMembersOf(st.classKey);
       const q = normalizeSearch(st.q);
       if (q) list = list.filter(m => normalizeSearch([m.name, m.phone, m.city].join(' ')).includes(q));
+      list = actApplyFilters(list);
+      const rc = document.getElementById('actResultCount'); if (rc) rc.textContent = 'يُعرض ' + list.length + ' من ' + a.members.length;
       document.querySelectorAll('#actGroupTabs [data-mode]').forEach(b => { b.className = 'py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer ' + (b.dataset.mode === st.group ? 'bg-white shadow text-slate-900' : 'text-slate-500'); });
       const box = document.getElementById('actMembers');
       if (!list.length) { box.innerHTML = '<p class="text-center text-xs text-slate-500 py-6">لا يوجد أعضاء</p>'; return; }
       if (st.group === 'none') { box.innerHTML = actCards(list); return; }
-      const kinds = st.group === 'level_teacher' ? ['level', 'teacher'] : ['teacher', 'level'];
+      const kinds = { teacher_level: ['teacher', 'level'], level_teacher: ['level', 'teacher'], level: ['level'], teacher: ['teacher'] }[st.group] || ['teacher', 'level'];
       const forceOpen = !!q;                       // while searching, show every match
       const top = actBucket(list, kinds[0]);
       const isOpen = (key, dflt) => forceOpen || (st.open[key] === undefined ? dflt : st.open[key]);
@@ -1739,7 +1785,8 @@
         const key1 = kinds[0][0] + ':' + g1.id;
         const open1 = isOpen(key1, top.length === 1);
         let body = '';
-        if (open1) {
+        if (open1 && kinds.length === 1) body = '<div class="space-y-2 pr-2">' + actCards(g1.items) + '</div>';
+        else if (open1) {
           const sub = actBucket(g1.items, kinds[1]);
           body = '<div class="space-y-2 pr-2">' + sub.map(g2 => {
             const key2 = key1 + '|' + kinds[1][0] + ':' + g2.id;
@@ -1786,7 +1833,7 @@
       AppState.departments = [];
       AppState.dept = 'edu';
       AppState.act = null;
-      AppState.actState = { filter: 'teacher', classKey: '', q: '', group: 'teacher_level', open: {} };
+      AppState.actState = { filter: 'teacher', classKey: '', q: '', group: 'teacher_level', open: {}, loc: '', city: '' };
       const sw0 = document.getElementById('deptTabs'); if (sw0) sw0.classList.add('hidden');
       const sq = document.getElementById('actSearch'); if (sq) sq.value = '';
       AppState.courses = [];
