@@ -28,6 +28,13 @@
   
 
   <style>
+    /* one colour identity per department: التعليم = olive, الأنشطة = indigo */
+    #appShell[data-dept="edu"] > header { border-top: 4px solid #223d2f; }
+    #appShell[data-dept="act"] > header { border-top: 4px solid #4338ca; }
+    #appShell[data-dept="act"] #userAvatar { background: #e0e7ff; color: #3730a3; }
+    #appShell[data-dept="act"] #userTier { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+    #appShell[data-dept="act"] #userLocationText { color: #4338ca; font-weight: 700; }
+    #appShell[data-dept="act"] main { background-image: linear-gradient(#eef2ff, #eef2ff00 180px); }
     /* the browser must never run its own pull-to-refresh / overscroll navigation (it reloads or leaves the app) */
     html, body { overscroll-behavior-y: none; overscroll-behavior-x: none; }
     #ptrIndicator { position: fixed; top: 0; left: 50%; z-index: 60; width: 40px; height: 40px; margin-left: -20px;
@@ -198,7 +205,6 @@
         <div class="flex items-center gap-1.5">
           <!-- Notification Bell for Supervisors/Managers (T2-T4) -->
           <button id="viewAsBtn" type="button" onclick="openViewAs()" class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white hover:bg-slate-700 transition-all cursor-pointer" title="معاينة حساب آخر (للقراءة فقط)">معاينة</button>
-          <button id="deptSwitchBtn" type="button" onclick="toggleDept()" class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold bg-olive-100 text-olive-900 hover:bg-olive-700 hover:text-white transition-all cursor-pointer" title="تبديل القسم"></button>
           <button id="notificationBellBtn" onclick="openNotificationsModal()" class="hidden relative p-2.5 rounded-xl text-slate-700 hover:bg-slate-200/60 transition-all cursor-pointer" title="تنبيهات المتابعة الأسبوعية">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -217,6 +223,10 @@
             </svg>
           </button>
         </div>
+      </div>
+      <div id="deptTabs" class="hidden max-w-2xl mx-auto mt-2 grid grid-cols-2 gap-1 p-1 rounded-2xl bg-slate-100" role="tablist" aria-label="القسم">
+        <button id="deptTabEdu" type="button" role="tab" onclick="setDept('edu')"></button>
+        <button id="deptTabAct" type="button" role="tab" onclick="setDept('act')"></button>
       </div>
       <div id="previewBanner" class="hidden max-w-2xl mx-auto mt-2 flex items-center justify-between gap-2 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 px-3 py-2 text-[11px] font-bold">
         <span id="previewBannerText"></span>
@@ -650,6 +660,12 @@
         <div id="actClassList" class="grid grid-cols-2 gap-2"></div>
         <div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-3 shadow-sm">
           <input id="actSearch" type="search" placeholder="ابحث بالاسم أو الهاتف أو المدينة" oninput="actSearchInput(this.value)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+          <div class="flex items-center gap-2"><span class="text-[11px] font-bold text-slate-500 shrink-0">تجميع</span>
+            <div id="actGroupTabs" class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl flex-1">
+              <button type="button" data-action="act-group-mode" data-mode="teacher_level" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">مدرس ← مستوى</button>
+              <button type="button" data-action="act-group-mode" data-mode="level_teacher" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">مستوى ← مدرس</button>
+              <button type="button" data-action="act-group-mode" data-mode="none" class="py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer">بلا تجميع</button>
+            </div></div>
           <div id="actMembers" class="space-y-2"></div>
         </div>
         <div id="actReports" class="hidden bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-slate-800 space-y-2"></div>
@@ -1309,7 +1325,7 @@
       viewAsPeople: [],
       dept: 'edu',
       act: null,
-      actState: { filter: 'teacher', classKey: '', q: '' },
+      actState: { filter: 'teacher', classKey: '', q: '', group: 'teacher_level', open: {} },
       currentUser: null,
       courses: [],
       students: [],
@@ -1570,8 +1586,20 @@
     function applyDeptChrome() {
       const inAct = AppState.dept === 'act';
       const both = AppState.departments.length > 1;
-      const sw = document.getElementById('deptSwitchBtn');
-      if (sw) { sw.classList.toggle('hidden', !both); sw.textContent = inAct ? 'التعليم' : 'الأنشطة'; }
+      const shell = document.getElementById('appShell'); if (shell) shell.dataset.dept = inAct ? 'act' : 'edu';
+      const tabs = document.getElementById('deptTabs');
+      if (tabs) {
+        tabs.classList.toggle('hidden', !both);
+        const eduT = AppState.currentUser && /^T[1-4]$/.test(AppState.currentUser.accessTier || '') ? AppState.currentUser.accessTier : '';
+        const actT = AppState.act && /^A[1-4]$/.test(AppState.act.tier || '') ? AppState.act.tier : '';
+        const base = 'flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-extrabold cursor-pointer transition-all ';
+        const te = document.getElementById('deptTabEdu'), ta = document.getElementById('deptTabAct');
+        te.className = base + (inAct ? 'text-slate-500 hover:bg-white/70' : 'bg-[#223d2f] text-white shadow');
+        ta.className = base + (inAct ? 'bg-[#4338ca] text-white shadow' : 'text-slate-500 hover:bg-white/70');
+        te.innerHTML = 'التعليم' + (eduT ? ` <span class="num-font text-[10px] opacity-80" dir="ltr">${eduT}</span>` : '');
+        ta.innerHTML = 'الأنشطة' + (actT ? ` <span class="num-font text-[10px] opacity-80" dir="ltr">${actT}</span>` : '');
+        te.setAttribute('aria-selected', String(!inAct)); ta.setAttribute('aria-selected', String(inAct));
+      }
       const tier = inAct ? (AppState.act && AppState.act.tier) : (AppState.currentUser && AppState.currentUser.accessTier);
       const ut = document.getElementById('userTier');
       if (ut) { ut.textContent = /^[TA][1-4]$/.test(tier || '') ? tier : ''; ut.classList.toggle('hidden', !ut.textContent); }
@@ -1598,6 +1626,8 @@
       renderActivities();
       switchView('viewActivities');
     }
+
+    function setDept(d) { if (AppState.departments.length > 1 && d !== AppState.dept) toggleDept(); }
 
     async function toggleDept() {
       if (AppState.departments.length < 2) return;
@@ -1650,10 +1680,46 @@
       const cards = a.classes.map(c => ({ key: c.key, label: c.name + ' ' + c.category, n: actMembersOf(c.key).length }));
       if (a.tier === 'A4') cards.push({ key: '__none', label: 'بدون صف', n: actMembersOf('__none').length });
       document.getElementById('actClassList').innerHTML =
-        `<button type="button" data-action="act-class" data-key="" class="text-right p-3 rounded-2xl border-2 ${st.classKey === '' ? 'border-olive-700 bg-olive-50' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">الكل</div><div class="text-[11px] text-slate-500 num-font">${a.members.length}</div></button>` +
-        cards.map(c => `<button type="button" data-action="act-class" data-key="${escapeHtml(c.key)}" class="text-right p-3 rounded-2xl border-2 ${st.classKey === c.key ? 'border-olive-700 bg-olive-50' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">${escapeHtml(c.label)}</div><div class="text-[11px] text-slate-500 num-font">${c.n}</div></button>`).join('');
+        `<button type="button" data-action="act-class" data-key="" class="text-right p-3 rounded-2xl border-2 ${st.classKey === '' ? 'border-[#4338ca] bg-[#eef2ff]' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">الكل</div><div class="text-[11px] text-slate-500 num-font">${a.members.length}</div></button>` +
+        cards.map(c => `<button type="button" data-action="act-class" data-key="${escapeHtml(c.key)}" class="text-right p-3 rounded-2xl border-2 ${st.classKey === c.key ? 'border-[#4338ca] bg-[#eef2ff]' : 'border-slate-200 bg-white'} cursor-pointer"><div class="text-xs font-extrabold text-slate-900">${escapeHtml(c.label)}</div><div class="text-[11px] text-slate-500 num-font">${c.n}</div></button>`).join('');
       renderActMembers();
       renderActReports();
+    }
+
+    function actCmpLevel(a, b) {
+      if (a === b) return 0; if (!a) return 1; if (!b) return -1;
+      const na = parseInt(a, 10), nb = parseInt(b, 10);
+      return (isNaN(na) || isNaN(nb)) ? a.localeCompare(b, 'ar') : na - nb;
+    }
+    function actBucket(list, kind) {
+      const map = new Map();
+      list.forEach(m => {
+        const ids = kind === 'teacher' ? (m.teachers.length ? m.teachers : ['']) : [m.level || ''];
+        ids.forEach(id => { if (!map.has(id)) map.set(id, []); map.get(id).push(m); });
+      });
+      const arr = Array.from(map.entries()).map(e => ({ id: e[0], items: e[1], label: kind === 'teacher' ? (e[0] || 'بدون مدرس') : (e[0] ? 'المستوى ' + e[0] : 'بدون مستوى') }));
+      arr.sort(kind === 'teacher' ? (x, y) => ((x.id === '' ? 1 : 0) - (y.id === '' ? 1 : 0)) || x.id.localeCompare(y.id, 'ar') : (x, y) => actCmpLevel(x.id, y.id));
+      return arr;
+    }
+    function actGroupHeader(key, label, count, open, nested) {
+      const cls = nested ? 'bg-slate-50 border border-slate-200 text-slate-700' : 'bg-[#eef2ff] border border-[#c7d2fe] text-[#312e81]';
+      return `<button type="button" data-action="act-group" data-key="${escapeHtml(key)}" data-open="${open ? '1' : '0'}" aria-expanded="${open}" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-extrabold cursor-pointer ${cls}"><span>${escapeHtml(label)}</span><span class="flex items-center gap-2"><span class="num-font text-[11px]">${count}</span><span aria-hidden="true">${open ? '▾' : '◂'}</span></span></button>`;
+    }
+    function actMemberCard(m) {
+      const st = AppState.actState, a = AppState.act;
+      const nameOfClass = k => { const c = a.classes.find(x => x.key === k); return c ? c.name + ' ' + c.category : ''; };
+      const keys = st.filter === 'teacher' ? m.k1 : (m.k2 ? [m.k2] : []);
+      const rate = m.att.t ? Math.round(100 * m.att.p / m.att.t) + '%' : '—';
+      const tel = String(m.phone || '').replace(/[^0-9+]/g, '');
+      return `<div class="p-3 rounded-xl border border-slate-200 bg-white space-y-1">
+          <div class="flex items-center justify-between gap-2"><div class="text-sm font-extrabold text-slate-900">${escapeHtml(m.name)}</div>${m.level ? `<span class="text-[10px] font-bold px-1.5 py-px rounded bg-slate-100 text-slate-600 num-font">المستوى ${escapeHtml(m.level)}</span>` : ''}</div>
+          <div class="text-[11px] text-slate-600">${escapeHtml(m.city || '—')}${tel ? ` · <a href="tel:${escapeHtml(tel)}" class="num-font underline">${escapeHtml(m.phone)}</a>` : ''}</div>
+          <div class="text-[11px] text-slate-600">${keys.length ? escapeHtml(keys.map(nameOfClass).filter(Boolean).join('، ')) : 'بدون صف'}${m.pinned ? ' · دروس الصف' : ''}</div>
+          <div class="text-[11px] text-slate-500">المدرس: ${escapeHtml(m.teachers.join('، ') || '—')} · الحضور: <span class="num-font">${rate}</span>${m.att.last ? ` · آخر حضور <span class="num-font">${escapeHtml(m.att.last)}</span>` : ''}</div>
+        </div>`;
+    }
+    function actCards(items) {
+      return items.slice(0, 200).map(actMemberCard).join('') + (items.length > 200 ? `<p class="text-center text-[11px] text-slate-500 py-2">يُعرض أول 200 من ${items.length}. استعمل البحث.</p>` : '');
     }
 
     function renderActMembers() {
@@ -1661,20 +1727,28 @@
       let list = st.classKey === '' ? a.members.slice() : actMembersOf(st.classKey);
       const q = normalizeSearch(st.q);
       if (q) list = list.filter(m => normalizeSearch([m.name, m.phone, m.city].join(' ')).includes(q));
+      document.querySelectorAll('#actGroupTabs [data-mode]').forEach(b => { b.className = 'py-1.5 rounded-lg text-[11px] font-extrabold cursor-pointer ' + (b.dataset.mode === st.group ? 'bg-white shadow text-slate-900' : 'text-slate-500'); });
       const box = document.getElementById('actMembers');
       if (!list.length) { box.innerHTML = '<p class="text-center text-xs text-slate-500 py-6">لا يوجد أعضاء</p>'; return; }
-      const nameOfClass = k => { const c = a.classes.find(x => x.key === k); return c ? c.name + ' ' + c.category : ''; };
-      box.innerHTML = list.slice(0, 200).map(m => {
-        const keys = st.filter === 'teacher' ? m.k1 : (m.k2 ? [m.k2] : []);
-        const rate = m.att.t ? Math.round(100 * m.att.p / m.att.t) + '%' : '—';
-        const tel = String(m.phone || '').replace(/[^0-9+]/g, '');
-        return `<div class="p-3 rounded-xl border border-slate-200 bg-white space-y-1">
-          <div class="flex items-center justify-between gap-2"><div class="text-sm font-extrabold text-slate-900">${escapeHtml(m.name)}</div>${m.level ? `<span class="text-[10px] font-bold px-1.5 py-px rounded bg-slate-100 text-slate-600 num-font">المستوى ${escapeHtml(m.level)}</span>` : ''}</div>
-          <div class="text-[11px] text-slate-600">${escapeHtml(m.city || '—')}${tel ? ` · <a href="tel:${escapeHtml(tel)}" class="num-font underline">${escapeHtml(m.phone)}</a>` : ''}</div>
-          <div class="text-[11px] text-slate-600">${keys.length ? escapeHtml(keys.map(nameOfClass).filter(Boolean).join('، ')) : 'بدون صف'}${m.pinned ? ' · دروس الصف' : ''}</div>
-          <div class="text-[11px] text-slate-500">المدرس: ${escapeHtml(m.teachers.join('، ') || '—')} · الحضور: <span class="num-font">${rate}</span>${m.att.last ? ` · آخر حضور <span class="num-font">${escapeHtml(m.att.last)}</span>` : ''}</div>
-        </div>`;
-      }).join('') + (list.length > 200 ? `<p class="text-center text-[11px] text-slate-500 py-2">يُعرض أول 200 من ${list.length}. استعمل البحث.</p>` : '');
+      if (st.group === 'none') { box.innerHTML = actCards(list); return; }
+      const kinds = st.group === 'level_teacher' ? ['level', 'teacher'] : ['teacher', 'level'];
+      const forceOpen = !!q;                       // while searching, show every match
+      const top = actBucket(list, kinds[0]);
+      const isOpen = (key, dflt) => forceOpen || (st.open[key] === undefined ? dflt : st.open[key]);
+      box.innerHTML = top.map(g1 => {
+        const key1 = kinds[0][0] + ':' + g1.id;
+        const open1 = isOpen(key1, top.length === 1);
+        let body = '';
+        if (open1) {
+          const sub = actBucket(g1.items, kinds[1]);
+          body = '<div class="space-y-2 pr-2">' + sub.map(g2 => {
+            const key2 = key1 + '|' + kinds[1][0] + ':' + g2.id;
+            const open2 = isOpen(key2, sub.length === 1);
+            return actGroupHeader(key2, g2.label, g2.items.length, open2, true) + (open2 ? '<div class="space-y-2 pr-2">' + actCards(g2.items) + '</div>' : '');
+          }).join('') + '</div>';
+        }
+        return '<div class="space-y-2">' + actGroupHeader(key1, g1.label, g1.items.length, open1, false) + body + '</div>';
+      }).join('');
     }
 
     function renderActReports() {
@@ -1712,8 +1786,8 @@
       AppState.departments = [];
       AppState.dept = 'edu';
       AppState.act = null;
-      AppState.actState = { filter: 'teacher', classKey: '', q: '' };
-      const sw0 = document.getElementById('deptSwitchBtn'); if (sw0) sw0.classList.add('hidden');
+      AppState.actState = { filter: 'teacher', classKey: '', q: '', group: 'teacher_level', open: {} };
+      const sw0 = document.getElementById('deptTabs'); if (sw0) sw0.classList.add('hidden');
       const sq = document.getElementById('actSearch'); if (sq) sq.value = '';
       AppState.courses = [];
       AppState.students = [];
@@ -3888,6 +3962,8 @@
       const d = el.dataset;
       switch (d.action) {
         case 'view-as': startViewAs(d.email); break;
+        case 'act-group-mode': AppState.actState.group = d.mode; renderActMembers(); break;
+        case 'act-group': AppState.actState.open[d.key] = d.open !== '1'; renderActMembers(); break;
         case 'act-filter': AppState.actState.filter = d.key; AppState.actState.classKey = ''; renderActivities(); break;
         case 'act-class': AppState.actState.classKey = d.key; renderActivities(); break;
         case 'act-set-default': actSetDefault(); break;
