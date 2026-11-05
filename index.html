@@ -32,6 +32,10 @@
     #appShell[data-dept="edu"] > header { border-top: 4px solid #223d2f; }
     #appShell[data-dept="act"] > header { border-top: 4px solid #4338ca; }
     #actBanner { background: linear-gradient(135deg, #312e81, #4338ca); }
+    #appShell[data-dept="ceo"] > header { border-top: 4px solid #b45309; }
+    #appShell[data-dept="ceo"] #userAvatar, #appShell[data-dept="ceo"] #userTier { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+    #appShell[data-dept="ceo"] #userLocationText { color: #b45309; font-weight: 700; }
+    #appShell[data-dept="ceo"] main { background-image: linear-gradient(#fffbeb, #fffbeb00 180px); }
     #appShell[data-dept="act"] #userAvatar { background: #e0e7ff; color: #3730a3; }
     #appShell[data-dept="act"] #userTier { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
     #appShell[data-dept="act"] #userLocationText { color: #4338ca; font-weight: 700; }
@@ -228,6 +232,7 @@
       <div id="deptTabs" class="hidden max-w-2xl mx-auto mt-2 grid grid-cols-2 gap-1 p-1 rounded-2xl bg-slate-100" role="tablist" aria-label="القسم">
         <button id="deptTabEdu" type="button" role="tab" onclick="setDept('edu')"></button>
         <button id="deptTabAct" type="button" role="tab" onclick="setDept('act')"></button>
+        <button id="deptTabCeo" type="button" role="tab" onclick="setDept('ceo')" class="hidden"></button>
       </div>
       <div id="previewBanner" class="hidden max-w-2xl mx-auto mt-2 flex items-center justify-between gap-2 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 px-3 py-2 text-[11px] font-bold">
         <span id="previewBannerText"></span>
@@ -642,6 +647,31 @@
       <!-- ========================================== -->
       <!-- VIEW: الأنشطة (نظام الصفوف)                -->
       <!-- ========================================== -->
+      <!-- ========================================== -->
+      <!-- VIEW: المدير التنفيذي (T5) — اطلاع فقط      -->
+      <!-- ========================================== -->
+      <section id="viewCeo" class="hidden space-y-4">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900">لوحة المدير التنفيذي</h2>
+            <p id="ceoStamp" class="text-[11px] text-slate-500 num-font"></p>
+          </div>
+          <div id="ceoDays" class="flex gap-1 p-1 bg-slate-100 rounded-xl shrink-0">
+            <button type="button" data-action="ceo-days" data-days="30" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer">30 يوماً</button>
+            <button type="button" data-action="ceo-days" data-days="60" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer">60 يوماً</button>
+            <button type="button" data-action="ceo-days" data-days="90" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer">90 يوماً</button>
+          </div>
+        </div>
+        <div id="ceoTabs" class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-2xl" role="tablist">
+          <button type="button" role="tab" data-action="ceo-tab" data-tab="overview" class="py-2.5 rounded-xl text-xs font-extrabold cursor-pointer">نظرة عامة</button>
+          <button type="button" role="tab" data-action="ceo-tab" data-tab="edu" class="py-2.5 rounded-xl text-xs font-extrabold cursor-pointer">التعليم</button>
+          <button type="button" role="tab" data-action="ceo-tab" data-tab="act" class="py-2.5 rounded-xl text-xs font-extrabold cursor-pointer">الأنشطة</button>
+          <button type="button" role="tab" data-action="ceo-tab" data-tab="people" class="py-2.5 rounded-xl text-xs font-extrabold cursor-pointer">الأشخاص</button>
+        </div>
+        <div id="ceoBody" class="space-y-4"></div>
+        <p class="text-center text-[10px] text-slate-400 pb-2">وضع الاطلاع فقط — لا يمكن تعديل أي بيانات من هذا الحساب</p>
+      </section>
+
       <section id="viewActivities" class="hidden space-y-4">
         <!-- Chalkboard Banner (same slogan in الأنشطة, indigo identity) -->
         <div id="actBanner" class="rounded-2xl py-3.5 px-5 chalkboard-bg text-white flex flex-col items-center justify-center text-center relative overflow-hidden border border-[#4338ca]/70 shadow-sm">
@@ -1340,6 +1370,12 @@
     const AppState = {
       token: null,
       departments: [],
+      ceo: null,
+      ceoTab: 'overview',
+      ceoDays: 30,
+      ceoSort: 'rate',
+      ceoAll: false,
+      eduReady: false,
       canViewAs: false,
       preview: null,
       viewAsPeople: [],
@@ -1528,6 +1564,11 @@
               if (!(actData && actData.success)) merged = actData || { success: false };
               else merged.actData = actData;
             }
+            if (merged.success && AppState.departments.includes('ceo')) {
+              const ceoData = await callBackend({ action: 'ceoInit', days: 30 });
+              if (!(ceoData && ceoData.success)) merged = ceoData || { success: false };
+              else merged.ceoData = ceoData;
+            }
             if (!merged.success) AppState.token = null;
             response = merged;
           }
@@ -1535,10 +1576,16 @@
         if (response && response.success && response.token) {
           if (AppState.departments.includes('edu')) applyInitData(response);
           if (response.actData) applyActData(response.actData);
+          if (response.ceoData) applyCeoData(response.ceoData);
           try { localStorage.setItem('al_rawad_saved_email', email); } catch (e) {}
           if (pinInput) pinInput.value = '';
           if (successNotice) successNotice.classList.add('hidden');
-          if (AppState.departments.includes('edu')) { AppState.dept = 'edu'; setupDashboardAfterLogin(); }
+          if (AppState.departments.includes('ceo')) {
+            AppState.dept = 'ceo';
+            if (!AppState.currentUser) AppState.currentUser = { name: AppState.ceo.ceo.name, accessTier: 'T5', location: '' };
+            setupCeoAfterLogin();
+          }
+          else if (AppState.departments.includes('edu')) { AppState.dept = 'edu'; setupDashboardAfterLogin(); }
           else { AppState.dept = 'act'; AppState.currentUser = { name: AppState.act.name, accessTier: AppState.act.tier, location: '' }; setupActivitiesAfterLogin(); }
         } else {
           showLoginError((response && response.error) || "البريد أو الرمز السري غير صحيح.");
@@ -1566,6 +1613,7 @@
     }
 
     function setupDashboardAfterLogin() {
+      AppState.eduReady = true;
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appShell').classList.remove('hidden');
 
@@ -1604,38 +1652,214 @@
     }
 
     function applyDeptChrome() {
-      const inAct = AppState.dept === 'act';
+      const dept = AppState.dept, inAct = dept === 'act', inCeo = dept === 'ceo';
       const both = AppState.departments.length > 1;
-      const shell = document.getElementById('appShell'); if (shell) shell.dataset.dept = inAct ? 'act' : 'edu';
+      const shell = document.getElementById('appShell'); if (shell) shell.dataset.dept = dept;
       const tabs = document.getElementById('deptTabs');
       if (tabs) {
         tabs.classList.toggle('hidden', !both);
+        const hasEdu = AppState.departments.includes('edu'), hasAct = AppState.departments.includes('act'), hasCeo = AppState.departments.includes('ceo');
+        tabs.classList.toggle('grid-cols-3', [hasEdu, hasAct, hasCeo].filter(Boolean).length === 3);
+        tabs.classList.toggle('grid-cols-2', [hasEdu, hasAct, hasCeo].filter(Boolean).length !== 3);
         const eduT = AppState.currentUser && /^T[1-4]$/.test(AppState.currentUser.accessTier || '') ? AppState.currentUser.accessTier : '';
         const actT = AppState.act && /^A[1-4]$/.test(AppState.act.tier || '') ? AppState.act.tier : '';
         const base = 'flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-extrabold cursor-pointer transition-all ';
-        const te = document.getElementById('deptTabEdu'), ta = document.getElementById('deptTabAct');
-        te.className = base + (inAct ? 'text-slate-500 hover:bg-white/70' : 'bg-[#223d2f] text-white shadow');
-        ta.className = base + (inAct ? 'bg-[#4338ca] text-white shadow' : 'text-slate-500 hover:bg-white/70');
+        const off = 'text-slate-500 hover:bg-white/70';
+        const te = document.getElementById('deptTabEdu'), ta = document.getElementById('deptTabAct'), tc = document.getElementById('deptTabCeo');
+        te.classList.toggle('hidden', !hasEdu); ta.classList.toggle('hidden', !hasAct); tc.classList.toggle('hidden', !hasCeo);
+        te.className = base + (dept === 'edu' ? 'bg-[#223d2f] text-white shadow' : off) + (hasEdu ? '' : ' hidden');
+        ta.className = base + (inAct ? 'bg-[#4338ca] text-white shadow' : off) + (hasAct ? '' : ' hidden');
+        tc.className = base + (inCeo ? 'bg-[#b45309] text-white shadow' : off) + (hasCeo ? '' : ' hidden');
         te.innerHTML = 'التعليم' + (eduT ? ` <span class="num-font text-[10px] opacity-80" dir="ltr">${eduT}</span>` : '');
         ta.innerHTML = 'الأنشطة' + (actT ? ` <span class="num-font text-[10px] opacity-80" dir="ltr">${actT}</span>` : '');
-        te.setAttribute('aria-selected', String(!inAct)); ta.setAttribute('aria-selected', String(inAct));
+        tc.innerHTML = 'الإدارة <span class="num-font text-[10px] opacity-80" dir="ltr">T5</span>';
+        te.setAttribute('aria-selected', String(dept === 'edu')); ta.setAttribute('aria-selected', String(inAct)); tc.setAttribute('aria-selected', String(inCeo));
       }
-      const tier = inAct ? (AppState.act && AppState.act.tier) : (AppState.currentUser && AppState.currentUser.accessTier);
+      const tier = inCeo ? 'T5' : (inAct ? (AppState.act && AppState.act.tier) : (AppState.currentUser && AppState.currentUser.accessTier));
       const ut = document.getElementById('userTier');
-      if (ut) { ut.textContent = /^[TA][1-4]$/.test(tier || '') ? tier : ''; ut.classList.toggle('hidden', !ut.textContent); }
+      if (ut) { ut.textContent = /^[TA][1-5]$/.test(tier || '') ? tier : ''; ut.classList.toggle('hidden', !ut.textContent); }
       const nm = document.getElementById('userName');
-      if (nm) nm.innerText = inAct ? (AppState.act.name || 'الأنشطة') : (AppState.currentUser.name || 'المدرس');
+      if (nm) nm.innerText = inCeo ? ((AppState.ceo && AppState.ceo.ceo && AppState.ceo.ceo.name) || 'المدير التنفيذي') : (inAct ? (AppState.act.name || 'الأنشطة') : (AppState.currentUser.name || 'المدرس'));
       const loc = document.getElementById('userLocationText');
-      if (loc) loc.innerText = inAct ? 'الأنشطة' : (AppState.currentUser.location || '');
+      if (loc) loc.innerText = inCeo ? 'اطلاع فقط' : (inAct ? 'الأنشطة' : (AppState.currentUser.location || ''));
       const bell = document.getElementById('notificationBellBtn');
-      if (bell && inAct) bell.classList.add('hidden');
+      if (bell && dept !== 'edu') bell.classList.add('hidden');
       const vb = document.getElementById('viewAsBtn');
-      if (vb) vb.classList.toggle('hidden', !(AppState.canViewAs && !AppState.preview));
+      if (vb) vb.classList.toggle('hidden', !(AppState.canViewAs && !AppState.preview && !inCeo));
       const pb = document.getElementById('previewBanner');
       if (pb) {
         pb.classList.toggle('hidden', !AppState.preview);
-        if (AppState.preview) document.getElementById('previewBannerText').textContent = 'تعاين حساب ' + AppState.preview.name + ' (' + [AppState.preview.edu, AppState.preview.act].filter(Boolean).join(' · ') + ') — للقراءة فقط';
+        if (AppState.preview) document.getElementById('previewBannerText').textContent = 'تعاين حساب ' + AppState.preview.name + ' (' + [AppState.preview.edu, AppState.preview.act, AppState.preview.ceo].filter(Boolean).join(' · ') + ') — للقراءة فقط';
       }
+    }
+
+    // ===== T5: المدير التنفيذي (اطلاع فقط) =====
+    function applyCeoData(resp) { AppState.ceo = resp; AppState.ceoDays = resp.days || 30; }
+
+    function setupCeoAfterLogin() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+      AppState.dept = 'ceo';
+      applyDeptChrome();
+      renderCeo();
+      switchView('viewCeo');
+    }
+
+    async function ceoReload(silent) {
+      try {
+        const resp = await callBackend({ action: 'ceoInit', days: AppState.ceoDays });
+        if (resp && resp.success) { applyCeoData(resp); renderCeo(); if (silent !== true) showToast("تم تحديث البيانات", "success"); }
+        else if (resp && resp.code !== 'SESSION_EXPIRED' && silent !== true) showToast((resp && resp.error) || "تعذر التحديث", "error");
+      } catch (e) { if (silent !== true) showToast(e.message, "error"); }
+    }
+
+    const CEO_COL = { edu: '#2c4c3b', act: '#4338ca', warn: '#b45309', bad: '#b91c1c', ink: '#0f172a' };
+    const ceoNum = n => (n === null || n === undefined) ? '—' : String(n);
+    const ceoPctTxt = n => (n === null || n === undefined) ? '—' : n + '%';
+
+    function ceoDelta(cur, prev, unit) {
+      if (cur === null || cur === undefined || prev === null || prev === undefined) return '<span class="text-slate-400">لا مقارنة</span>';
+      const d = Math.round((cur - prev) * 10) / 10;
+      if (d === 0) return '<span class="text-slate-500">= مثل الفترة السابقة</span>';
+      return `<span class="${d > 0 ? 'text-emerald-700' : 'text-red-700'} font-bold num-font">${d > 0 ? '▲' : '▼'} ${Math.abs(d)}${unit || ''}</span> <span class="text-slate-400">عن الفترة السابقة</span>`;
+    }
+    function ceoKpi(label, value, sub, color) {
+      return `<div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-1 shadow-sm"><div class="text-[11px] font-bold text-slate-500">${escapeHtml(label)}</div>
+        <div class="text-2xl font-extrabold num-font leading-none" style="color:${color || CEO_COL.ink}">${escapeHtml(String(value))}</div>
+        <div class="text-[11px] text-slate-600 leading-snug">${sub || ''}</div></div>`;
+    }
+    function ceoCard(title, body, note) {
+      return `<div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-3 shadow-sm"><div class="flex items-baseline justify-between gap-2"><h3 class="text-sm font-extrabold text-slate-900">${escapeHtml(title)}</h3>${note ? `<span class="text-[10px] text-slate-400">${escapeHtml(note)}</span>` : ''}</div>${body}</div>`;
+    }
+    function ceoBar(pct, color) {
+      const w = pct === null || pct === undefined ? 0 : Math.max(0, Math.min(100, pct));
+      return `<div class="h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full rounded-full" style="width:${w}%;background:${color}"></div></div>`;
+    }
+    function ceoHBars(items, color, fmt) {
+      const max = Math.max(1, ...items.map(i => i.count));
+      return items.length ? '<div class="space-y-2">' + items.map(i => `<div class="space-y-1"><div class="flex justify-between text-[11px]"><span class="font-bold text-slate-700">${escapeHtml(i.label)}</span><span class="num-font text-slate-500">${fmt ? fmt(i) : i.count}</span></div>${ceoBar(100 * i.count / max, color)}</div>`).join('') + '</div>' : '<p class="text-xs text-slate-500">لا معطيات</p>';
+    }
+    function ceoTrend(trend, color) {
+      const w = 300, hgt = 96, pad = 14, n = trend.length;
+      const x = i => pad + i * (w - 2 * pad) / Math.max(1, n - 1), y = v => hgt - pad - (v / 100) * (hgt - 2 * pad);
+      let path = '', dots = '';
+      trend.forEach((t, i) => {
+        if (t.rate === null) return;
+        path += (path && trend[i - 1] && trend[i - 1].rate !== null ? ' L' : ' M') + x(i).toFixed(1) + ' ' + y(t.rate).toFixed(1);
+        dots += `<circle cx="${x(i).toFixed(1)}" cy="${y(t.rate).toFixed(1)}" r="3.5" fill="${color}"></circle>`;
+      });
+      const labels = trend.map((t, i) => (i === 0 || i === n - 1 || n <= 6) && t.rate !== null ? `<text x="${x(i).toFixed(1)}" y="${(y(t.rate) - 7).toFixed(1)}" text-anchor="middle" font-size="9" fill="#475569">${t.rate}</text>` : '').join('');
+      const wl = trend.map((t, i) => (i === 0 || i === n - 1 || i === Math.floor(n / 2)) ? `<text x="${x(i).toFixed(1)}" y="${hgt - 2}" text-anchor="middle" font-size="8" fill="#94a3b8">${escapeHtml(t.week)}</text>` : '').join('');
+      return `<svg viewBox="0 0 ${w} ${hgt}" class="w-full h-auto" role="img" aria-label="الحضور الأسبوعي (٪)" direction="ltr"><line x1="${pad}" x2="${w - pad}" y1="${y(50)}" y2="${y(50)}" stroke="#e2e8f0" stroke-dasharray="3 3"></line><path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"></path>${dots}${labels}${wl}</svg>`;
+    }
+
+    function renderCeo() {
+      const c = AppState.ceo;
+      if (!c) return;
+      document.getElementById('ceoStamp').textContent = 'آخر تحديث ' + (c.generatedAt || '') + ' · مقارنة بالفترة السابقة نفسها';
+      document.querySelectorAll('#ceoTabs [data-tab]').forEach(b => { b.className = 'py-2.5 rounded-xl text-xs font-extrabold cursor-pointer ' + (b.dataset.tab === AppState.ceoTab ? 'bg-[#b45309] text-white shadow' : 'text-slate-500'); b.setAttribute('aria-selected', String(b.dataset.tab === AppState.ceoTab)); });
+      document.querySelectorAll('#ceoDays [data-days]').forEach(b => { b.className = 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer ' + (Number(b.dataset.days) === AppState.ceoDays ? 'bg-white shadow text-slate-900' : 'text-slate-500'); });
+      const t = AppState.ceoTab, box = document.getElementById('ceoBody');
+      box.innerHTML = t === 'edu' ? ceoEduHtml(c) : t === 'act' ? ceoActHtml(c) : t === 'people' ? ceoPeopleHtml(c) : ceoOverviewHtml(c);
+      if (t === 'people') ceoLoadPeople();
+    }
+
+    function ceoOverviewHtml(c) {
+      const e = c.edu.totals, a = c.act.totals, rq = c.edu.requests;
+      const kpis = [
+        ceoKpi('نسبة الحضور (التعليم)', ceoPctTxt(e.rate), ceoDelta(e.rate, e.ratePrev, ' نقطة'), CEO_COL.edu),
+        ceoKpi('الحصص المنعقدة', ceoNum(e.sessions), ceoDelta(e.sessions, e.sessionsPrev, '') + (e.noSessions ? `<br>${e.noSessions} لم تنعقد` : ''), CEO_COL.edu),
+        ceoKpi('الطلبة', ceoNum(e.students), `${ceoNum(e.courses)} درساً · ${ceoNum(e.activeTeachers)} مدرساً نشطاً` + (e.unassigned ? `<br>${e.unassigned} بلا درس` : '')),
+        ceoKpi('طلبات الدروس المفتوحة', ceoNum(rq.open), rq.overdue ? `<span class="text-red-700 font-bold">${rq.overdue} متأخرة</span>` : 'لا متأخرات', rq.overdue ? CEO_COL.bad : CEO_COL.edu),
+        ceoKpi('أعضاء الأنشطة', ceoNum(a.members), `${a.mapped} من ${a.classes} صفاً مرتبط` + (a.noClass ? `<br>${a.noClass} بلا صف` : ''), CEO_COL.act),
+        ceoKpi('حضور الأنشطة', ceoPctTxt(a.rate), `${ceoNum(a.active)} عضواً نشطاً آخر 30 يوماً`, CEO_COL.act)
+      ].join('');
+      const alerts = c.alerts.length ? '<div class="space-y-2">' + c.alerts.map(x => `<button type="button" data-action="ceo-tab" data-tab="${x.tab}" class="w-full text-right flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border cursor-pointer ${x.level === 'warn' ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}"><span class="text-xs font-bold text-slate-800">${escapeHtml(x.text)}</span><span class="num-font text-sm font-extrabold ${x.level === 'warn' ? 'text-amber-800' : 'text-slate-600'}">${x.count}</span></button>`).join('') + '</div>' : '<p class="text-xs text-emerald-700 font-bold">✓ لا شيء يحتاج انتباهك الآن</p>';
+      const ranked = c.edu.teachers.filter(x => x.rate !== null && x.sessions >= 2).sort((p, q) => q.rate - p.rate);
+      const rowT = x => `<div class="flex items-center justify-between gap-2 text-xs"><span class="font-bold text-slate-800">${escapeHtml(x.name)}</span><span class="num-font text-slate-600">${x.rate}% · ${x.sessions} حصص</span></div>`;
+      const top = ranked.slice(0, 3), low = ranked.length > 6 ? ranked.slice(-3).reverse() : [];
+      return `<div class="grid grid-cols-2 gap-2">${kpis}</div>`
+        + ceoCard('يحتاج انتباهك', alerts)
+        + ceoCard('الحضور الأسبوعي (التعليم)', ceoTrend(c.edu.trend, CEO_COL.edu), 'نسبة الحضور ٪')
+        + (ranked.length ? ceoCard('أداء المدرسين', `<div class="space-y-2"><div class="text-[11px] font-bold text-emerald-700">الأعلى حضوراً</div>${top.map(rowT).join('')}${low.length ? `<div class="text-[11px] font-bold text-red-700 pt-2">الأقل حضوراً</div>${low.map(rowT).join('')}` : ''}</div>`, 'مدرسون بحصتين فأكثر') : '');
+    }
+
+    function ceoEduHtml(c) {
+      const e = c.edu, t = e.totals, rq = e.requests;
+      const kpis = [
+        ceoKpi('الحضور', ceoPctTxt(t.rate), ceoDelta(t.rate, t.ratePrev, ' نقطة'), CEO_COL.edu),
+        ceoKpi('الحصص', ceoNum(t.sessions), ceoDelta(t.sessions, t.sessionsPrev, '')),
+        ceoKpi('المدرسون', ceoNum(t.teachers), `${ceoNum(t.activeTeachers)} لديهم دروس`),
+        ceoKpi('الدروس', ceoNum(t.courses), t.stale ? `<span class="text-amber-800 font-bold">${t.stale} متوقفة</span>` : 'كلها نشطة'),
+        ceoKpi('الطلبة', ceoNum(t.students), t.unassigned ? `${t.unassigned} بلا درس` : 'كلهم في دروس'),
+        ceoKpi('حصص لم تنعقد', ceoNum(t.noSessions), e.noSessionReasons.map(r => escapeHtml(r.name) + ' ' + r.count).join(' · ') || '—')
+      ].join('');
+      const sorts = [['rate', 'الحضور'], ['sessions', 'الحصص'], ['students', 'الطلبة'], ['last', 'الأحدث']];
+      const key = AppState.ceoSort;
+      const list = e.teachers.slice().sort((p, q) => key === 'last' ? (q.last > p.last ? 1 : q.last < p.last ? -1 : 0) : ((q[key] === null ? -1 : q[key]) - (p[key] === null ? -1 : p[key])));
+      const teachers = '<div class="flex gap-1 flex-wrap">' + sorts.map(s => `<button type="button" data-action="ceo-sort" data-sort="${s[0]}" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer ${key === s[0] ? 'bg-[#2c4c3b] text-white' : 'bg-slate-100 text-slate-600'}">${s[1]}</button>`).join('') + '</div>'
+        + '<div class="space-y-2">' + (AppState.ceoAll ? list : list.slice(0, 12)).map(x => `<div class="p-3 rounded-xl border border-slate-200 space-y-1.5">
+            <div class="flex items-center justify-between gap-2"><div class="text-sm font-extrabold text-slate-900">${escapeHtml(x.name)} <span class="text-[10px] font-bold num-font px-1.5 py-px rounded bg-slate-100 text-slate-600" dir="ltr">${escapeHtml(x.tier)}</span></div>
+              ${x.neverStarted ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">لم يبدأ</span>' : x.idle ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">متوقف</span>' : ''}</div>
+            <div class="text-[11px] text-slate-600 num-font">${x.courses} دروس · ${x.students} طلبة · ${x.sessions} حصص${x.noSess ? ` · ${x.noSess} لم تنعقد` : ''}${x.last ? ` · آخر حصة ${escapeHtml(x.last)}` : ''}</div>
+            <div class="flex items-center gap-2"><div class="flex-1">${ceoBar(x.rate, x.rate !== null && x.rate < 50 ? CEO_COL.warn : CEO_COL.edu)}</div><span class="text-xs font-extrabold num-font w-12 text-left">${ceoPctTxt(x.rate)}</span>
+              ${x.email && !AppState.preview ? `<button type="button" data-action="view-as" data-email="${escapeHtml(x.email)}" class="px-2 py-1 rounded-lg bg-slate-900 text-white text-[10px] font-bold cursor-pointer">معاينة</button>` : ''}</div></div>`).join('') + '</div>'
+        + (list.length > 12 ? `<button type="button" data-action="ceo-all" class="w-full py-2 rounded-xl bg-slate-100 text-xs font-extrabold text-slate-700 cursor-pointer">${AppState.ceoAll ? 'عرض الأوائل فقط' : 'عرض الكل (' + list.length + ')'}</button>` : '');
+      const stBy = Object.keys(rq.byStatus).map(k => ({ label: k, count: rq.byStatus[k] })).filter(x => x.count > 0);
+      const reqBody = `<div class="grid grid-cols-3 gap-2 text-center"><div class="rounded-xl bg-slate-50 p-2"><div class="text-lg font-extrabold num-font">${rq.open}</div><div class="text-[10px] text-slate-500">مفتوحة</div></div><div class="rounded-xl ${rq.overdue ? 'bg-red-50' : 'bg-slate-50'} p-2"><div class="text-lg font-extrabold num-font ${rq.overdue ? 'text-red-700' : ''}">${rq.overdue}</div><div class="text-[10px] text-slate-500">متأخرة</div></div><div class="rounded-xl bg-slate-50 p-2"><div class="text-lg font-extrabold num-font">${rq.unassigned}</div><div class="text-[10px] text-slate-500">لم تُسنَد</div></div></div>`
+        + ceoHBars(stBy, CEO_COL.edu)
+        + `<div class="text-[11px] text-slate-600 num-font leading-relaxed">متوسط أيام: للإسناد ${ceoNum(rq.avgDaysToAssign)} · للاتصال الأول ${ceoNum(rq.avgDaysToFirstCall)} · للإنجاز ${ceoNum(rq.avgDaysToDone)}<br>طلبات جديدة في الفترة: ${rq.newInPeriod} · أُنجز هذا الشهر: ${rq.doneThisMonth} · أقدم طلب مفتوح: ${rq.oldestOpenDays} يوماً</div>`;
+      const stale = e.staleCourses.length ? '<div class="space-y-1.5">' + e.staleCourses.map(s => `<div class="flex items-center justify-between gap-2 text-xs"><span class="font-bold text-slate-800">${escapeHtml(s.code)} <span class="font-normal text-slate-500">${escapeHtml(s.teacher)}</span></span><span class="num-font text-amber-800">منذ ${s.daysAgo} يوماً · ${s.students} طلبة</span></div>`).join('') + '</div>' : '<p class="text-xs text-emerald-700 font-bold">✓ لا دروس متوقفة</p>';
+      const risk = e.atRisk.length ? '<div class="space-y-1.5">' + e.atRisk.map(s => `<div class="flex items-center justify-between gap-2 text-xs"><span class="font-bold text-slate-800">${escapeHtml(s.name)} <span class="font-normal text-slate-500">${escapeHtml(s.course)}${s.teacher ? ' · ' + escapeHtml(s.teacher) : ''}</span></span><span class="num-font text-red-700">${s.streak} غيابات</span></div>`).join('') + '</div>' : '<p class="text-xs text-emerald-700 font-bold">✓ لا طلبة بغياب متتالٍ</p>';
+      return `<div class="grid grid-cols-2 gap-2">${kpis}</div>`
+        + ceoCard('الحضور الأسبوعي', ceoTrend(e.trend, CEO_COL.edu), 'نسبة الحضور ٪')
+        + ceoCard('المدرسون', teachers, e.teachers.length + ' مدرساً')
+        + ceoCard('طلبات الدروس', reqBody)
+        + ceoCard('دروس متوقفة', stale, 'بلا حصة منذ 21 يوماً')
+        + ceoCard('طلبة غابوا 3 حصص متتالية', risk, e.atRisk.length >= 30 ? 'أول 30' : '')
+        + ceoCard('الطلبة حسب المستوى', ceoHBars(e.levels.map(l => ({ label: l.level ? 'المستوى ' + l.level : 'بدون مستوى', count: l.count })), CEO_COL.edu))
+        + ceoCard('الدروس حسب الصنف', ceoHBars(e.categories.map(k => ({ label: k.name, count: k.count })), CEO_COL.edu));
+    }
+
+    function ceoActHtml(c) {
+      const a = c.act, t = a.totals;
+      const cls = a.classes.filter(x => x.members > 0).sort((p, q) => q.members - p.members);
+      const empty = a.classes.filter(x => x.members === 0);
+      const kpis = [
+        ceoKpi('الأعضاء', ceoNum(t.members), a.byCategory.map(x => escapeHtml(x.name) + ' ' + x.count).join(' · '), CEO_COL.act),
+        ceoKpi('الحضور', ceoPctTxt(t.rate), 'آخر 6 أشهر', CEO_COL.act),
+        ceoKpi('نشطون', ceoNum(t.active), 'حضروا آخر 30 يوماً', CEO_COL.act),
+        ceoKpi('الصفوف المرتبطة', t.mapped + ' / ' + t.classes, empty.length ? `${empty.length} بلا أعضاء بعد` : 'كلها مرتبطة', CEO_COL.act),
+        ceoKpi('أعضاء بلا صف', ceoNum(t.noClass), t.noClass ? 'لا مدرس مرتبط بصف' : 'لا يوجد', t.noClass ? CEO_COL.warn : CEO_COL.act),
+        ceoKpi('فريق الأنشطة', ceoNum(t.teamSize), ['A4', 'A3', 'A2', 'A1'].map(k => `<span class="num-font" dir="ltr">${k}</span> ${a.team[k] || 0}`).join(' · '), CEO_COL.act)
+      ].join('');
+      const clsHtml = cls.length ? '<div class="space-y-2">' + cls.map(x => `<div class="p-3 rounded-xl border border-slate-200 space-y-1.5">
+          <div class="flex items-center justify-between gap-2"><div class="text-sm font-extrabold text-slate-900">${escapeHtml(x.name)} <span class="text-[11px] font-bold text-slate-500">${escapeHtml(x.category)}</span></div><span class="text-sm font-extrabold num-font" style="color:${CEO_COL.act}">${x.members}</span></div>
+          <div class="flex items-center gap-2"><div class="flex-1">${ceoBar(x.rate, CEO_COL.act)}</div><span class="text-xs font-extrabold num-font w-12 text-left">${ceoPctTxt(x.rate)}</span></div>
+          <div class="text-[11px] text-slate-500 num-font">${x.active} نشطاً آخر 30 يوماً من ${x.members}</div></div>`).join('') + '</div>' : '<p class="text-xs text-slate-500">لم يُربط أي مدرس بصف بعد. املأ ورقة «صفوف المدرسين» ليظهر توزيع الأعضاء.</p>';
+      return `<div class="grid grid-cols-2 gap-2">${kpis}</div>`
+        + ceoCard('الصفوف', clsHtml + (empty.length && cls.length ? `<p class="text-[11px] text-slate-500">بلا أعضاء: ${empty.map(x => escapeHtml(x.name + ' ' + x.category)).join('، ')}</p>` : ''), 'حسب المدرس')
+        + ceoCard('الأعضاء حسب المستوى', ceoHBars(a.levels.map(l => ({ label: l.level ? 'المستوى ' + l.level : 'بدون مستوى', count: l.count })), CEO_COL.act));
+    }
+
+    function ceoPeopleHtml() {
+      return `<div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-3 shadow-sm">
+        <p class="text-[11px] text-slate-600 leading-relaxed">اختر شخصاً لترى لوحته كما يراها هو، <b>للاطلاع فقط</b>. يظهر لك شريط «العودة لحسابي» أعلى الصفحة.</p>
+        <input id="ceoPeopleSearch" type="search" placeholder="ابحث بالاسم" oninput="ceoRenderPeople()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+        <div id="ceoPeopleList" class="space-y-2"></div></div>`;
+    }
+    async function ceoLoadPeople() {
+      if (AppState.preview) { document.getElementById('ceoPeopleList').innerHTML = '<p class="text-xs text-slate-500">غير متاح أثناء المعاينة.</p>'; return; }
+      if (!AppState.viewAsPeople.length) {
+        try { const r = await callBackend({ action: 'viewAsList' }); if (r && r.success) AppState.viewAsPeople = r.people || []; } catch (e) { showToast(e.message, 'error'); }
+      }
+      ceoRenderPeople();
+    }
+    function ceoRenderPeople() {
+      const box = document.getElementById('ceoPeopleList'); if (!box) return;
+      const q = normalizeSearch((document.getElementById('ceoPeopleSearch') || {}).value);
+      const list = AppState.viewAsPeople.filter(p => !q || normalizeSearch(p.name).includes(q));
+      box.innerHTML = list.length ? list.map(p => `<button type="button" data-action="view-as" data-email="${escapeHtml(p.email)}" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-between gap-2 cursor-pointer"><span class="text-sm font-bold text-slate-900">${escapeHtml(p.name)}</span><span class="text-[10px] font-bold num-font text-slate-500" dir="ltr">${escapeHtml([p.edu, p.act, p.ceo].filter(Boolean).join(' · '))}</span></button>`).join('') : '<p class="text-center text-xs text-slate-500 py-6">لا نتائج</p>';
     }
 
     function setupActivitiesAfterLogin() {
@@ -1647,24 +1871,23 @@
       switchView('viewActivities');
     }
 
-    function setDept(d) { if (AppState.departments.length > 1 && d !== AppState.dept) toggleDept(); }
+    function setDept(d) { if (AppState.departments.includes(d) && d !== AppState.dept) switchToDept(d); }
 
-    async function toggleDept() {
+    function toggleDept() {
       if (AppState.departments.length < 2) return;
+      switchToDept(AppState.dept === 'edu' ? 'act' : 'edu');
+    }
+
+    async function switchToDept(d) {
       if (isAttendanceDirty && !confirm("لديك حضور غير محفوظ وسيُفقد عند التبديل. هل تريد المتابعة؟")) return;
       setAttDirty(false);
-      if (AppState.dept === 'edu') {
-        AppState.dept = 'act';
-        applyDeptChrome();
-        renderActivities();
-        switchView('viewActivities');
-        actReload(true);
-      } else {
-        AppState.dept = 'edu';
-        applyDeptChrome();
-        refreshMgmtTools();
-        if (isSupervisorUser()) setupSupervisionPortal();
-        openDashboardView();
+      AppState.dept = d;
+      applyDeptChrome();
+      if (d === 'act') { renderActivities(); switchView('viewActivities'); actReload(true); }
+      else if (d === 'ceo') { renderCeo(); switchView('viewCeo'); ceoReload(true); }
+      else {
+        if (!AppState.eduReady) setupDashboardAfterLogin();
+        else { refreshMgmtTools(); if (isSupervisorUser()) setupSupervisionPortal(); openDashboardView(); }
       }
     }
 
@@ -1832,9 +2055,14 @@
       AppState.currentUser = null;
       AppState.departments = [];
       AppState.dept = 'edu';
+      AppState.eduReady = false;
       AppState.act = null;
+      AppState.ceo = null;
+      AppState.ceoTab = 'overview';
+      AppState.ceoDays = 30;
       AppState.actState = { filter: 'teacher', classKey: '', q: '', group: 'teacher_level', open: {}, loc: '', city: '' };
       const sw0 = document.getElementById('deptTabs'); if (sw0) sw0.classList.add('hidden');
+      const cb0 = document.getElementById('ceoBody'); if (cb0) cb0.innerHTML = '';
       const sq = document.getElementById('actSearch'); if (sq) sq.value = '';
       AppState.courses = [];
       AppState.students = [];
@@ -1886,7 +2114,17 @@
         if (!(a && a.success)) throw new Error((a && a.error) || 'تعذر تحميل البيانات');
         applyActData(a);
       }
-      if (deps.includes('edu')) { AppState.dept = 'edu'; setupDashboardAfterLogin(); }
+      if (deps.includes('ceo')) {
+        const c = await callBackend({ action: 'ceoInit', days: AppState.ceoDays });
+        if (!(c && c.success)) throw new Error((c && c.error) || 'تعذر تحميل البيانات');
+        applyCeoData(c);
+      }
+      if (deps.includes('ceo')) {
+        AppState.dept = 'ceo';
+        if (!AppState.currentUser) AppState.currentUser = { name: AppState.ceo.ceo.name, accessTier: 'T5', location: '' };
+        setupCeoAfterLogin();
+      }
+      else if (deps.includes('edu')) { AppState.dept = 'edu'; setupDashboardAfterLogin(); }
       else { AppState.dept = 'act'; AppState.currentUser = { name: AppState.act.name, accessTier: AppState.act.tier, location: '' }; setupActivitiesAfterLogin(); }
     }
 
@@ -1907,7 +2145,7 @@
       const q = normalizeSearch((document.getElementById('viewAsSearch') || {}).value);
       const list = AppState.viewAsPeople.filter(p => !q || normalizeSearch(p.name).includes(q));
       document.getElementById('viewAsList').innerHTML = list.length ? list.map(p =>
-        `<button type="button" data-action="view-as" data-email="${escapeHtml(p.email)}" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-between gap-2 cursor-pointer"><span class="text-sm font-bold text-slate-900">${escapeHtml(p.name)}</span><span class="text-[10px] font-bold num-font text-slate-500" dir="ltr">${escapeHtml([p.edu, p.act].filter(Boolean).join(' · '))}</span></button>`).join('')
+        `<button type="button" data-action="view-as" data-email="${escapeHtml(p.email)}" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-between gap-2 cursor-pointer"><span class="text-sm font-bold text-slate-900">${escapeHtml(p.name)}</span><span class="text-[10px] font-bold num-font text-slate-500" dir="ltr">${escapeHtml([p.edu, p.act, p.ceo].filter(Boolean).join(' · '))}</span></button>`).join('')
         : '<p class="text-center text-xs text-slate-500 py-6">لا نتائج</p>';
     }
 
@@ -1920,7 +2158,7 @@
         const adminToken = AppState.token, adminDeps = AppState.departments.slice();
         resetClientState_();
         AppState.token = r.token;
-        AppState.preview = { name: r.target.name, edu: r.target.edu, act: r.target.act, adminToken: adminToken, adminDeps: adminDeps };
+        AppState.preview = { name: r.target.name, edu: r.target.edu, act: r.target.act, ceo: r.target.ceo, adminToken: adminToken, adminDeps: adminDeps };
         try { await enterWithDepartments_(r.departments); }
         catch (e) { showToast(e.message, 'error'); await exitViewAs(true); }
       } catch (e) { showToast(e.message, 'error'); } finally { hideLoading(); }
@@ -1942,6 +2180,7 @@
     let refreshBusy = false;
     async function refreshLiveBackend(silent) {
       if (!AppState.token || refreshBusy) return;
+      if (AppState.dept === 'ceo') { refreshBusy = true; showLoading("جارٍ تحديث البيانات..."); try { await ceoReload(false); } finally { refreshBusy = false; hideLoading(); } return; }
       if (AppState.dept === 'act') { refreshBusy = true; showLoading("جارٍ تحديث البيانات..."); try { await actReload(false); } finally { refreshBusy = false; hideLoading(); } return; }
       if (isAttendanceDirty && !confirm("لديك حضور غير محفوظ وسيُفقد عند التحديث. هل تريد المتابعة؟")) return;
       refreshBusy = true;
@@ -3334,7 +3573,7 @@
     // payload = { action, ...fields }. The session token is added automatically (never stored on disk).
     async function callBackend(payload) {
       const body = Object.assign({}, payload);
-      if (AppState.preview && ['init', 'actInit', 'logout'].indexOf(body.action) === -1) {
+      if (AppState.preview && ['init', 'actInit', 'ceoInit', 'logout'].indexOf(body.action) === -1) {
         return { success: false, code: 'READONLY', error: 'وضع المعاينة للقراءة فقط.' };   // the server refuses these too
       }
       if (AppState.token && body.action !== 'login') body.token = AppState.token;
@@ -3395,7 +3634,7 @@
 
     let currentActiveView = 'viewDashboard';
     function switchView(targetId) {
-      ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp', 'viewRequests', 'viewActivities'].forEach(id => {
+      ['viewDashboard', 'viewAttendance', 'viewCourses', 'viewCourseStudents', 'viewFollowUp', 'viewRequests', 'viewActivities', 'viewCeo'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('hidden', id !== targetId);
       });
@@ -4009,6 +4248,10 @@
       const d = el.dataset;
       switch (d.action) {
         case 'view-as': startViewAs(d.email); break;
+        case 'ceo-tab': AppState.ceoTab = d.tab; renderCeo(); break;
+        case 'ceo-days': AppState.ceoDays = Number(d.days); ceoReload(false); break;
+        case 'ceo-all': AppState.ceoAll = !AppState.ceoAll; renderCeo(); break;
+        case 'ceo-sort': AppState.ceoSort = d.sort; renderCeo(); break;
         case 'act-group-mode': AppState.actState.group = d.mode; renderActMembers(); break;
         case 'act-group': AppState.actState.open[d.key] = d.open !== '1'; renderActMembers(); break;
         case 'act-filter': AppState.actState.filter = d.key; AppState.actState.classKey = ''; renderActivities(); break;
