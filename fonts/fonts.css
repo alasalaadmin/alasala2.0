@@ -1,0 +1,134 @@
+/* tajawal-arabic-400-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./tajawal-arabic-400-normal.woff2) format("woff2");
+}/* tajawal-latin-400-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./tajawal-latin-400-normal.woff2) format("woff2");
+}/* tajawal-arabic-500-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(./tajawal-arabic-500-normal.woff2) format("woff2");
+}/* tajawal-latin-500-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(./tajawal-latin-500-normal.woff2) format("woff2");
+}/* tajawal-arabic-700-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(./tajawal-arabic-700-normal.woff2) format("woff2");
+}/* tajawal-latin-700-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(./tajawal-latin-700-normal.woff2) format("woff2");
+}/* tajawal-arabic-800-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url(./tajawal-arabic-800-normal.woff2) format("woff2");
+}/* tajawal-latin-800-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url(./tajawal-latin-800-normal.woff2) format("woff2");
+}/* tajawal-arabic-900-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url(./tajawal-arabic-900-normal.woff2) format("woff2");
+}/* tajawal-latin-900-normal */
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url(./tajawal-latin-900-normal.woff2) format("woff2");
+}/* aref-ruqaa-arabic-400-normal */
+@font-face {
+  font-family: 'Aref Ruqaa';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./aref-ruqaa-arabic-400-normal.woff2) format("woff2");
+}/* aref-ruqaa-latin-400-normal */
+@font-face {
+  font-family: 'Aref Ruqaa';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./aref-ruqaa-latin-400-normal.woff2) format("woff2");
+}/* aref-ruqaa-arabic-700-normal */
+@font-face {
+  font-family: 'Aref Ruqaa';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(./aref-ruqaa-arabic-700-normal.woff2) format("woff2");
+}/* aref-ruqaa-latin-700-normal */
+@font-face {
+  font-family: 'Aref Ruqaa';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(./aref-ruqaa-latin-700-normal.woff2) format("woff2");
+}/* plus-jakarta-sans-latin-400-normal */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./plus-jakarta-sans-latin-400-normal.woff2) format("woff2");
+}/* plus-jakarta-sans-latin-500-normal */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(./plus-jakarta-sans-latin-500-normal.woff2) format("woff2");
+}/* plus-jakarta-sans-latin-600-normal */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(./plus-jakarta-sans-latin-600-normal.woff2) format("woff2");
+}/* plus-jakarta-sans-latin-700-normal */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(./plus-jakarta-sans-latin-700-normal.woff2) format("woff2");
+}/* plus-jakarta-sans-latin-800-normal */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url(./plus-jakarta-sans-latin-800-normal.woff2) format("woff2");
+}
