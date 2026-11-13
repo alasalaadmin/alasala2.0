@@ -6,8 +6,8 @@
  */
 'use strict';
 importScripts('./js/crypto.js', './js/release.js');
-const RELEASE_PUB = 'BFJ25Rxe8nxHohuWoNbl8ioKcj-SvLuZR0csrYvWROLIuX1WNjhZ3wjbu6FY4NJsZ6iE5LQQMJtkDQiHl6wRFP8';
-const VERSION = '1.0.0';
+const RELEASE_PUB = 'BDW-OTtZ1SsNxJkcr2YkzVkONWogdqXOkFwBE9xiqnv7Y7RjL72pngl9mv_Ao3nJIFcr9xLRood9Vr0fVp_uFDQ';
+const VERSION = '1.2.0-202611131628';
 const CACHE = 'alasala-app-' + VERSION;
 
 self.addEventListener('install', (event) => {

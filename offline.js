@@ -44,15 +44,15 @@
     #offLayer .warn{background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:10px 12px;font-size:12.5px;line-height:1.8;color:#78350f}
     #offLayer .err{background:#fef2f2;border:1px solid #fecaca;border-radius:14px;padding:10px 12px;font-size:12.5px;color:#7f1d1d;margin-top:8px}
     #offLayer .code{font-size:38px;font-weight:900;letter-spacing:5px;text-align:center;direction:ltr;padding:12px;background:#fffbeb;border:2px dashed #f59e0b;border-radius:16px;margin:10px 0;font-family:'Plus Jakarta Sans',sans-serif}
-    #offLayer .mark{font-size:34px;text-align:center;margin:8px 0}
     #offLayer .row{display:flex;gap:8px}#offLayer .row>*{flex:1}
     #offLayer ul{font-size:12.5px;line-height:1.8;padding-inline-start:18px;margin:6px 0}
     #offLayer .x{float:left;background:none;border:0;font-size:22px;cursor:pointer;color:#64748b}
     #offSyncBtn{position:relative}
     #offSyncBadge{position:absolute;top:2px;left:2px;min-width:16px;height:16px;border-radius:9px;background:#d97706;color:#fff;font-size:10px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 3px}
-    #offMark{margin-top:10px;text-align:center;color:#fde68a;font-size:12px;font-weight:700}
-    #offMark b{display:block;font-size:30px;margin-top:2px}
-    #offTabWarn{background:#7c2d12;color:#fff;font-size:12px;font-weight:700;padding:8px 12px;text-align:center}`;
+    #offTabWarn{position:fixed;top:0;left:0;right:0;z-index:2147483000;background:#7c2d12;color:#fff;font-size:12px;font-weight:700;padding:8px 12px;text-align:center}
+    /* login fields: dark with white text, also when focused or filled in by the phone (autofill paints them light) */
+    #loginScreen input,#loginScreen input:focus,#loginScreen input:hover{background-color:#101c16 !important;color:#fff !important;-webkit-text-fill-color:#fff !important;caret-color:#fbbf24}
+    #loginScreen input:-webkit-autofill,#loginScreen input:-webkit-autofill:focus,#loginScreen input:-webkit-autofill:hover{-webkit-box-shadow:0 0 0 1000px #101c16 inset !important;box-shadow:0 0 0 1000px #101c16 inset !important;-webkit-text-fill-color:#fff !important;transition:background-color 99999s}`;
   document.head.appendChild(css);
 
   let layer = null, widgets = [];
@@ -93,13 +93,10 @@
       return;
     }
     show(`<h2>تسجيل هذا الهاتف</h2>
-      <p>يعمل التطبيق دون إنترنت. يُسجَّل الهاتف مرة واحدة أمام المحطة الرئيسية، ثم تتم المزامنة وجهاً لوجه برمز متحرك.</p>
-      ${standalone() ? '' : '<div class="warn">افتح التطبيق دائماً من أيقونته على الشاشة الرئيسية، لا من المتصفح، حتى لا يمسح الهاتف بياناته. على أندرويد: قائمة المتصفح ← «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</div>'}
-      <div class="note">قبل البدء: يجب أن يكون للهاتف قفل شاشة (رمز أو بصمة).</div>
+      ${standalone() ? '' : '<div class="warn">افتح التطبيق من أيقونته على الشاشة الرئيسية، لا من المتصفح.</div>'}
       <label>اسم الهاتف (مثلاً: هاتف أيمن)</label><input id="offLabel" maxlength="40">
       <label>الرمز السري للتطبيق</label><input id="offP1" type="password" dir="ltr" autocomplete="new-password">
       <label>أعد كتابة الرمز</label><input id="offP2" type="password" dir="ltr" autocomplete="new-password">
-      <p style="font-size:12px">8 أرقام على الأقل. المشرفون والمسؤولون (T3، T4، A3، A4، T5): كلمة مرور من 12 حرفاً على الأقل فيها حروف.</p>
       <div id="offErr" class="err" style="display:none"></div><button class="ob" id="offGo">متابعة</button>`);
     $('#offGo').onclick = async () => {
       const a = $('#offP1').value, b = $('#offP2').value;
@@ -112,23 +109,23 @@
     };
   }
   function showJoin(joinText) {
-    show(`<h2>١ — اعرض هذا الرمز على المحطة</h2><p>وجّه الشاشة نحو كاميرا حاسوب المحطة الرئيسية (قسم «تسجيل هاتف»).</p><div id="offQR"></div>
+    show(`<h2>١ — اعرض هذا الرمز على المحطة</h2><p>وجّه الشاشة نحو كاميرا المحطة.</p><div id="offQR"></div>
       <button class="ob" id="offNext">التالي: امسح رمز المحطة</button><button class="ob l" id="offFile">حفظ الرمز كملف</button>`);
     QRUI.still($('#offQR'), joinText);
     $('#offFile').onclick = () => download('alasala-join.alasala', joinText);
     $('#offNext').onclick = scanEnroll;
   }
   function scanEnroll() {
-    show(`<h2>٢ — امسح رمز المحطة</h2><p>وجّه كاميرا الهاتف نحو الرمز المتحرك على شاشة المحطة حتى يكتمل الشريط.</p><div id="offScan"></div>
+    show(`<h2>٢ — امسح رمز المحطة</h2><p>وجّه كاميرا الهاتف نحو الرمز على شاشة المحطة حتى يكتمل الشريط.</p><div id="offScan"></div>
       <div id="offErr" class="err" style="display:none"></div><button class="ob l" id="offFile">قراءة ملف بدلاً من ذلك</button><button class="ob l" id="offBack">رجوع</button>`);
     const done = async (text) => {
       try {
         const r = await rpc('enroll', text);
         show(`<h2>٣ — تحقق من رقم المطابقة</h2><p>هل يظهر الرقم نفسه على شاشة المحطة الرئيسية؟</p><div class="code">${esc(r.code)}</div>
-          <p>هذا الهاتف لـ <b>${esc(r.profile.name)}</b>. علامتك الشخصية (تظهر دائماً على شاشة الدخول في تطبيقك الحقيقي):</p><div class="mark">${esc(r.mark)}</div>
+          <p>هذا الهاتف لـ <b>${esc(r.profile.name)}</b>.</p>
           <button class="ob" id="offYes">نعم، الرقم مطابق</button><button class="ob r" id="offNo">لا، الرقم مختلف</button>`);
         $('#offYes').onclick = () => (r.mustUpgradeSecret ? changeSecret(true) : finishEnroll());
-        $('#offNo').onclick = async () => { await rpc('wipe'); alert('أُلغي التسجيل. أعد المحاولة مع المحطة الرئيسية وأبلغ المسؤول.'); onboarding({ state: 'new' }); };
+        $('#offNo').onclick = async () => { await rpc('wipe'); alert('أُلغي التسجيل.'); onboarding({ state: 'new' }); };
       } catch (e) { errBox(msgOf(e)); setTimeout(scanEnroll, 2500); }
     };
     widgets.push(QRUI.scanner($('#offScan'), done, { allowSingle: false }));
@@ -138,8 +135,8 @@
   function finishEnroll() { close(); location.reload(); }
 
   function changeSecret(forced) {
-    show(`${forced ? '' : '<button class="x" id="offX">×</button>'}<h2>${forced ? 'صفتك تتطلب كلمة مرور أقوى' : 'تغيير الرمز السري'}</h2>
-      ${forced ? '<p>تحمل في هاتفك بيانات أكثر: اختر كلمة مرور من 12 حرفاً على الأقل فيها حروف.</p>' : ''}
+    show(`${forced ? '' : '<button class="x" id="offX">×</button>'}<h2>${forced ? 'اختر كلمة مرور أقوى' : 'تغيير الرمز السري'}</h2>
+      ${forced ? '<p>12 حرفاً على الأقل، فيها حروف.</p>' : ''}
       <label>الرمز الحالي</label><input id="offOld" type="password" dir="ltr">
       <label>الرمز الجديد</label><input id="offN1" type="password" dir="ltr" autocomplete="new-password">
       <label>أعد كتابته</label><input id="offN2" type="password" dir="ltr" autocomplete="new-password">
@@ -151,7 +148,7 @@
         await rpc('changeSecret', $('#offOld').value, $('#offN1').value);
         try { localStorage.setItem('offPinKind', /^\d+$/.test($('#offN1').value) ? 'digits' : 'text'); } catch (e) { /* none */ }
         if (forced) finishEnroll(); else { close(); if (typeof showToast === 'function') showToast('تم تغيير الرمز', 'success'); }
-      } catch (e) { errBox(e.code === 'WEAK' ? e.message.replace('Your role needs a passphrase of at least 12 characters, with letters', 'صفتك تتطلب كلمة مرور من 12 حرفاً على الأقل فيها حروف.').replace('Use at least 8 digits, or a passphrase of 10 characters or more', MSG.WEAK) : msgOf(e)); }
+      } catch (e) { errBox(e.code === 'WEAK' ? e.message.replace('Your role needs a passphrase of at least 12 characters, with letters', 'كلمة المرور: 12 حرفاً على الأقل، فيها حروف.').replace('Use at least 8 digits, or a passphrase of 10 characters or more', MSG.WEAK) : msgOf(e)); }
     };
   }
 
@@ -309,15 +306,11 @@
   }
   async function prepareLogin(st) {
     const email = $('#loginEmailInput');
-    if (email) { email.value = st.email; email.readOnly = true; }
+    // one phone = one person: the e-mail is not asked, only the PIN
+    if (email) { email.value = st.email; email.readOnly = true; const box = email.parentElement && email.parentElement.parentElement; if (box) box.style.display = 'none'; }
     const pin = $('#loginPinInput');
     try { if (pin && localStorage.getItem('offPinKind') === 'text') pin.setAttribute('inputmode', 'text'); } catch (e) { /* none */ }
     const form = document.querySelector('#loginScreen form');
-    if (form && !$('#offMark')) {
-      const m = document.createElement('div'); m.id = 'offMark';
-      m.innerHTML = 'علامتك الشخصية — إن لم تظهر فلا تكتب رمزك<b>' + esc(st.mark) + '</b>' + esc(st.name);
-      form.parentElement.appendChild(m);
-    }
     if (!standalone() && !$('#offTabWarn')) {
       const w = document.createElement('div'); w.id = 'offTabWarn';
       w.textContent = 'افتح التطبيق من أيقونته على الشاشة الرئيسية، لا من المتصفح.';

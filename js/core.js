@@ -293,9 +293,9 @@
     async login(p) {
       // the v66 login screen: e-mail + PIN; offline, the PIN opens this phone's vault
       try { if (!this.v) await this.unlock(p.pin); }
-      catch (e) { return { success: false, code: e.code || 'BAD_CREDENTIALS', error: e.code === 'LOCKED' ? 'تم تعليق الدخول مؤقتاً بسبب محاولات خاطئة متكررة. أعد المحاولة لاحقاً.' : (e.code === 'WIPED' ? 'تم مسح بيانات هذا الهاتف بعد محاولات خاطئة كثيرة. أعد تسجيله لدى المحطة الرئيسية.' : 'البريد الإلكتروني أو الرمز السري غير صحيح.') }; }
+      catch (e) { return { success: false, code: e.code || 'BAD_CREDENTIALS', error: e.code === 'LOCKED' ? 'تم تعليق الدخول مؤقتاً بسبب محاولات خاطئة متكررة. أعد المحاولة لاحقاً.' : (e.code === 'WIPED' ? 'تم مسح بيانات هذا الهاتف بعد محاولات خاطئة كثيرة. أعد تسجيله لدى المحطة الرئيسية.' : 'الرمز السري غير صحيح.') }; }
       if (this.meta.state !== 'enrolled') return { success: false, code: 'STATE', error: 'هذا الهاتف غير مسجل بعد.' };
-      if (String(p.email || '').trim().toLowerCase() !== this.v.profile.email) { this.lock(); return { success: false, code: 'BAD_CREDENTIALS', error: 'البريد الإلكتروني أو الرمز السري غير صحيح.' }; }
+      // the phone belongs to one enrolled person: the PIN alone opens it (the e-mail field is hidden)
       // education and programs (A1 to A4, M1); the CEO view stays on the master
       const deps = (this.v.profile.departments || ['edu']).filter((d) => d === 'edu' || d === 'act');
       return { success: true, token: GasEnv.randomHex(32), departments: deps.length ? deps : ['edu'], canViewAs: false, tiers: { edu: this.v.profile.tier || '', act: this.v.profile.act || '' } };
