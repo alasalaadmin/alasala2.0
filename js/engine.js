@@ -92,6 +92,24 @@
       return tokens[k];
     }
 
+    /** The city / neighbourhood suggestions also offer each place's other names («أسماء أخرى»), e.g. «حي النصر 2». */
+    function withAliases(res) {
+      try {
+        const idx = gas.areaIndex_(book, null), seen = new Set(res.list.map((x) => x.n)), extra = [];
+        // an other name written on two places (e.g. «حي النصر 2» on a row in أريانة and on a row in المروج) is not
+        // offered: picking it could put the member in the wrong place
+        const uses = new Map();
+        idx.rows.forEach((r) => (r.aliases || []).forEach((a) => { a = String(a || '').trim(); if (a) uses.set(a, (uses.get(a) || 0) + 1); }));
+        idx.rows.forEach((r) => {
+          const where = r.special ? r.gov : ((r.parent && r.parent !== r.name ? r.parent + ' — ' : '') + r.gov);
+          (r.aliases || []).forEach((a) => { a = String(a || '').trim(); if (a && !seen.has(a) && uses.get(a) === 1) { seen.add(a); extra.push({ n: a, g: where }); } });
+        });
+        if (!extra.length) return res;
+        const list = res.list.concat(extra);
+        return Object.assign({}, res, { list, v: list.length + ':' + list[list.length - 1].n });
+      } catch (e) { return res; }
+    }
+
     function run(email, payload, o) {
       o = o || {};
       if (!payload || typeof payload !== 'object' || typeof payload.action !== 'string') return { res: { success: false, error: 'طلب غير صالح.', code: 'BAD_INPUT' }, write: false, gen: [], journal: null };
@@ -112,6 +130,7 @@
         clock = null; state = null;
         return out;
       }
+      if (action === 'areaList' && res && res.success && Array.isArray(res.list)) res = withAliases(res);
       if (book.changed) Formulas.recompute(book);
       const journal = book.changed ? book.takeJournal() : null;
       const out = { res, write: write && !!journal, gen: state.gen, remap: state.remap, journal };

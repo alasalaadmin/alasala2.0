@@ -6324,5 +6324,5 @@ function WRITES_SPEC_(T, P, LOG, ST, CO, AT, RQ) {
     CacheService.getScriptCache().put("sess:" + token, JSON.stringify(o), CFG.SESSION_TTL_SEC);
     return token;
   }
-  return { handle_, readTable_, loadStaff_, loadCourses_, loadStudents_, buildScope_, studentInScope_, courseInScope_, findStaffByEmail_, actLoadTeam_, actFindByEmail_, ceoFindByEmail_, normCode, normName, normalizeArabic, cleanVal, sessVer_, toISODate_, isUnassignedNorm, parseCodes, computeHealth_, summarizeHealth_, rqLoad_, rqVisible_, actLoadClasses_, CFG, SHEET_NAMES, SHEETS_P1, RQ_SHEET, RQ_EVENTS, PUB, ACT, publicUser_, parseTier, actSuperviseesOf_, actHasA2_, pubIsLesson_, extractListOptions_, __session };
+  return { handle_, readTable_, loadStaff_, loadCourses_, loadStudents_, buildScope_, studentInScope_, courseInScope_, findStaffByEmail_, actLoadTeam_, actFindByEmail_, ceoFindByEmail_, normCode, normName, normalizeArabic, cleanVal, sessVer_, toISODate_, isUnassignedNorm, parseCodes, computeHealth_, summarizeHealth_, rqLoad_, rqVisible_, actLoadClasses_, CFG, SHEET_NAMES, SHEETS_P1, RQ_SHEET, RQ_EVENTS, PUB, ACT, publicUser_, parseTier, actSuperviseesOf_, actHasA2_, pubIsLesson_, extractListOptions_, areaIndex_, __session };
 });
