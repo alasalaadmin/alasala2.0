@@ -95,12 +95,8 @@
     <div class="w-full max-w-sm z-10 flex flex-col items-center animate-float">
       
       <div class="text-center mb-5">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-amber-50 tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
-          Wasl
-        </h1>
-        <p class="text-xs sm:text-sm text-amber-200/90 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">
-          وصل
-        </p>
+        <h1 id="waslTitle"><img src="./wasl-title.png" alt="تطبيق وصل" width="900" height="527"></h1>
+        <p id="waslSub">Wasl</p>
       </div>
 
       <div class="w-full bg-slate-950/45 backdrop-blur-2xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] space-y-4">
@@ -246,7 +242,7 @@
         </div>
 
         <!-- Supervisor Quick Notification Alert Banner (T2-T4) -->
-        <div id="supervisorAlertBanner" class="hidden p-4 bg-amber-50 border border-amber-300 rounded-2xl shadow-soft flex items-center justify-between cursor-pointer" onclick="openNotificationsModal()">
+        <div id="supervisorAlertBanner" class="hidden p-4 bg-amber-50 border border-amber-300 rounded-2xl flex items-center justify-between cursor-pointer" style="position:fixed;left:12px;right:12px;bottom:20px;z-index:55;max-width:28rem;margin:0 auto;box-shadow:0 18px 40px -12px rgba(15,23,42,.45);transition:opacity .7s" onclick="openNotificationsModal()">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
               ⚠️
@@ -938,6 +934,10 @@
             </select>
           </div>
         </div>
+        <div id="newCourseHomeBox" class="hidden">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">عنوان البيت</label>
+          <input type="text" id="newCourseHome" list="areaList" autocomplete="off" placeholder="اكتب ثم اختر من القائمة: باردو، المروج…" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+        </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">الكتاب المقرر</label>
@@ -1014,6 +1014,28 @@
             </select>
           </div>
         </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">حالة الدرس</label>
+            <select id="editCourseStatus" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+              <option value="نشط">درس نشط</option>
+              <option value="متقطع">درس متقطع</option>
+              <option value="متوقف">درس متوقف</option>
+            </select>
+          </div>
+          <div id="editCourseStopBox" class="hidden">
+            <label class="block text-xs font-semibold text-slate-600 mb-1">سبب التوقف</label>
+            <select id="editCourseStopReason" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600">
+              <option value="">— اختر —</option>
+              <option value="ظروف الطلبة">ظروف الطلبة</option>
+              <option value="ظروف المدرس">ظروف المدرس</option>
+            </select>
+          </div>
+        </div>
+        <div id="editCourseHomeBox" class="hidden">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">عنوان البيت</label>
+          <input type="text" id="editCourseHome" list="areaList" autocomplete="off" placeholder="اكتب ثم اختر من القائمة: باردو، المروج…" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-olive-600"/>
+        </div>
 
         <div class="pt-2 flex gap-2">
           <button type="submit" class="flex-1 py-2.5 bg-olive-700 hover:bg-olive-600 text-white font-bold rounded-xl text-xs transition-all active:scale-95 cursor-pointer">
@@ -1072,6 +1094,7 @@
         <textarea id="deleteRequestReason" rows="3" maxlength="200" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900" placeholder="مثال: انتقل إلى بلد آخر، تسجيل مكرّر..."></textarea>
       </div>
       <button type="button" id="deleteRequestSubmitBtn" onclick="submitDeleteRequest()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-xl text-sm cursor-pointer">إرسال الطلب إلى الإدارة</button>
+      <button type="button" id="deleteRequestSpotBtn" onclick="spotFromDeleteModal()" class="hidden w-full mt-2 py-3 bg-white text-red-700 border-2 border-red-300 font-extrabold rounded-xl text-sm cursor-pointer">المدير معي الآن: اعتماد فوري</button>
     </div>
   </div>
 
@@ -1127,6 +1150,7 @@
         <input type="text" id="nameSuggestReason" maxlength="200" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900" placeholder="مثال: لقب العائلة الصحيح، خطأ في الكتابة..." />
       </div>
       <button type="button" id="nameSuggestSubmitBtn" onclick="submitNameSuggestion()" class="w-full py-3 bg-olive-700 hover:bg-olive-600 text-white font-extrabold rounded-xl text-sm cursor-pointer">إرسال الاقتراح إلى الإدارة</button>
+      <button type="button" id="nameSuggestSpotBtn" onclick="spotFromNameModal()" class="hidden w-full mt-2 py-3 bg-white text-olive-800 border-2 border-olive-300 font-extrabold rounded-xl text-sm cursor-pointer">المدير معي الآن: اعتماد فوري</button>
     </div>
   </div>
 
@@ -1528,7 +1552,7 @@
       showLoading("الرجاء الانتظار");
 
       try {
-        const slowTimer = setTimeout(() => showLoading("الخادم يستجيب ببطء، الرجاء الانتظار"), 8000);
+        const slowTimer = setTimeout(() => showLoading("جارٍ التحميل، الرجاء الانتظار"), 8000);
         let response;
         try {
           response = await callBackend({ action: 'login', email: email, pin: pin, lite: true });
@@ -1561,7 +1585,7 @@
           showLoginError((response && response.error) || "البريد أو الرمز السري غير صحيح.");
         }
       } catch (err) {
-        showLoginError(err.message || "تعذر إتمام الدخول، يرجى التأكد من اتصال الإنترنت.");
+        showLoginError(err.message || "تعذر إتمام الدخول.");
       } finally {
         loginBusy = false;
         if (submitBtn) submitBtn.disabled = false;
@@ -1950,7 +1974,7 @@
       const t = (a && a.team) || [];
       if (!a || a.tier !== 'A3' || !t.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }   // v54: nothing to show when nobody reports to this A3
       box.classList.remove('hidden');
-      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-2 shadow-sm"><div class="flex items-center justify-between"><h3 class="text-sm font-extrabold text-slate-900">فريقي</h3><span class="num-font text-[11px] font-bold text-slate-500">${t.length}</span></div>` +
+      box.innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-2 shadow-sm"><div class="flex items-center justify-between"><h3 class="text-sm font-extrabold text-slate-900">تحت إشرافي</h3><span class="num-font text-[11px] font-bold text-slate-500">${t.length}</span></div>` +
         (t.length ? t.map(x => `<div class="p-2.5 rounded-xl border border-slate-200 space-y-1"><div class="flex items-center justify-between gap-2"><span class="text-sm font-extrabold text-slate-900">${escapeHtml(x.name)}</span><span class="flex items-center gap-1.5"><span dir="ltr" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[#f2f3fe] text-[#3e4594] num-font">${escapeHtml(x.tier)}</span><span class="text-[11px] text-slate-500 num-font">${x.members} فرد</span></span></div><div class="text-[11px] text-slate-500">${x.classes.length ? escapeHtml(x.classes.join('، ')) : 'لم يُحدَّد له صف بعد'}</div></div>`).join('')
           : '<p class="text-xs text-slate-500">لا يوجد أحد مرتبط بك بعد. اكتب اسمك أو بريدك في عمود «المشرف» عند كل منسق (A2) يتبعك.</p>') + '</div>';
     }
@@ -2394,7 +2418,7 @@
           : `<div class="text-xs font-bold text-slate-700">${escapeHtml(lessonLabel(L))}${L.teacher ? ` · ${escapeHtml(L.teacher)}` : ''}</div>`}
         <div class="flex items-center gap-2"><input id="pubDate" type="date" value="${escapeHtml(d.date)}" max="${escapeHtml(d.today)}" onchange="pubLoad(AppState.pub.data.code, this.value)" class="${inp} num-font">
           ${d.date !== d.today ? `<button type="button" onclick="pubLoad(AppState.pub.data.code, AppState.pub.data.today)" class="shrink-0 px-3 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-extrabold cursor-pointer">اليوم</button>` : ''}</div>
-        <div class="grid grid-cols-3 gap-2 text-center">${[['الحاضرون', d.present.length], ['منهم جدد', d.present.filter(x => x.type === 'جديد').length], ['المواظبون', d.regulars.length]].map(t => `<div class="rounded-xl bg-slate-50 border border-slate-200 p-2"><div class="text-[10px] font-bold text-slate-500">${t[0]}</div><div class="text-base font-extrabold num-font">${t[1]}</div></div>`).join('')}</div>
+        <div class="grid grid-cols-3 gap-2 text-center">${[['الحاضرون', d.present.length], ['غير مسجل من قبل', d.present.filter(x => x.type === 'جديد').length], ['المواظبون', d.regulars.length]].map(t => `<div class="rounded-xl bg-slate-50 border border-slate-200 p-2"><div class="text-[10px] font-bold text-slate-500">${t[0]}</div><div class="text-base font-extrabold num-font">${t[1]}</div></div>`).join('')}</div>
       </div>`;
       // 1. the regulars, first
       if (d.regulars.length) html += `<div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-2 shadow-sm">
@@ -3080,7 +3104,7 @@
               <span class="text-[11px] text-slate-500">${coursesList.length} دروس مسندة</span>
             </div>
             <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${hasUpdatedThisWeek ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-              ${hasUpdatedThisWeek ? '✓ محدث هذا الأسبوع' : '⚠️ لم يحدث هذا الأسبوع'}
+              ${hasUpdatedThisWeek ? '✓ محيّن هذا الأسبوع' : '⚠️ لم يحيّن هذا الأسبوع'}
             </span>
           </div>
           <div class="space-y-2">
@@ -3088,7 +3112,7 @@
               <div class="p-2.5 bg-slate-50 rounded-xl flex items-center justify-between text-xs">
                 <div>
                   <strong class="text-slate-900">${escapeHtml(c.book)}</strong>
-                  <span class="text-slate-500 mr-2">${escapeHtml(c.day || '')} ${escapeHtml(c.timing || '')}</span>
+                  <span class="text-slate-500 mr-2">${escapeHtml(c.day || '')} ${escapeHtml(c.timing || '')}</span> ${courseStatusBadge(c)}
                 </div>
                 <button data-action="open-course-students" data-code="${escapeHtml(c.code)}" class="px-2.5 py-1 bg-olive-100 hover:bg-olive-700 hover:text-white text-olive-900 font-bold rounded-lg transition-all cursor-pointer">
                   عرض الطلاب
@@ -3140,7 +3164,12 @@
           badgeCount.innerText = count;
           badgeCount.classList.toggle('hidden', notifSeen);
         }
-        if (banner) banner.classList.toggle('hidden', notifSeen);
+        // v67: a floating message for 10 seconds, once per opening of the app (the bell keeps the count)
+        if (banner && !notifSeen && !AppState.alertShown) {
+          AppState.alertShown = true;
+          banner.style.opacity = '1'; banner.classList.remove('hidden');
+          setTimeout(() => { banner.style.opacity = '0'; setTimeout(() => banner.classList.add('hidden'), 750); }, 10000);
+        }
         if (alertText) alertText.innerText = `يوجد ${count} مدرسين لم يقوموا بتحديث الحضور لهذا الأسبوع`;
       } else {
         if (badgeCount) badgeCount.classList.add('hidden');
@@ -3320,6 +3349,7 @@
       document.getElementById('deleteRequestCourseLabel').innerText = courseCode;
       document.getElementById('deleteRequestStudentName').innerText = st.name;
       document.getElementById('deleteRequestReason').value = '';
+      document.getElementById('deleteRequestSpotBtn').classList.toggle('hidden', !spotAvailable());
       showModal('deleteRequestModal');
     }
     let deleteReqBusy = false;
@@ -3342,6 +3372,29 @@
         }
       } catch (err) { showToast(err.message, "error"); }
       finally { deleteReqBusy = false; hideLoading(); }
+    }
+
+    // ---- approval on the spot (offline phone app only): the T4 decides on his own phone, face to face ----
+    function spotAvailable() { return !!window.WaslSpot && userRank() < 4; }
+    function courseDisplay(code) {
+      const c = (AppState.courses || []).find(x => x.code === code);
+      return c ? [c.book || code, [c.day, c.timing].filter(Boolean).join(' ')].filter(Boolean).join(' — ') : code;
+    }
+    function spotFromDeleteModal() {
+      const id = document.getElementById('deleteRequestStudentId').value, code = document.getElementById('deleteRequestCourse').value;
+      const reason = document.getElementById('deleteRequestReason').value.trim();
+      if (reason.length < 3) { showToast("يرجى كتابة سبب الحذف", "error"); return; }
+      const st = AppState.students.find(x => x.id === id);
+      hideModal('deleteRequestModal');
+      window.WaslSpot.start({ kind: 'deletion', fields: { studentId: id, courseCode: code, reason: reason }, show: { student: st ? st.name : '', course: courseDisplay(code) } });
+    }
+    function spotFromNameModal() {
+      const id = getVal('nameSuggestStudentId'), nn = getVal('nameSuggestNew');
+      if (nn.length < 2) { showToast("اكتب الاسم المقترح", "error"); return; }
+      const st = AppState.students.find(x => x.id === id);
+      if (st && st.name === nn) { showToast("الاسم المقترح مطابق للحالي.", "error"); return; }
+      hideModal('nameSuggestModal');
+      window.WaslSpot.start({ kind: 'name', fields: { studentId: id, newName: nn, reason: getVal('nameSuggestReason') }, show: { student: st ? st.name : '', current: st ? st.name : '' } });
     }
 
     // ---- T4 inbox ----
@@ -3403,6 +3456,7 @@
       setVal('nameSuggestStudentId', id);
       document.getElementById('nameSuggestCurrent').innerText = st.name;
       setVal('nameSuggestNew', st.name); setVal('nameSuggestReason', '');
+      document.getElementById('nameSuggestSpotBtn').classList.toggle('hidden', !spotAvailable());
       showModal('nameSuggestModal');
     }
     let nameSugBusy = false;
@@ -4038,8 +4092,8 @@
               <h3 class="text-lg font-extrabold text-olive-900 truncate"><span>${escapeHtml(c.day || '—')}</span> <span class="num-font">${escapeHtml(c.timing || '')}</span></h3>
               <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg border ${pal.chip} shrink-0">${escapeHtml(c.category || 'عام')}</span>
             </div>
-            <p class="text-sm font-extrabold text-slate-800">${escapeHtml(c.book || 'درس')}</p>
-            <p class="text-[11px] font-semibold text-slate-600">${escapeHtml(c.location || '')}${c.venue ? ' • 📍 ' + escapeHtml(c.venue) : ''}</p>
+            <p class="text-sm font-extrabold text-slate-800">${escapeHtml(c.book || 'درس')} ${courseStatusBadge(c)}</p>
+            <p class="text-[11px] font-semibold text-slate-600">${escapeHtml(c.location || '')}${c.location === 'بيت' && c.home ? ' — ' + escapeHtml(c.home) : ''}${c.venue ? ' • 📍 ' + escapeHtml(c.venue) : ''}</p>
             <p class="text-[11px] text-slate-500">${studentsLabel(n)} • ${last ? 'آخر حصة: <span class="num-font">' + escapeHtml(last) + '</span>' : 'لم تُسجَّل حصص بعد'}</p>
           </div>
           <div class="flex items-center gap-2 pt-2 border-t border-slate-200">
@@ -4490,7 +4544,7 @@
     }
 
     // ---- create course ----------------------------------------------------------------
-    function openCreateCourseModal() { AppState.afterCourseCreated = null; showModal('createCourseModal'); }
+    function openCreateCourseModal() { AppState.afterCourseCreated = null; setVal('newCourseHome', ''); courseHomeToggle('newCourse'); showModal('createCourseModal'); }
     function closeCreateCourseModal() { hideModal('createCourseModal'); }
     // (a hook set by the placement flow is cleared when the course modal is dismissed without creating)
 
@@ -4498,6 +4552,7 @@
       if (isCreatingCourse) return;
       const book = getVal('newCourseBook');
       if (!book) { showToast("يرجى اختيار الكتاب المقرر", "error"); return; }
+      if (getVal('newCourseLocation') === 'بيت') { const hm = getVal('newCourseHome') ? areaCheckMsg(getVal('newCourseHome')) : 'اكتب عنوان البيت (من القائمة).'; if (hm) { showToast(hm, "error"); return; } }
       isCreatingCourse = true;
       const btn = document.getElementById('submitCreateCourseBtn');
       if (btn) btn.disabled = true;
@@ -4509,6 +4564,7 @@
           day: getVal('newCourseDay'),
           timing: getVal('newCourseTiming'),
           location: getVal('newCourseLocation'),
+          home: getVal('newCourseLocation') === 'بيت' ? getVal('newCourseHome') : '',
           venue: getVal('newCourseVenue'),
           book: book
         });
@@ -4541,10 +4597,29 @@
       setSelectValue('editCourseDay', c.day || 'السبت');
       setVal('editCourseTiming', c.timing);
       setSelectValue('editCourseLocation', c.location || 'مقر');
+      setVal('editCourseHome', c.home || '');
+      courseHomeToggle('editCourse');
+      setSelectValue('editCourseStatus', c.status || 'نشط');
+      setSelectValue('editCourseStopReason', c.stopReason || '');
+      courseStopToggle();
       setSelectValue('editCourseVenue', c.venue);
       showModal('editCourseModal');
     }
     function closeEditCourseModal() { hideModal('editCourseModal'); }
+    // v67: a course at a home asks for the home's neighbourhood or town (from the areas list)
+    function courseHomeToggle(pre) {
+      const sel = document.getElementById(pre + 'Location'), box = document.getElementById(pre + 'HomeBox');
+      if (!sel || !box) return;
+      box.classList.toggle('hidden', sel.value !== 'بيت');
+    }
+    document.addEventListener('change', e => { const t = e.target; if (t && (t.id === 'newCourseLocation' || t.id === 'editCourseLocation')) courseHomeToggle(t.id.replace('Location', '')); if (t && t.id === 'editCourseStatus') courseStopToggle(); });
+    function courseStopToggle() { const b = document.getElementById('editCourseStopBox'); if (b) b.classList.toggle('hidden', getVal('editCourseStatus') !== 'متوقف'); }
+    // v67: the declared state of a course, as a small badge (nothing shown for an active course)
+    function courseStatusBadge(c) {
+      if (!c || !c.status || c.status === 'نشط') return '';
+      const stop = c.status === 'متوقف';
+      return `<span class="text-[11px] font-bold px-2 py-0.5 rounded-lg border ${stop ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-800 border-amber-200'}">${stop ? 'متوقف' + (c.stopReason ? ' — ' + escapeHtml(c.stopReason) : '') : 'متقطع'}</span>`;
+    }
 
     let editCourseBusy = false;
     async function submitCourseUpdate() {
@@ -4557,16 +4632,21 @@
         day: getVal('editCourseDay'),
         timing: getVal('editCourseTiming'),
         location: getVal('editCourseLocation'),
+        home: getVal('editCourseLocation') === 'بيت' ? getVal('editCourseHome') : '',
+        status: getVal('editCourseStatus') || 'نشط',
+        stopReason: getVal('editCourseStatus') === 'متوقف' ? getVal('editCourseStopReason') : '',
         venue: getVal('editCourseVenue')
       };
+      if (payload.status === 'متوقف' && !payload.stopReason) { showToast("اختر سبب توقف الدرس", "error"); return; }
       if (!payload.book) { showToast("يرجى اختيار الكتاب المقرر", "error"); return; }
+      if (payload.location === 'بيت') { const hm = payload.home ? areaCheckMsg(payload.home) : 'اكتب عنوان البيت (من القائمة).'; if (hm) { showToast(hm, "error"); return; } }
       editCourseBusy = true;
       showLoading("جارٍ حفظ التعديلات...");
       try {
         const res = await callBackend(payload);
         if (res && res.success) {
           const c = findCourseByCode(code);
-          if (c) { c.book = payload.book; c.day = payload.day; c.timing = payload.timing; c.location = payload.location; c.venue = payload.venue; }
+          if (c) { c.book = payload.book; c.day = payload.day; c.timing = payload.timing; c.location = payload.location; c.home = payload.home; c.status = payload.status; c.stopReason = payload.stopReason; c.venue = payload.venue; }
           closeEditCourseModal();
           showToast("تم تحديث بيانات الدرس", "success");
           refreshCourseScreens();
@@ -4934,6 +5014,8 @@
     });
   </script>
   <datalist id="areaList"></datalist>
+  <script src="./js/count-cap.js"></script>
+  <script src="./js/lesson-date.js"></script>
   <script src="./js/crypto.js"></script>
   <script src="./js/qrframes.js"></script>
   <script src="./js/qrcode.js"></script>

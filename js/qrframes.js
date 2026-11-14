@@ -36,7 +36,8 @@
       if (typeof text !== 'string') return { status: 'ignored' };
       if (!text.startsWith(PREFIX + '/')) {
         // a plain (single) QR: join requests are shown this way
-        if (text.charAt(0) === '{') return { status: 'single', text };
+        // a plain (single) QR: join requests and approval codes (W1Q. / W1A.) are shown this way
+        if (text.charAt(0) === '{' || /^W1[QA]\./.test(text)) return { status: 'single', text };
         return { status: 'ignored' };
       }
       const p = text.split('/');

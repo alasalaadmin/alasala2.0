@@ -71,6 +71,7 @@
         st.gen.push({ kind: 'student', value });
         return value;
       },
+      spotApprover() { return state && state.spot ? state.spot : null; },
       pins(rows) { if (opts.onPins) opts.onPins(rows); }
     };
     // the master never hands out an id already reserved for a phone
@@ -119,7 +120,7 @@
       const snap = isWriteAction(action) ? snapshot(book) : null;
       book.resetJournal();
       clock = typeof o.now === 'number' ? o.now : null;
-      state = { gen: [], remap: {}, expect: o.expect ? JSON.parse(JSON.stringify(o.expect)) : null, device: o.device || null };
+      state = { gen: [], remap: {}, expect: o.expect ? JSON.parse(JSON.stringify(o.expect)) : null, device: o.device || null, spot: o.spot || null };
       let res;
       try { res = gas.handle_(p); }
       catch (e) { res = { success: false, error: 'خطأ داخلي: ' + (e && e.message ? e.message : e), code: 'INTERNAL' }; }

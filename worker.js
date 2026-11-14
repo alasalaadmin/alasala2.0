@@ -1,6 +1,6 @@
 /* worker.js — the phone's local "server": runs the rules and keeps the encrypted data, off the screen's thread. */
 'use strict';
-importScripts('./js/crypto.js', './js/bundle.js', './js/gas-env.js', './js/formulas.js', './js/gas-bundle.js', './js/engine.js', './js/core.js');
+importScripts('./js/crypto.js', './js/bundle.js', './js/spot.js', './js/gas-env.js', './js/formulas.js', './js/gas-bundle.js', './js/engine.js', './js/core.js');
 
 const DB = 'alasala-offline', STORE = 'kv';
 function idb() {
@@ -28,7 +28,7 @@ const kv = {
 };
 
 const core = new self.PhoneCore.Core({ kv });
-const METHODS = ['status', 'join', 'joinText', 'enroll', 'unlock', 'lock', 'changeSecret', 'wipe', 'api', 'makeBundle', 'applyReply', 'applyIncoming', 'collect', 'packFor', 'info', 'details'];
+const METHODS = ['status', 'join', 'joinText', 'enroll', 'unlock', 'lock', 'changeSecret', 'wipe', 'api', 'makeBundle', 'applyReply', 'applyIncoming', 'collect', 'packFor', 'info', 'details', 'spotStart', 'spotCancel', 'spotRead', 'spotDecide', 'spotFinish'];
 
 let queue = Promise.resolve();   // one operation at a time: no two changes can interleave
 self.onmessage = (e) => {

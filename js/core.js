@@ -11,11 +11,11 @@
 (function (root, factory) {
   const isNode = typeof module === 'object' && module.exports;
   const deps = isNode
-    ? [require('../shared/crypto.js'), require('../shared/bundle.js'), require('../shared/engine.js'), require('../shared/gas-env.js')]
-    : [root.AC, root.Bundle, root.Engine, root.GasEnv];
+    ? [require('../shared/crypto.js'), require('../shared/bundle.js'), require('../shared/engine.js'), require('../shared/gas-env.js'), require('../shared/spot.js')]
+    : [root.AC, root.Bundle, root.Engine, root.GasEnv, root.Spot];
   const api = factory.apply(null, deps);
   if (isNode) module.exports = api; else root.PhoneCore = api;
-})(typeof self !== 'undefined' ? self : globalThis, function (AC, Bundle, Engine, GasEnv) {
+})(typeof self !== 'undefined' ? self : globalThis, function (AC, Bundle, Engine, GasEnv, Spot) {
   'use strict';
   const APP_VERSION = '1.0.0';
   const LOCK_STEPS = [0, 0, 0, 0, 0, 15 * 60e3, 60 * 60e3, 6 * 3600e3];   // after 5 wrong secrets: 15 min, 1 h, then 6 h
@@ -209,13 +209,25 @@
       this.requireEnrolled();
       const p = this.v.profile || {};
       const now = new Date(this.now()).toISOString();
+      let watch = (this.v.views && this.v.views.watch) || null;
+      if (watch && watch.act && watch.act.hidden && p.act === 'A3' && this.engine) {
+        // the share not on this phone, counted on the phone itself (own courses and public lesson members travel too)
+        try {
+          const held = ((this.engine.run(p.email, { action: 'actInit' }).res || {}).members || []).length;
+          const total = watch.act.hidden.total;
+          watch = Object.assign({}, watch, { act: Object.assign({}, watch.act, { hidden: { total, shown: held, pct: total ? Math.max(0, Math.round(100 * (total - held) / total)) : 0 } }) });
+        } catch (e) { /* keep the master's figure */ }
+      }
       return {
         canCourse: /(^|[^A-Z0-9])T4(?![0-9])/.test(String(p.role || '').toUpperCase()),
         canClass: ['A3', 'A4'].indexOf(p.act) !== -1,
         canPub: p.act === 'A4',
+        canArea: p.act === 'A3',
+        watch,
         tier: p.act || '',
+        eduTier: p.tier || '',
         pubLessons: (this.v.views && this.v.views.pubLessons) || [],
-        grants: (this.v.grants || []).filter((g) => g.until > now).map((g) => ({ kind: g.kind, ref: g.ref, until: g.until, members: g.members, people: this.peopleOf(g) })),
+        grants: (this.v.grants || []).filter((g) => g.until > now).map((g) => ({ kind: g.kind, ref: g.ref, until: g.until, members: g.members, people: g.kind === 'area' ? [] : this.peopleOf(g) })),
         asked: this.v.pending.filter((c) => c.payload.action === 'requestDetails').map((c) => ({ kind: c.payload.kind, ref: c.payload.ref, at: c.at })),
         prog: (this.v.views && this.v.views.prog) || null
       };
@@ -237,15 +249,15 @@
 
     async requestDetails(payload) {
       const d = this.details();
-      const kind = ['class', 'course', 'pub'].indexOf(payload.kind) !== -1 ? payload.kind : '';
-      const ref = String(payload.ref || '').trim().slice(0, 60);
+      const kind = ['class', 'course', 'pub', 'area'].indexOf(payload.kind) !== -1 ? payload.kind : '';
+      const ref = payload.kind === 'area' ? 'all' : String(payload.ref || '').trim().slice(0, 60);
       if (!kind || !ref) return { success: false, code: 'BAD_INPUT', error: 'اختر الدرس أو الصف.' };
-      if ((kind === 'course' && !d.canCourse) || (kind === 'class' && !d.canClass) || (kind === 'pub' && !d.canPub)) return { success: false, code: 'FORBIDDEN', error: 'غير متاح لصفتك.' };
+      if ((kind === 'course' && !d.canCourse) || (kind === 'class' && !d.canClass) || (kind === 'pub' && !d.canPub) || (kind === 'area' && !d.canArea)) return { success: false, code: 'FORBIDDEN', error: 'غير متاح لصفتك.' };
       if (d.asked.some((a) => a.kind === kind && a.ref === ref)) return { success: true, message: 'الطلب مسجّل من قبل؛ يصل مع المزامنة القادمة.' };
       this.v.seq += 1;
       this.v.pending.push({ id: Bundle.newId('c'), seq: this.v.seq, at: this.now(), payload: { action: 'requestDetails', kind, ref }, gen: [] });
       await this.saveVault();
-      return { success: true, message: 'سُجّل الطلب؛ يصل إلى المحطة مع المزامنة القادمة، وتصل التفاصيل مع ردها.' };
+      return { success: true, message: 'سُجّل الطلب.' };
     }
 
     /** Working data = what the master last sent + the changes not yet acknowledged, replayed in order. */
@@ -260,8 +272,9 @@
       const email = this.v.profile.email;
       this.v.pending.forEach((c) => {
         if (c.payload.action === 'requestDetails') return;   // decided by the master only
+        if (c.carryOnly) return;                              // an on-the-spot decision this phone only carries to the master
         const expect = { ids: (c.gen || []).filter((g) => g.kind !== 'student'), studentIds: (c.gen || []).filter((g) => g.kind === 'student').map((g) => g.value) };
-        const r = this.engine.run(email, c.payload, { now: c.at, expect });
+        const r = this.engine.run(c.runAs || email, c.payload, { now: c.at, expect, spot: c.spot || null });
         c.localConflict = !r.res.success ? (r.res.error || 'refused') : undefined;
         (c.gen || []).forEach((g) => { if (g.kind === 'student') { const i = this.v.pool.indexOf(g.value); if (i !== -1) this.v.pool.splice(i, 1); } });
       });
@@ -274,9 +287,11 @@
       this.requireEnrolled();
       const email = this.v.profile.email;
       if (payload.action === 'requestDetails') return this.requestDetails(payload);
+      if (payload.action === 'spotDecision') return { success: false, code: 'FORBIDDEN', error: 'الاعتماد الفوري يتم من شاشته الخاصة.' };
       // A4: contribution details and the programs settings stay on the master (percentages in the summary)
-      if (this.v.profile.act === 'A4' && A4_MASTER_ONLY.indexOf(payload.action) !== -1) return { success: false, code: 'MASTER_ONLY', error: 'متاح في المحطة الرئيسية فقط. على الهاتف: ملخص البرامج بالنسب.' };
-      if (payload.action === 'viewAs' || payload.action === 'viewAsList' || payload.action === 'revokeSessions') return { success: false, code: 'FORBIDDEN', error: 'متاح في المحطة الرئيسية فقط.' };
+      if (this.v.profile.act === 'A4' && A4_MASTER_ONLY.indexOf(payload.action) !== -1) return { success: false, code: 'MASTER_ONLY', error: 'غير متاح على الهاتف.' };
+      // master only: previews, sessions, the T5 view, the data-health check (a phone holds only part of the data)
+      if (['viewAs', 'viewAsList', 'revokeSessions', 'ceoInit', 'health'].indexOf(payload.action) !== -1) return { success: false, code: 'FORBIDDEN', error: 'غير متاح على الهاتف.' };
       const out = this.engine.run(email, payload, {});
       // the book list as the master computes it from every course (a phone holds only some courses)
       if (payload.action === 'init' && out.res && out.res.success && this.v.views && Array.isArray(this.v.views.books) && this.v.views.books.length) out.res.books = this.v.views.books.slice();
@@ -293,7 +308,7 @@
     async login(p) {
       // the v66 login screen: e-mail + PIN; offline, the PIN opens this phone's vault
       try { if (!this.v) await this.unlock(p.pin); }
-      catch (e) { return { success: false, code: e.code || 'BAD_CREDENTIALS', error: e.code === 'LOCKED' ? 'تم تعليق الدخول مؤقتاً بسبب محاولات خاطئة متكررة. أعد المحاولة لاحقاً.' : (e.code === 'WIPED' ? 'تم مسح بيانات هذا الهاتف بعد محاولات خاطئة كثيرة. أعد تسجيله لدى المحطة الرئيسية.' : 'الرمز السري غير صحيح.') }; }
+      catch (e) { return { success: false, code: e.code || 'BAD_CREDENTIALS', error: e.code === 'LOCKED' ? 'تم تعليق الدخول مؤقتاً بسبب محاولات خاطئة متكررة. أعد المحاولة لاحقاً.' : (e.code === 'WIPED' ? 'مُسحت بيانات هذا الهاتف بعد محاولات خاطئة كثيرة.' : 'الرمز السري غير صحيح.') }; }
       if (this.meta.state !== 'enrolled') return { success: false, code: 'STATE', error: 'هذا الهاتف غير مسجل بعد.' };
       // the phone belongs to one enrolled person: the PIN alone opens it (the e-mail field is hidden)
       // education and programs (A1 to A4, M1); the CEO view stays on the master
@@ -413,6 +428,62 @@
       this.rebuild();
       await this.saveVault();
       return { accepted: (r.accepted || []).length, rejected, held: r.held || [], flagged: r.flagged || [], pending: this.v.pending.length, counts: body.counts };
+    }
+
+    // ---------------------------------------------------------------- approval on the spot (teacher and T4 face to face)
+    isT4() { return !!this.v && !!this.v.profile && this.v.profile.tier === 'T4'; }
+    /** Teacher: the signed request to show to the T4. Kept until it is answered or cancelled. */
+    async spotStart(kind, fields, show) {
+      this.requireEnrolled();
+      if (this.isT4()) throw new PhoneError('FORBIDDEN', 'You decide these requests yourself');
+      const text = await Spot.request({ kind, fields, show, deviceId: this.v.deviceId, email: this.v.profile.email, name: this.v.profile.name, signPriv: this.v.identity.signPriv, at: this.now() });
+      this.v.spotOpen = { text, at: this.now() };
+      await this.saveVault();
+      return { text };
+    }
+    async spotCancel() { this.requireEnrolled(); if (this.v.spotOpen) { this.v.spotOpen = null; await this.saveVault(); } return { ok: true }; }
+    /** T4: reads the teacher's request (shown before deciding). The station checks the teacher's signature. */
+    spotRead(text) {
+      this.requireEnrolled();
+      if (!this.isT4()) throw new PhoneError('FORBIDDEN', 'Only a T4 phone decides these requests');
+      const q = Spot.parse(text);
+      if (q.type !== 'Q') throw new PhoneError('BAD_INPUT', 'This is not a request code');
+      if (q.body.dev === this.v.deviceId || q.body.e === String(this.v.profile.email).toLowerCase()) throw new PhoneError('MISMATCH_OWN', 'This is your own code');
+      if (this.now() - q.body.at > Spot.MAX_AGE_DAYS * 86400e3) throw new PhoneError('OLD', 'This request is too old');
+      return { kind: q.body.k, from: q.body.nm, email: q.body.e, fields: q.body.p, show: q.body.s, at: q.body.at };
+    }
+    /** T4: signs the decision, keeps it to send to the station, applies it here when this phone holds the data. */
+    async spotDecide(text, decision, note, finalName) {
+      this.requireEnrolled();
+      this.spotRead(text);
+      const aText = await Spot.decision({ requestText: text, decision, note, finalName, deviceId: this.v.deviceId, email: this.v.profile.email, name: this.v.profile.name, signPriv: this.v.identity.signPriv, at: this.now() });
+      const q = Spot.parse(text), a = Spot.parse(aText);
+      const res = this.queueSpot(q, a, { email: this.v.profile.email, name: this.v.profile.name, tier: 'T4' });
+      await this.saveVault();
+      return { text: aText, local: res.success };
+    }
+    /** Teacher: reads the T4's answer, checks it is signed by a T4 phone the station listed, applies it. */
+    async spotFinish(aText) {
+      this.requireEnrolled();
+      if (!this.v.spotOpen) throw new PhoneError('STATE', 'No request waiting for an answer');
+      const q = Spot.parse(this.v.spotOpen.text), a = Spot.parse(aText);
+      if (a.type !== 'A') throw new PhoneError('BAD_INPUT', 'This is not an answer code');
+      if (!(await Spot.matches(q, a))) throw new PhoneError('MISMATCH', 'This answer is for another request');
+      const list = (this.v.views && this.v.views.approvers) || [];
+      const who = list.find((x) => x.d === a.body.dev);
+      if (!who || !(await Spot.verify(a, who.k))) throw new PhoneError('SPOT_UNKNOWN', 'This answer is not from a T4 phone known to this phone');
+      const res = this.queueSpot(q, a, { email: who.e, name: who.n, tier: 'T4' });
+      this.v.spotOpen = null;
+      await this.saveVault();
+      return { decision: a.body.d, by: who.n, note: a.body.note || '', finalName: a.body.fn || '', kind: q.body.k, show: q.body.s, local: res };
+    }
+    queueSpot(q, a, approver) {
+      const payload = Spot.payloadOf(q, a);
+      const runAs = q.body.e;
+      const out = this.engine.run(runAs, payload, { spot: approver });
+      this.v.seq += 1;
+      this.v.pending.push({ id: Bundle.newId('c'), seq: this.v.seq, at: this.now(), payload, gen: out.res && out.res.success ? out.gen : [], runAs, spot: approver, carryOnly: !(out.res && out.res.success) || undefined });
+      return out.res || { success: false };
     }
 
     info() {
